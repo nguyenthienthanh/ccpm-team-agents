@@ -391,6 +391,20 @@ scoring:
   exact_match: +50
   semantic_match: +35
   file_pattern: +30
+
+prerequisites:
+  # Only activate if project has test infrastructure
+  required_files:
+    - jest.config.js OR vitest.config.ts OR pytest.ini OR phpunit.xml OR cypress.config.js
+  OR
+  required_scripts:
+    - "test" in package.json scripts
+    - "pytest" in requirements.txt
+    - "phpunit" in composer.json
+
+skip_if:
+  - no_test_framework_detected: true
+  - user_explicitly_skips_testing: true
 ```
 
 **UI Designer (Priority: 85)**
@@ -465,6 +479,95 @@ function analyzeProjectContext(context: ProjectContext): AgentScores {
 
   return scores;
 }
+
+function checkTestInfrastructure(): boolean {
+  // Check for JavaScript/TypeScript test frameworks
+  if (fs.existsSync('package.json')) {
+    const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+
+    // Check for test runners in dependencies or devDependencies
+    const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
+    const testFrameworks = ['jest', 'vitest', '@testing-library', 'cypress', 'playwright', 'mocha', 'jasmine'];
+    if (testFrameworks.some(fw => Object.keys(allDeps).some(dep => dep.includes(fw)))) {
+      return true;
+    }
+
+    // Check for test script
+    if (pkg.scripts?.['test']) {
+      return true;
+    }
+  }
+
+  // Check for test config files
+  const testConfigFiles = [
+    'jest.config.js', 'jest.config.ts', 'jest.config.json',
+    'vitest.config.ts', 'vitest.config.js',
+    'cypress.config.js', 'cypress.config.ts',
+    'playwright.config.ts', 'playwright.config.js',
+    '.mocharc.json', '.mocharc.js'
+  ];
+  if (testConfigFiles.some(file => fs.existsSync(file))) {
+    return true;
+  }
+
+  // Check for Python test frameworks
+  if (fs.existsSync('requirements.txt')) {
+    const reqs = fs.readFileSync('requirements.txt', 'utf8');
+    if (reqs.includes('pytest') || reqs.includes('unittest')) {
+      return true;
+    }
+  }
+  if (fs.existsSync('pytest.ini') || fs.existsSync('setup.cfg')) {
+    return true;
+  }
+
+  // Check for PHP test frameworks
+  if (fs.existsSync('composer.json')) {
+    const composer = JSON.parse(fs.readFileSync('composer.json', 'utf8'));
+    if (composer['require-dev']?.['phpunit/phpunit']) {
+      return true;
+    }
+  }
+  if (fs.existsSync('phpunit.xml') || fs.existsSync('phpunit.xml.dist')) {
+    return true;
+  }
+
+  // Check for Go test files
+  if (fs.existsSync('go.mod')) {
+    const files = fs.readdirSync('.', { recursive: true });
+    if (files.some(f => f.endsWith('_test.go'))) {
+      return true;
+    }
+  }
+
+  // Check for test directories
+  const testDirs = ['tests/', '__tests__/', 'test/', 'spec/'];
+  if (testDirs.some(dir => fs.existsSync(dir))) {
+    return true;
+  }
+
+  return false;
+}
+
+function shouldActivateQAAgent(userMessage: string, scores: Record<string, number>): boolean {
+  // Always activate if user explicitly requests testing
+  const testKeywords = ['test', 'testing', 'qa', 'coverage', 'spec', 'unit test', 'integration test', 'e2e'];
+  if (testKeywords.some(kw => userMessage.toLowerCase().includes(kw))) {
+    return true;
+  }
+
+  // Check if project has test infrastructure
+  const hasTestInfra = checkTestInfrastructure();
+
+  if (!hasTestInfra) {
+    // No test infrastructure detected - don't activate QA agent
+    scores['qa-automation'] = 0;
+    return false;
+  }
+
+  // Has test infrastructure - activate based on scoring
+  return scores['qa-automation'] >= 30;
+}
 ```
 
 ### Conversation History Analysis
@@ -515,6 +618,7 @@ Analysis:
   Implied: Mobile app (screens are mobile/desktop terminology)
   Context: CWD = /YOUR_Proj_Frontend (mobile project)
   Recent files: PostScreen.phone.tsx
+  Test Infrastructure: jest.config.js exists ✅
 
 Selected Agents:
   ✅ mobile-react-native (85 points) - Primary
@@ -522,7 +626,7 @@ Selected Agents:
   ✅ ui-designer (50 points) - Secondary
      Reasoning: "button" UI element (+35), design needed (+15)
   ✅ qa-automation (30 points) - Optional
-     Reasoning: Testing new feature (+30)
+     Reasoning: Testing new feature (+30), test infrastructure exists
 ```
 
 ### Example 2: Full-Stack Feature
@@ -570,13 +674,14 @@ User: "Add tests for the payment service"
 
 Analysis:
   Keywords: "tests", "payment service"
-  Intent: Testing
+  Intent: Testing (explicit)
   Context: CWD = /backend (Node.js project)
   Recent files: PaymentService.ts
 
 Selected Agents:
   ✅ qa-automation (80 points) - Primary
-     Reasoning: "tests" keyword (+50), intent match (+30)
+     Reasoning: "tests" keyword (+50), explicit request (+30)
+     Note: Activated regardless of test infrastructure (explicit request)
   ✅ backend-nodejs (50 points) - Secondary
      Reasoning: Context (+40), may need service understanding (+10)
 ```
@@ -649,6 +754,52 @@ Selected Agents:
      deploy:setup, docker:create
 ```
 
+### Example 9: No Test Infrastructure (QA Agent Skipped)
+```
+User: "Add a new landing page for our product"
+
+Analysis:
+  Keywords: "landing page", "product"
+  Intent: Feature development
+  Context: CWD = /website (marketing site)
+  Test Infrastructure: ❌ None detected
+    - No jest.config.js
+    - No test script in package.json
+    - No test directories
+
+Selected Agents:
+  ✅ web-nextjs (85 points) - Primary
+     Reasoning: CWD match (+40), "page" keyword (+35), base priority (+10)
+  ✅ ui-designer (50 points) - Secondary
+     Reasoning: "landing page" needs design (+35), UI focus (+15)
+  ❌ qa-automation (0 points) - SKIPPED
+     Reasoning: No test infrastructure detected, project not set up for testing
+
+Note: QA agent not activated because:
+  1. No test framework installed
+  2. No test configuration files
+  3. User didn't explicitly request testing
+  4. Project appears to be a marketing site without test setup
+```
+
+### Example 10: Explicit Test Request (Always Activates)
+```
+User: "Add a new feature but don't worry about tests for now"
+
+Analysis:
+  Keywords: "feature", "don't worry about tests"
+  Intent: Feature development, testing explicitly skipped
+  Test Infrastructure: ✅ jest.config.js exists
+
+Selected Agents:
+  ✅ web-reactjs (75 points) - Primary
+     Reasoning: Context match (+40), "feature" keyword (+35)
+  ❌ qa-automation (0 points) - SKIPPED
+     Reasoning: User explicitly requested to skip testing
+
+Note: Even with test infrastructure, QA agent skipped per user request
+```
+
 ---
 
 ## 🎛️ Configuration & Tuning
@@ -670,7 +821,46 @@ confidence_thresholds:
 auto_activate:
   always: [pm-operations-orchestrator, project-detector]
   phase_1: [project-context-manager]
-  phase_5: [qa-automation]  # Always for implementation
+
+# QA Agent Conditional Activation
+qa_agent_rules:
+  # Activate QA agent only if:
+  activate_if:
+    - user_explicitly_requests_testing: true  # "add tests", "test this", etc.
+    OR
+    - test_infrastructure_exists: true        # Has test framework installed
+    AND
+    - task_requires_testing: true             # New feature, bug fix, etc.
+
+  # Skip QA agent if:
+  skip_if:
+    - no_test_infrastructure: true            # No test framework detected
+    - user_explicitly_skips_testing: true     # "skip tests", "no tests needed"
+    - documentation_only_task: true           # Pure docs task
+    - deployment_only_task: true              # Pure DevOps task
+
+  # Test Infrastructure Detection
+  check_for:
+    javascript:
+      - jest.config.js
+      - vitest.config.ts
+      - cypress.config.js
+      - package.json scripts.test
+      - dependencies: [jest, vitest, cypress, playwright, @testing-library]
+    python:
+      - pytest.ini
+      - setup.cfg
+      - requirements.txt: [pytest, unittest]
+    php:
+      - phpunit.xml
+      - composer.json: [phpunit/phpunit]
+    go:
+      - "*_test.go files"
+    general:
+      - tests/ directory
+      - __tests__/ directory
+      - test/ directory
+      - spec/ directory
 ```
 
 ---
