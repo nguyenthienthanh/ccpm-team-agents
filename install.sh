@@ -1,295 +1,424 @@
 #!/bin/bash
 
-# CCPM Team Agents Installation Script
-# Copies .claude directory to your project and sets up environment configuration
+# CCPM Installation Script
+# Version: 5.0.0-beta
+# Description: Install CCPM (Claude Code Project Management) into any project
 
 set -e
 
-# Check bash version (associative arrays require bash 4+)
-if [ "${BASH_VERSION%%.*}" -lt 4 ]; then
-    echo "Error: This script requires bash 4.0 or higher"
-    echo "Current version: $BASH_VERSION"
-    echo "On macOS, install newer bash: brew install bash"
-    exit 1
-fi
-
 # Colors
-GREEN='\033[0;32m'
 RED='\033[0;31m'
+GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Script directory (where this script is located)
+# Configuration
+CCPM_VERSION="5.0.0-beta"
+INSTALL_DIR=".claude"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CLAUDE_SOURCE="$SCRIPT_DIR/.claude"
 
-echo -e "${BLUE}🚀 CCPM Team Agents Installation${NC}"
-echo "======================================"
-echo ""
-
-# Check if .claude directory exists
-if [ ! -d "$CLAUDE_SOURCE" ]; then
-    echo -e "${RED}❌ Error: .claude directory not found in $SCRIPT_DIR${NC}"
-    echo "Please run this script from the ccpm-team-agents repository root."
-    exit 1
-fi
-
-# Get target project path
-if [ -z "$1" ]; then
-    read -p "Enter your project path (absolute or relative): " TARGET_PROJECT
-else
-    TARGET_PROJECT="$1"
-fi
-
-# Convert to absolute path
-if [[ ! "$TARGET_PROJECT" = /* ]]; then
-    TARGET_PROJECT="$(cd "$TARGET_PROJECT" && pwd)"
-fi
-
-# Check if target directory exists
-if [ ! -d "$TARGET_PROJECT" ]; then
-    echo -e "${RED}❌ Error: Target directory does not exist: $TARGET_PROJECT${NC}"
-    exit 1
-fi
-
-TARGET_CLAUDE="$TARGET_PROJECT/.claude"
-
-echo -e "${BLUE}Target project:${NC} $TARGET_PROJECT"
-echo -e "${BLUE}Target .claude:${NC} $TARGET_CLAUDE"
-echo ""
-
-# Check if .claude already exists in target
-if [ -d "$TARGET_CLAUDE" ]; then
-    echo -e "${YELLOW}⚠️  Warning: .claude directory already exists in target project${NC}"
-    read -p "Overwrite? (yes/no): " OVERWRITE
-    if [ "$OVERWRITE" != "yes" ]; then
-        echo "Installation cancelled."
-        exit 0
-    fi
-    echo "Removing existing .claude directory..."
-    rm -rf "$TARGET_CLAUDE"
-fi
-
-# Copy .claude directory
-echo -e "${BLUE}Copying .claude directory...${NC}"
-cp -r "$CLAUDE_SOURCE" "$TARGET_CLAUDE"
-echo -e "${GREEN}✅ .claude directory copied${NC}"
-echo ""
-
-# Read .envrc.template to get environment variable keys
-ENVRC_TEMPLATE="$TARGET_CLAUDE/.envrc.template"
-
-if [ ! -f "$ENVRC_TEMPLATE" ]; then
-    echo -e "${RED}❌ Error: .envrc.template not found${NC}"
-    exit 1
-fi
-
-# Extract environment variable names from template
-echo -e "${BLUE}📝 Environment Configuration${NC}"
-echo "======================================"
-echo "Please provide values for environment variables."
-echo "Press Enter to skip optional variables (empty values)."
-echo "You can configure integrations later by editing .claude/.envrc"
-echo ""
-
-# Initialize variables
-declare -A ENV_VARS 2>/dev/null || {
-    echo -e "${RED}❌ Error: Associative arrays not supported${NC}"
-    echo "This script requires bash 4.0 or higher"
-    echo "On macOS, install newer bash: brew install bash"
-    exit 1
+# Functions
+print_header() {
+    echo ""
+    echo -e "${BLUE}╔══════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║${NC}  🚀 CCPM Installation Script v${CCPM_VERSION}               ${BLUE}║${NC}"
+    echo -e "${BLUE}╚══════════════════════════════════════════════════════════╝${NC}"
+    echo ""
 }
 
-# Function to prompt for env var
-prompt_env_var() {
-    local var_name=$1
-    local description=$2
-    local is_secret=${3:-false}
-    local default_value=${4:-}
-    
-    local prompt_text="$description"
-    if [ -n "$default_value" ]; then
-        prompt_text="$prompt_text [$default_value]"
+print_success() {
+    echo -e "${GREEN}✅ $1${NC}"
+}
+
+print_error() {
+    echo -e "${RED}❌ $1${NC}"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}"
+}
+
+print_info() {
+    echo -e "${BLUE}ℹ️  $1${NC}"
+}
+
+# Check prerequisites
+check_prerequisites() {
+    print_info "Checking prerequisites..."
+
+    # Check if curl is installed
+    if ! command -v curl &> /dev/null; then
+        print_error "curl is not installed. Please install curl first."
+        exit 1
     fi
-    
-    local value=""
-    if [ "$is_secret" = true ]; then
-        read -sp "$prompt_text: " value
-        echo ""
+
+    # Check if git is installed
+    if ! command -v git &> /dev/null; then
+        print_error "git is not installed. Please install git first."
+        exit 1
+    fi
+
+    # Check if jq is installed (optional but recommended)
+    if ! command -v jq &> /dev/null; then
+        print_warning "jq is not installed. Some features may not work. Install with: brew install jq"
+    fi
+
+    print_success "Prerequisites checked"
+}
+
+# Detect project type
+detect_project_type() {
+    print_info "Detecting project type..."
+
+    local project_type="generic"
+
+    if [ -f "package.json" ]; then
+        if grep -q "\"react-native\"" package.json; then
+            project_type="react-native"
+        elif grep -q "\"next\"" package.json; then
+            project_type="nextjs"
+        elif grep -q "\"react\"" package.json; then
+            project_type="react"
+        elif grep -q "\"vue\"" package.json; then
+            project_type="vue"
+        elif grep -q "\"@angular/core\"" package.json; then
+            project_type="angular"
+        else
+            project_type="nodejs"
+        fi
+    elif [ -f "composer.json" ] && [ -f "artisan" ]; then
+        project_type="laravel"
+    elif [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
+        project_type="python"
+    elif [ -f "go.mod" ]; then
+        project_type="go"
+    fi
+
+    echo "$project_type"
+}
+
+# Check if CCPM is already installed
+check_existing_installation() {
+    if [ -d "$INSTALL_DIR" ]; then
+        print_warning "CCPM is already installed in this project"
+        read -p "Do you want to reinstall/update? (y/n): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            print_info "Installation cancelled"
+            exit 0
+        fi
+        print_info "Backing up existing installation..."
+        mv "$INSTALL_DIR" "${INSTALL_DIR}.backup.$(date +%Y%m%d-%H%M%S)"
+        print_success "Backup created"
+    fi
+}
+
+# Install core files
+install_core() {
+    print_info "Installing core files..."
+
+    # Check if .claude directory exists in script directory
+    if [ ! -d "$SCRIPT_DIR/.claude" ]; then
+        print_error "Source .claude directory not found at $SCRIPT_DIR/.claude"
+        print_info "Please run this script from the CCPM repository root"
+        exit 1
+    fi
+
+    # Copy .claude directory
+    cp -r "$SCRIPT_DIR/.claude" "./"
+
+    print_success "Core files installed"
+}
+
+# Install project template
+install_template() {
+    local project_type="$1"
+
+    print_info "Installing $project_type template..."
+
+    # Create project context directory
+    mkdir -p "$INSTALL_DIR/project-contexts/current"
+
+    # Copy template if exists
+    if [ -d "$INSTALL_DIR/project-contexts/template" ]; then
+        cp -r "$INSTALL_DIR/project-contexts/template/"* "$INSTALL_DIR/project-contexts/current/"
+    fi
+
+    print_success "Template installed"
+}
+
+# Create configuration files
+create_config() {
+    print_info "Creating configuration files..."
+
+    # Copy example config if not exists
+    if [ ! -f "$INSTALL_DIR/ccpm-config.yaml" ] && [ -f "$INSTALL_DIR/ccpm-config.example.yaml" ]; then
+        cp "$INSTALL_DIR/ccpm-config.example.yaml" "$INSTALL_DIR/ccpm-config.yaml"
+    fi
+
+    # Copy .envrc template if not exists
+    if [ ! -f "$INSTALL_DIR/.envrc" ] && [ -f "$INSTALL_DIR/.envrc.template" ]; then
+        cp "$INSTALL_DIR/.envrc.template" "$INSTALL_DIR/.envrc"
+    fi
+
+    print_success "Configuration files created"
+}
+
+# Set permissions
+set_permissions() {
+    print_info "Setting permissions..."
+
+    # Make scripts executable
+    if [ -d "$INSTALL_DIR/scripts" ]; then
+        chmod +x "$INSTALL_DIR/scripts/"*.sh 2>/dev/null || true
+    fi
+
+    # Secure .envrc
+    if [ -f "$INSTALL_DIR/.envrc" ]; then
+        chmod 600 "$INSTALL_DIR/.envrc"
+    fi
+
+    print_success "Permissions set"
+}
+
+# Update .gitignore
+update_gitignore() {
+    print_info "Updating .gitignore..."
+
+    local gitignore_entries=(
+        "$INSTALL_DIR/.envrc"
+        "$INSTALL_DIR/logs/"
+        "$INSTALL_DIR/ccpm-config.yaml"
+        "$INSTALL_DIR/active-workflow.txt"
+    )
+
+    if [ ! -f .gitignore ]; then
+        touch .gitignore
+    fi
+
+    for entry in "${gitignore_entries[@]}"; do
+        if ! grep -q "^$entry" .gitignore; then
+            echo "$entry" >> .gitignore
+        fi
+    done
+
+    print_success ".gitignore updated"
+}
+
+# Interactive setup
+interactive_setup() {
+    echo ""
+    print_info "Interactive Setup (optional)"
+    echo ""
+
+    # Ask about integrations
+    read -p "Enable JIRA integration? (y/n): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        setup_jira
+    fi
+
+    read -p "Enable Figma integration? (y/n): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        setup_figma
+    fi
+
+    read -p "Enable Slack integration? (y/n): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        setup_slack
+    fi
+}
+
+# Setup JIRA integration
+setup_jira() {
+    print_info "Setting up JIRA integration..."
+
+    read -p "JIRA URL (e.g., https://company.atlassian.net): " jira_url
+    read -p "JIRA Email: " jira_email
+    read -p "JIRA Project Key: " jira_project_key
+
+    # Update .envrc
+    if [ -f "$INSTALL_DIR/.envrc" ]; then
+        {
+            echo ""
+            echo "# JIRA Configuration"
+            echo "export JIRA_URL=\"$jira_url\""
+            echo "export JIRA_EMAIL=\"$jira_email\""
+            echo "export JIRA_PROJECT_KEY=\"$jira_project_key\""
+            echo "export JIRA_API_TOKEN=\"\""
+        } >> "$INSTALL_DIR/.envrc"
+    fi
+
+    print_success "JIRA integration configured"
+    print_warning "Don't forget to add your JIRA API token to $INSTALL_DIR/.envrc"
+}
+
+# Setup Figma integration
+setup_figma() {
+    print_info "Setting up Figma integration..."
+
+    print_warning "You'll need to generate a Figma access token:"
+    print_info "1. Go to https://www.figma.com/developers/api#access-tokens"
+    print_info "2. Generate a personal access token"
+    print_info "3. Add it to $INSTALL_DIR/.envrc"
+
+    # Update .envrc
+    if [ -f "$INSTALL_DIR/.envrc" ]; then
+        {
+            echo ""
+            echo "# Figma Configuration"
+            echo "export FIGMA_ACCESS_TOKEN=\"\""
+        } >> "$INSTALL_DIR/.envrc"
+    fi
+
+    print_success "Figma integration ready (token needed)"
+}
+
+# Setup Slack integration
+setup_slack() {
+    print_info "Setting up Slack integration..."
+
+    read -p "Slack Channel ID: " slack_channel
+
+    # Update .envrc
+    if [ -f "$INSTALL_DIR/.envrc" ]; then
+        {
+            echo ""
+            echo "# Slack Configuration"
+            echo "export SLACK_BOT_TOKEN=\"\""
+            echo "export SLACK_CHANNEL_ID=\"$slack_channel\""
+        } >> "$INSTALL_DIR/.envrc"
+    fi
+
+    print_success "Slack integration configured"
+    print_warning "Don't forget to add your Slack bot token to $INSTALL_DIR/.envrc"
+}
+
+# Health check
+run_health_check() {
+    print_info "Running health check..."
+
+    local errors=0
+
+    # Check core files
+    if [ ! -f "$INSTALL_DIR/CLAUDE.md" ]; then
+        print_error "CLAUDE.md not found"
+        ((errors++))
+    fi
+
+    if [ ! -d "$INSTALL_DIR/agents" ]; then
+        print_error "agents/ directory not found"
+        ((errors++))
+    fi
+
+    if [ ! -d "$INSTALL_DIR/commands" ]; then
+        print_error "commands/ directory not found"
+        ((errors++))
+    fi
+
+    # Check scripts
+    if [ -d "$INSTALL_DIR/scripts" ]; then
+        local script_count=$(ls "$INSTALL_DIR/scripts/"*.sh 2>/dev/null | wc -l)
+        if [ "$script_count" -eq 0 ]; then
+            print_warning "No scripts found in $INSTALL_DIR/scripts/"
+        else
+            print_success "Found $script_count integration scripts"
+        fi
+    fi
+
+    # Check configuration
+    if [ ! -f "$INSTALL_DIR/ccpm-config.yaml" ]; then
+        print_warning "ccpm-config.yaml not found"
+    fi
+
+    if [ "$errors" -eq 0 ]; then
+        print_success "Health check passed"
+        return 0
     else
-        read -p "$prompt_text: " value
+        print_error "Health check failed with $errors error(s)"
+        return 1
     fi
-    
-    # Use default if empty
-    if [ -z "$value" ] && [ -n "$default_value" ]; then
-        value="$default_value"
-    fi
-    
-    # Escape quotes in value
-    value="${value//\"/\\\"}"
-    
-    ENV_VARS["$var_name"]="$value"
 }
 
-# Prompt for key environment variables
-echo -e "${YELLOW}Project Configuration:${NC}"
-prompt_env_var "PROJECT_NAME" "Project Name" false ""
-prompt_env_var "PROJECT_ENV" "Project Environment" false "development"
-
-echo ""
-echo -e "${YELLOW}Jira Integration (optional - press Enter to skip):${NC}"
-prompt_env_var "JIRA_URL" "Jira URL (e.g., https://company.atlassian.net)" false ""
-prompt_env_var "JIRA_EMAIL" "Jira Email" false ""
-prompt_env_var "JIRA_API_TOKEN" "Jira API Token" true ""
-prompt_env_var "JIRA_PROJECT_KEY" "Jira Project Key" false ""
-
-echo ""
-echo -e "${YELLOW}Confluence Integration (optional - press Enter to skip):${NC}"
-prompt_env_var "CONFLUENCE_URL" "Confluence URL" false ""
-prompt_env_var "CONFLUENCE_EMAIL" "Confluence Email" false ""
-prompt_env_var "CONFLUENCE_API_TOKEN" "Confluence API Token" true ""
-prompt_env_var "CONFLUENCE_SPACE_KEY" "Confluence Space Key" false ""
-
-echo ""
-echo -e "${YELLOW}Slack Integration (optional - press Enter to skip):${NC}"
-prompt_env_var "SLACK_BOT_TOKEN" "Slack Bot Token (xoxb-...)" true ""
-prompt_env_var "SLACK_CHANNEL_ID" "Slack Channel ID" false ""
-prompt_env_var "SLACK_WEBHOOK_URL" "Slack Webhook URL" false ""
-
-echo ""
-echo -e "${YELLOW}Figma Integration (optional - press Enter to skip):${NC}"
-prompt_env_var "FIGMA_ACCESS_TOKEN" "Figma Access Token (figd_...)" true ""
-prompt_env_var "FIGMA_FILE_KEY" "Figma File Key" false ""
-
-echo ""
-echo -e "${YELLOW}Git Configuration (optional):${NC}"
-prompt_env_var "GIT_AUTHOR_NAME" "Git Author Name" false ""
-prompt_env_var "GIT_AUTHOR_EMAIL" "Git Author Email" false ""
-
-# Create .envrc file
-ENVRC_FILE="$TARGET_CLAUDE/.envrc"
-echo ""
-echo -e "${BLUE}Creating .envrc file...${NC}"
-
-# Generate .envrc from template
-cat > "$ENVRC_FILE" << 'EOF'
-# .claude/.envrc - CCPM Integration Configuration
-# Auto-generated by install.sh
-# Date: 
-# DO NOT COMMIT THIS FILE
-
-EOF
-
-# Replace date
-sed -i.bak "s/Date: /Date: $(date +%Y-%m-%d)/" "$ENVRC_FILE" 2>/dev/null || \
-sed -i "s/Date: /Date: $(date +%Y-%m-%d)/" "$ENVRC_FILE"
-rm -f "$ENVRC_FILE.bak" 2>/dev/null || true
-
-# Append environment variables
-# Use printf to avoid heredoc expansion issues
-{
+# Show next steps
+show_next_steps() {
     echo ""
-    echo "# ============================================"
-    echo "# Project Configuration"
-    echo "# ============================================"
-    printf 'export PROJECT_NAME="%s"\n' "${ENV_VARS[PROJECT_NAME]}"
-    printf 'export PROJECT_ENV="%s"\n' "${ENV_VARS[PROJECT_ENV]:-development}"
-    
+    echo -e "${GREEN}╔══════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${GREEN}║${NC}  ✅ CCPM Installation Complete!                          ${GREEN}║${NC}"
+    echo -e "${GREEN}╚══════════════════════════════════════════════════════════╝${NC}"
     echo ""
-    echo "# ============================================"
-    echo "# Jira Integration"
-    echo "# ============================================"
-    printf 'export JIRA_URL="%s"\n' "${ENV_VARS[JIRA_URL]}"
-    printf 'export JIRA_EMAIL="%s"\n' "${ENV_VARS[JIRA_EMAIL]}"
-    printf 'export JIRA_API_TOKEN="%s"\n' "${ENV_VARS[JIRA_API_TOKEN]}"
-    printf 'export JIRA_PROJECT_KEY="%s"\n' "${ENV_VARS[JIRA_PROJECT_KEY]}"
-    printf 'export JIRA_DEFAULT_ASSIGNEE="%s"\n' "${ENV_VARS[JIRA_DEFAULT_ASSIGNEE]}"
-    printf 'export JIRA_DEFAULT_PRIORITY="%s"\n' "${ENV_VARS[JIRA_DEFAULT_PRIORITY]:-Medium}"
-    printf 'export JIRA_BOARD_ID="%s"\n' "${ENV_VARS[JIRA_BOARD_ID]}"
-    
+    echo -e "${BLUE}📚 Next Steps:${NC}"
     echo ""
-    echo "# ============================================"
-    echo "# Confluence Integration"
-    echo "# ============================================"
-    printf 'export CONFLUENCE_URL="%s"\n' "${ENV_VARS[CONFLUENCE_URL]}"
-    printf 'export CONFLUENCE_EMAIL="%s"\n' "${ENV_VARS[CONFLUENCE_EMAIL]}"
-    printf 'export CONFLUENCE_API_TOKEN="%s"\n' "${ENV_VARS[CONFLUENCE_API_TOKEN]}"
-    printf 'export CONFLUENCE_SPACE_KEY="%s"\n' "${ENV_VARS[CONFLUENCE_SPACE_KEY]}"
-    printf 'export CONFLUENCE_PARENT_PAGE_ID="%s"\n' "${ENV_VARS[CONFLUENCE_PARENT_PAGE_ID]}"
-    printf 'export CONFLUENCE_DEFAULT_LABELS="%s"\n' "${ENV_VARS[CONFLUENCE_DEFAULT_LABELS]:-ccpm,generated,documentation}"
-    
+    echo "  1. Configure API tokens:"
+    echo "     Edit $INSTALL_DIR/.envrc"
     echo ""
-    echo "# ============================================"
-    echo "# Slack Integration"
-    echo "# ============================================"
-    printf 'export SLACK_BOT_TOKEN="%s"\n' "${ENV_VARS[SLACK_BOT_TOKEN]}"
-    printf 'export SLACK_CHANNEL_ID="%s"\n' "${ENV_VARS[SLACK_CHANNEL_ID]}"
-    printf 'export SLACK_WEBHOOK_URL="%s"\n' "${ENV_VARS[SLACK_WEBHOOK_URL]}"
-    printf 'export SLACK_MENTION_DEV="%s"\n' "${ENV_VARS[SLACK_MENTION_DEV]:-@developer-team}"
-    printf 'export SLACK_MENTION_QA="%s"\n' "${ENV_VARS[SLACK_MENTION_QA]:-@qa-team}"
-    printf 'export SLACK_MENTION_PM="%s"\n' "${ENV_VARS[SLACK_MENTION_PM]:-@pm-team}"
-    
+    echo "  2. Load environment variables:"
+    echo "     source $INSTALL_DIR/.envrc"
     echo ""
-    echo "# ============================================"
-    echo "# Figma Integration"
-    echo "# ============================================"
-    printf 'export FIGMA_ACCESS_TOKEN="%s"\n' "${ENV_VARS[FIGMA_ACCESS_TOKEN]}"
-    printf 'export FIGMA_FILE_KEY="%s"\n' "${ENV_VARS[FIGMA_FILE_KEY]}"
-    printf 'export FIGMA_TEAM_ID="%s"\n' "${ENV_VARS[FIGMA_TEAM_ID]}"
-    printf 'export FIGMA_MCP_ENABLED="%s"\n' "${ENV_VARS[FIGMA_MCP_ENABLED]:-true}"
-    
+    echo "  3. Start your first workflow:"
+    echo "     workflow:start \"Your task description\""
     echo ""
-    echo "# ============================================"
-    echo "# CCPM Configuration"
-    echo "# ============================================"
-    printf 'export CCPM_AUTO_APPROVE="%s"\n' "${ENV_VARS[CCPM_AUTO_APPROVE]:-true}"
-    printf 'export CCPM_DEFAULT_COVERAGE="%s"\n' "${ENV_VARS[CCPM_DEFAULT_COVERAGE]:-80}"
-    printf 'export CCPM_TDD_ENFORCE="%s"\n' "${ENV_VARS[CCPM_TDD_ENFORCE]:-true}"
-    printf 'export CCPM_AUTO_NOTIFY="%s"\n' "${ENV_VARS[CCPM_AUTO_NOTIFY]:-true}"
-    printf 'export CCPM_TOKEN_WARNING="%s"\n' "${ENV_VARS[CCPM_TOKEN_WARNING]:-150000}"
-    
+    echo -e "${BLUE}📖 Documentation:${NC}"
+    echo "  • Quick Start: $INSTALL_DIR/GET_STARTED.md"
+    echo "  • Full Guide: $INSTALL_DIR/README.md"
+    echo "  • Integrations: $INSTALL_DIR/docs/BASH_INTEGRATIONS_GUIDE.md"
     echo ""
-    echo "# ============================================"
-    echo "# Optional: Git Configuration"
-    echo "# ============================================"
-    printf 'export GIT_AUTHOR_NAME="%s"\n' "${ENV_VARS[GIT_AUTHOR_NAME]}"
-    printf 'export GIT_AUTHOR_EMAIL="%s"\n' "${ENV_VARS[GIT_AUTHOR_EMAIL]}"
-} >> "$ENVRC_FILE"
+    echo -e "${BLUE}🔧 Useful Commands:${NC}"
+    echo "  • agent:list          - List all available agents"
+    echo "  • workflow:status     - Check workflow status"
+    echo "  • project:init        - Initialize project context"
+    echo ""
+    echo -e "${GREEN}Happy coding! 🚀${NC}"
+    echo ""
+}
 
-echo -e "${GREEN}✅ .envrc file created${NC}"
-echo ""
+# Main installation flow
+main() {
+    print_header
 
-# Create settings.local.json from settings.example.json
-SETTINGS_EXAMPLE="$TARGET_CLAUDE/settings.example.json"
-SETTINGS_LOCAL="$TARGET_CLAUDE/settings.local.json"
+    # Check prerequisites
+    check_prerequisites
 
-if [ -f "$SETTINGS_EXAMPLE" ]; then
-    echo -e "${BLUE}Creating settings.local.json...${NC}"
-    cp "$SETTINGS_EXAMPLE" "$SETTINGS_LOCAL"
-    echo -e "${GREEN}✅ settings.local.json created${NC}"
-    echo ""
-else
-    echo -e "${YELLOW}⚠️  Warning: settings.example.json not found${NC}"
-fi
+    # Detect project type
+    local project_type=$(detect_project_type)
+    print_success "Detected project type: $project_type"
 
-# Summary
-echo -e "${GREEN}======================================"
-echo "✅ Installation Complete!"
-echo "======================================${NC}"
-echo ""
-echo "CCPM Team Agents has been installed to:"
-echo -e "  ${BLUE}$TARGET_CLAUDE${NC}"
-echo ""
-echo "Configuration files created:"
-echo -e "  ✅ ${BLUE}$ENVRC_FILE${NC} (environment variables - git-ignored)"
-echo -e "  ✅ ${BLUE}$SETTINGS_LOCAL${NC} (local settings - git-ignored)"
-echo ""
-echo "Next steps:"
-echo "  1. Review and edit $ENVRC_FILE if needed"
-echo "  2. Review and edit $SETTINGS_LOCAL if needed"
-echo "  3. Start using CCPM: ${BLUE}workflow:start \"Your task\"${NC}"
-echo ""
-echo "📚 Documentation: $TARGET_CLAUDE/README.md"
-echo ""
+    # Check existing installation
+    check_existing_installation
 
+    # Install core files
+    install_core
+
+    # Install template
+    install_template "$project_type"
+
+    # Create configuration
+    create_config
+
+    # Set permissions
+    set_permissions
+
+    # Update .gitignore
+    update_gitignore
+
+    # Interactive setup (optional)
+    read -p "Run interactive setup? (y/n): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        interactive_setup
+    fi
+
+    # Health check
+    run_health_check || {
+        print_error "Installation completed with warnings"
+    }
+
+    # Show next steps
+    show_next_steps
+}
+
+# Run installation
+main "$@"

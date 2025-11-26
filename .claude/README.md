@@ -205,6 +205,7 @@ document "feature"           # Just documentation (30 min)
 ### Getting Started
 
 - **[GET_STARTED.md](GET_STARTED.md)** - Complete quick start guide (5 minutes)
+- **[docs/PLUGIN_INSTALLATION.md](docs/PLUGIN_INSTALLATION.md)** - Official plugin installation guide ⭐
 - **[INDEX.md](INDEX.md)** - Quick reference index for all commands and files
 - **[TESTING_GUIDE.md](TESTING_GUIDE.md)** - How to test workflows and commands
 

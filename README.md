@@ -21,7 +21,38 @@ The system includes:
 
 ### Installation
 
-#### Option 1: Automated Installation (Recommended)
+#### Option 1: Claude Code Plugin (Recommended) ⭐
+
+Install directly in Claude Code using the official plugin system:
+
+```bash
+# Install from GitHub repository
+/plugin install https://github.com/nguyenthienthanh/ccpm-team-agents
+
+# Verify installation
+/agent:list
+```
+
+**Benefits:**
+- ✅ One-command installation
+- ✅ Automatic updates from GitHub
+- ✅ Official Claude Code integration
+- ✅ No manual file copying
+
+**Alternative (if added to official marketplace):**
+```bash
+# If CCPM is listed in Claude Code official marketplace
+/plugin install ccpm-team-agents
+```
+
+**Post-Installation Setup:**
+```bash
+# Configure integrations (optional)
+# Edit .claude/.envrc for JIRA, Figma, Slack, Confluence
+source .claude/.envrc
+```
+
+#### Option 2: Automated Installation Script
 
 Use the installation script to automatically copy `.claude` to your project and configure environment variables:
 
@@ -45,7 +76,7 @@ The script will:
 
 **Note:** All sensitive files (`.envrc`, `settings.local.json`) are automatically git-ignored.
 
-#### Option 2: Manual Installation
+#### Option 3: Manual Installation
 
 1. Clone this repository:
 ```bash
