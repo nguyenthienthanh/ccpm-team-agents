@@ -330,7 +330,7 @@ You:
 
 ---
 
-## 🤖 Available Agents (18 Total)
+## 🤖 Available Agents (21 Total)
 
 ### Development Agents (Priority 90-100)
 
@@ -368,6 +368,36 @@ You:
 - Laravel PHP backend
 - REST API, Eloquent
 - Triggers: `laravel`, `php`, `api`, `backend`
+
+**backend-python** (Priority: 90) - NEW! ⭐
+- Python backend development
+- Django, Django REST Framework, FastAPI, Flask
+- SQLAlchemy, Django ORM
+- Async/await patterns with FastAPI
+- Pydantic validation, pytest testing
+- Triggers: `python`, `django`, `fastapi`, `flask`, `sqlalchemy`
+- **Commands:** `api:design`, `api:test`
+
+**backend-go** (Priority: 85) - NEW! ⭐
+- Go backend development
+- Gin, Fiber, Echo frameworks
+- gRPC microservices
+- GORM (Go ORM), sqlx
+- Goroutines & channels (concurrency)
+- Go testing, table-driven tests
+- Triggers: `go`, `golang`, `gin`, `fiber`, `grpc`, `microservice`
+- **Commands:** `api:design`, `api:test`
+
+**database-specialist** (Priority: 85) - NEW! ⭐
+- Database schema design & optimization
+- PostgreSQL, MySQL, MongoDB, SQLite
+- Query optimization (EXPLAIN/ANALYZE)
+- Index strategies (B-tree, composite, partial)
+- Migration generation (up/down, zero-downtime)
+- ERD diagrams, normalization patterns
+- Performance tuning, backup strategies
+- Triggers: `database`, `sql`, `postgres`, `mysql`, `mongodb`, `schema`, `migration`, `query`, `index`
+- **Commands:** `db:design`, `db:optimize`
 
 ### Quality, Security & Design (Priority 85-95)
 
