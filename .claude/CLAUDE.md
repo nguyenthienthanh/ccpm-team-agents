@@ -1,7 +1,7 @@
 # CCPM - Instructions for Claude Code AI
 
 **System:** CCPM Team Agents System
-**Version:** 4.6.0
+**Version:** 5.0.0-beta
 **Purpose:** Guide Claude Code AI to operate as specialized agents in structured workflows
 
 ---
@@ -330,7 +330,7 @@ You:
 
 ---
 
-## 🤖 Available Agents (15 Total)
+## 🤖 Available Agents (18 Total)
 
 ### Development Agents (Priority 90-100)
 
@@ -339,6 +339,15 @@ You:
 - **Adaptive styling** - NativeWind expert, supports all styling approaches
 - Cross-platform (iOS/Android)
 - Triggers: `react-native`, `expo`, `mobile`, `ios`, `android`
+
+**backend-nodejs** (Priority: 95) - NEW! ⭐
+- Node.js backend development
+- Express.js, NestJS, Fastify, Koa
+- GraphQL (Apollo Server), REST APIs
+- Prisma, TypeORM, Sequelize ORMs
+- JWT authentication, Passport.js
+- Testing: Jest, Supertest
+- Triggers: `nodejs`, `node`, `express`, `nestjs`, `fastify`, `graphql`
 
 **web-vuejs** (Priority: 90)
 - Vue.js 3 web development
@@ -360,7 +369,17 @@ You:
 - REST API, Eloquent
 - Triggers: `laravel`, `php`, `api`, `backend`
 
-### Quality & Design (Priority 85)
+### Quality, Security & Design (Priority 85-95)
+
+**security-expert** (Priority: 95) - NEW! ⭐
+- OWASP Top 10 security audits
+- Dependency vulnerability scanning (npm audit, Snyk)
+- Static code analysis (SAST)
+- Secret detection (TruffleHog)
+- Container security (Trivy)
+- Compliance (GDPR, HIPAA, PCI DSS)
+- Triggers: `security`, `vulnerability`, `audit`, `owasp`, `pentest`
+- **Commands:** `security:audit`, `security:deps`, `security:scan`
 
 **qa-automation** (Priority: 85)
 - Testing & QA
@@ -405,7 +424,17 @@ NOT:
 
 **Reference:** See `.claude/docs/figma-mcp-integration.md` for complete MCP setup guide.
 
-### Operations (Priority 70-80)
+### DevOps & Operations (Priority 70-90)
+
+**devops-cicd** (Priority: 90) - NEW! ⭐
+- Docker containerization & multi-stage builds
+- Kubernetes orchestration (Deployments, Services, Ingress)
+- CI/CD pipelines (GitHub Actions, GitLab CI, Azure, CircleCI)
+- Infrastructure as Code (Terraform, CloudFormation, Pulumi)
+- Cloud platforms (AWS, GCP, Azure)
+- Monitoring & logging (Prometheus, Grafana, ELK)
+- Triggers: `docker`, `kubernetes`, `k8s`, `ci/cd`, `terraform`, `deploy`
+- **Commands:** `docker:create`, `cicd:create`, `deploy:setup`
 
 **jira-operations** (Priority: 80)
 - JIRA integration
@@ -422,7 +451,7 @@ NOT:
 - Team communication
 - Triggers: `notify`, `slack`, `message`
 
-**voice-operations** (Priority: 70) - NEW!
+**voice-operations** (Priority: 70)
 - ElevenLabs AI voice generation
 - Documentation narration (Phase 8)
 - Text-to-speech in 70+ languages

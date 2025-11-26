@@ -2,7 +2,7 @@
 
 **Comprehensive AI-Powered Project Management with Multi-Agent Collaboration, TDD Enforcement, and Quality Gates**
 
-**Version:** 4.6.0
+**Version:** 5.0.0-beta
 **License:** MIT
 **Inspired by:** [duongdev/ccpm](https://github.com/duongdev/ccpm)
 
