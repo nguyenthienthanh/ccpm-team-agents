@@ -70,6 +70,16 @@ Identify and document each component:
 - muted: boolean
 - onToggleMuted: () => void
 
+**NativeWind Styling (if React Native):**
+```tsx
+<View className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden">
+  <Image source={{ uri: signedUrl }} className="w-full h-full" />
+  <TouchableOpacity className="absolute bottom-4 right-4 bg-black/50 p-3 rounded-full">
+    {/* Mute icon */}
+  </TouchableOpacity>
+</View>
+```
+
 ### 2. PlatformSelector
 **Purpose:** Select social media platform
 **Visual Elements:**
@@ -81,9 +91,72 @@ Identify and document each component:
 - platforms: SocialMarketingPlatform[]
 - onSelect: (platform) => void
 - disabled: boolean
+
+**NativeWind Styling (if React Native):**
+```tsx
+<TouchableOpacity
+  className={`flex-row items-center px-4 py-3 border rounded-lg ${
+    disabled ? 'bg-gray-100 border-gray-300' : 'bg-white border-gray-400'
+  }`}
+>
+  {/* Platform icon */}
+  <Text className="text-base text-gray-900 ml-2">{platform.name}</Text>
+</TouchableOpacity>
+```
 ```
 
+**💡 Tip:** For React Native projects using NativeWind, generate components with Tailwind utility classes. See `.claude/skills/nativewind-component-generator.md` for templates.
+
 ### Step 5: Extract Design Tokens
+
+**For React Native Projects with NativeWind:**
+Map design tokens to Tailwind config for seamless styling.
+
+```javascript
+// tailwind.config.js (NativeWind project)
+module.exports = {
+  content: [
+    "./App.{js,jsx,ts,tsx}",
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#0066FF',
+          50: '#E6F0FF',
+          100: '#CCE0FF',
+          500: '#0066FF',
+          600: '#0052CC',
+          700: '#003D99',
+        },
+        secondary: '#6B6B6B',
+        error: '#FF3B30',
+        success: '#34C759',
+      },
+      spacing: {
+        'xs': '4px',
+        'sm': '8px',
+        'md': '16px',
+        'lg': '24px',
+        'xl': '32px',
+      },
+      fontSize: {
+        'heading': '24px',
+        'body': '16px',
+        'caption': '14px',
+      },
+      borderRadius: {
+        'sm': '4px',
+        'md': '8px',
+        'lg': '12px',
+      },
+    },
+  },
+};
+```
+
+**For Traditional React Native or Web Projects:**
 ```typescript
 // Design Tokens
 export const designTokens = {

@@ -7,6 +7,9 @@
       "Bash(bash **/.claude/scripts/workflow/*.sh:*)",
       "Bash(chmod +x **/.claude/scripts/**/*.sh:*)",
       "Bash(gh issue view:*)",
+      "Read(./**)",
+      "Edit(./**)",
+      "Write(./**)",
       
       "# Linting & Formatting",
       "Bash(npx tsc:*)",

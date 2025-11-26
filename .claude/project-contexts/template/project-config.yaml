@@ -10,11 +10,26 @@ tech_stack:
     framework: "React"  # React, Vue, Next.js, React Native, Laravel, etc.
     language: "TypeScript"
     version: "18.x"
-  
+
   state_management: "Redux Toolkit"  # Redux, Zustand, Pinia, MobX, Context API
-  styling: "Tailwind CSS"  # Tailwind, CSS Modules, Styled Components, BEM
+
+  # Styling Configuration (CRITICAL for mobile agent)
+  styling:
+    approach: "tailwind"  # Options: nativewind, emotion, stylesheet, styled-components, tailwind, css-modules
+    theme_provider: "none"  # Options: proj-ui-components, custom, none
+
+    # For React Native projects, specify:
+    # approach: nativewind  # Use NativeWind (Tailwind CSS for RN)
+    # approach: emotion  # Use Emotion styled-components
+    # approach: stylesheet  # Use React Native StyleSheet
+    # approach: styled-components  # Use styled-components
+
+    # Additional styling config (optional)
+    config_file: "tailwind.config.js"  # Path to config file if applicable
+    use_theme_colors: true  # Enforce theme colors (no hardcoded colors)
+
   testing: "Jest + RTL"  # Jest, Vitest, Cypress, Playwright
-  
+
   additional:
     - "React Query"
     - "React Hook Form"

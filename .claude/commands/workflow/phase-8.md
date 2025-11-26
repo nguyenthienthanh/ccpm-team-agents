@@ -335,8 +335,8 @@ Phase 8 complete when:
 Documentation complete and ready for sharing
 
 📦 Deliverables:
-   📄 IMPLEMENTATION_SUMMARY.md
-   📄 DEPLOYMENT_GUIDE.md
+   📄 IMPLEMENTATION_SUMMARY.md (1,245 words)
+   📄 DEPLOYMENT_GUIDE.md (823 words)
    📄 CONFLUENCE_PAGE.md (ready to paste)
    📄 CHANGELOG.md
 
@@ -355,6 +355,19 @@ Documentation complete and ready for sharing
    ✅ Deployment steps clear
    ✅ Change log complete
 
+🎙️  VOICE NARRATION AVAILABLE (Optional)
+
+Generate audio narration for documentation?
+Benefits:
+- Accessibility for team members
+- Hands-free documentation review
+- Easier onboarding
+
+Options:
+  "narrate all" → Generate audio for all documents (~23 min)
+  "narrate summary" → Only implementation summary (~8 min)
+  "skip narration" → No audio generation
+
 ⏭️  Next Phase: Phase 9 - Notification
    Notify stakeholders and close workflow
 
@@ -362,6 +375,7 @@ Documentation complete and ready for sharing
 ⚠️  ACTION REQUIRED
 
 Type "/workflow:approve" → Proceed to Phase 9 (Notification)
+Type "narrate all" or "narrate summary" → Generate audio first
 Type "/workflow:reject" → Revise documentation
 Type "/workflow:modify <feedback>" → Adjust specific docs
 
@@ -379,6 +393,11 @@ Your response:
 ├── DEPLOYMENT_GUIDE.md
 ├── CONFLUENCE_PAGE.md
 └── CHANGELOG.md
+
+.claude/logs/audio/{workflow-id}/ (if narration generated)
+├── implementation_summary.mp3
+├── deployment_guide.mp3
+└── changelog.mp3
 
 documents/ (local copies)
 ├── implementation-summary-{date}.md

@@ -312,6 +312,80 @@ it('should call onSuccess callback when form submits successfully', () => {})
 
 ---
 
+## Styling Conventions
+
+### For React Native Projects: NativeWind (Recommended)
+
+**NativeWind** brings Tailwind CSS utility-first styling to React Native.
+
+```typescript
+// ✅ Preferred: NativeWind utility classes
+import { View, Text, TouchableOpacity } from 'react-native'
+
+export const UserCard = () => (
+  <View className="bg-white rounded-xl shadow-lg p-6 mb-4">
+    <Text className="text-xl font-bold text-gray-900">John Doe</Text>
+    <Text className="text-sm text-gray-500 mt-1">john@example.com</Text>
+
+    <TouchableOpacity className="bg-blue-500 px-6 py-3 rounded-lg mt-4">
+      <Text className="text-white font-semibold text-center">
+        View Profile
+      </Text>
+    </TouchableOpacity>
+  </View>
+)
+
+// Responsive design
+const isTablet = useDeviceType().isTablet
+<View className={`p-4 ${isTablet ? 'flex-row' : 'flex-col'}`}>
+  {/* Content */}
+</View>
+```
+
+**Setup Tailwind Config:**
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: [
+    "./App.{js,jsx,ts,tsx}",
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          500: '#0ea5e9',
+        },
+        secondary: {
+          500: '#8b5cf6',
+        },
+      },
+    },
+  },
+}
+```
+
+**Benefits:**
+- Faster development with utility classes
+- Consistent styling across iOS, Android, Web
+- No need for StyleSheet.create
+- Built-in responsive design
+- Theme integration
+
+**Reference:** See `.claude/skills/nativewind-component-generator.md` for templates
+
+### For Web Projects: Standard CSS/Tailwind
+
+```typescript
+// Use Tailwind classes or CSS modules
+<div className="bg-white rounded-lg shadow-md p-6">
+  <h1 className="text-2xl font-bold">Title</h1>
+</div>
+```
+
+---
+
 ## Project-Specific Conventions
 
 ### [Add Your Custom Conventions Here]
