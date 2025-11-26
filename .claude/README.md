@@ -231,9 +231,12 @@ document "feature"           # Just documentation (30 min)
 
 ### Integration Guides
 
-- **[docs/INTEGRATION_ENV_SETUP.md](docs/INTEGRATION_ENV_SETUP.md)** - Environment setup for integrations
-- **[docs/figma-mcp-integration.md](docs/figma-mcp-integration.md)** - Figma MCP integration
-- **[docs/mcp-integration.md](docs/mcp-integration.md)** - General MCP setup
+**Bash Script Integrations (JIRA, Figma, Slack, Confluence):**
+- **[docs/QUICK_SETUP_INTEGRATIONS.md](docs/QUICK_SETUP_INTEGRATIONS.md)** - 15-minute setup for all 4 services ⚡
+- **[docs/BASH_INTEGRATIONS_GUIDE.md](docs/BASH_INTEGRATIONS_GUIDE.md)** - Complete reference guide
+- **[docs/guides/JIRA_INTEGRATION.md](docs/guides/JIRA_INTEGRATION.md)** - JIRA integration details
+- **[docs/JIRA_WEBFETCH_SOLUTION.md](docs/JIRA_WEBFETCH_SOLUTION.md)** - Technical deep dive
+- **[docs/INTEGRATION_ENV_SETUP.md](docs/INTEGRATION_ENV_SETUP.md)** - Environment configuration
 
 ### Project Context
 
@@ -242,12 +245,11 @@ document "feature"           # Just documentation (30 min)
 
 ### Rules & Conventions
 
-- **[rules/](rules/)** - CCPM core rules (14 files)
+- **[rules/](rules/)** - CCPM core rules (13 files)
   - [tdd-workflow.md](rules/tdd-workflow.md) - TDD enforcement
   - [safety-rules.md](rules/safety-rules.md) - Safety and security
   - [code-quality.md](rules/code-quality.md) - Code quality standards
   - [smart-commenting.md](rules/smart-commenting.md) - Commenting guidelines
-  - [figma-mcp-handling.md](rules/figma-mcp-handling.md) - Figma MCP integration rules
   - [theme-consistency.md](rules/theme-consistency.md) - Theme usage
   - [direct-hook-access.md](rules/direct-hook-access.md) - Hook patterns
   - [correct-file-extensions.md](rules/correct-file-extensions.md) - File extensions

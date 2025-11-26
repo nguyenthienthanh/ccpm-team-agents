@@ -11,7 +11,7 @@ team:
   reviewers:
     # Add team member emails or names for each region/role
     default: "reviewer@example.com"
-    # For multi-region projects (like FWD Cube):
+    # For multi-region projects (like Company Cute):
     # ph: "philippines-reviewer@example.com"
     # my: "malaysia-reviewer@example.com"
     # id: "indonesia-reviewer@example.com"

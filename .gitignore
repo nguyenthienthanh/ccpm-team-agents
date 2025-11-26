@@ -33,3 +33,5 @@ __MACOSX/
 *.swo
 *~
 
+
+.claude/archive/

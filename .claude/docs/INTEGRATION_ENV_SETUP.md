@@ -10,7 +10,7 @@ CCPM supports integrations with:
 - **Jira** - Ticket management, status updates
 - **Confluence** - Documentation publishing
 - **Slack** - Team notifications
-- **Figma** - Design analysis (via MCP)
+- **Figma** - Design analysis (via Bash scripts)
 
 All configured via environment variables for security and flexibility.
 
@@ -336,7 +336,7 @@ bugfix:hotfix "API down"
 
 ---
 
-## 🎨 Figma Integration Setup (MCP)
+## 🎨 Figma Integration Setup (Bash Scripts)
 
 ### Required Environment Variables
 
@@ -347,9 +347,6 @@ bugfix:hotfix "API down"
 export FIGMA_ACCESS_TOKEN="figd_your-personal-access-token"
 export FIGMA_FILE_KEY="your-file-key"  # Default file (optional)
 export FIGMA_TEAM_ID="your-team-id"  # Optional
-
-# MCP Server Configuration (if using MCP)
-export FIGMA_MCP_ENABLED="true"
 ```
 
 ### Getting Figma Access Token
@@ -389,13 +386,13 @@ Once configured, CCPM can:
 - ✅ Compare design vs implementation
 - ✅ Extract assets (icons, images)
 
-**Note:** 
-- ✅ **Recommended:** Use Figma MCP integration (see [figma-mcp-integration.md](figma-mcp-integration.md))
-  - CCPM will automatically extract design data via MCP when you provide Figma links
-  - No screenshots needed if MCP is configured
-- ⚠️ **Fallback:** If MCP not available, provide screenshots instead
+**Note:**
+- ✅ **Recommended:** Use Figma Bash script integration (see [BASH_INTEGRATIONS_GUIDE.md](BASH_INTEGRATIONS_GUIDE.md))
+  - CCPM will automatically extract design data via `figma-fetch.sh` when you provide Figma links
+  - No screenshots needed if Bash script is configured
+- ⚠️ **Fallback:** If token not configured, provide screenshots instead
   - CCPM will analyze images visually
-  - **DO NOT** fetch Figma URLs directly (will cause 403 errors)
+  - **DO NOT** fetch Figma URLs directly without token (will cause 403 errors)
 
 ### Usage in CCPM
 
@@ -459,7 +456,6 @@ export SLACK_MENTION_PM="@pm-team"
 export FIGMA_ACCESS_TOKEN="figd_your-figma-token"
 export FIGMA_FILE_KEY="your-default-file-key"
 export FIGMA_TEAM_ID="your-team-id"
-export FIGMA_MCP_ENABLED="true"
 
 # ============================================
 # CCPM Configuration
@@ -674,5 +670,5 @@ workflow:start PROJ-1234
 **Questions? Check:**
 - `.claude/docs/guides/JIRA_INTEGRATION.md`
 - `.claude/docs/guides/CONFLUENCE_OPERATIONS.md`
-- `.claude/docs/figma-mcp-integration.md`
+- `.claude/docs/BASH_INTEGRATIONS_GUIDE.md` (all 4 services)
 

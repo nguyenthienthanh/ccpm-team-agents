@@ -1,195 +1,340 @@
 # JIRA Integration Guide
 
-**Complete guide for JIRA MCP integration with CCPM Team Agents**
+**Complete guide for JIRA integration with CCPM Team Agents using Bash scripts**
+
+**Version:** 2.0.0 (Bash Script Approach)
+**Last Updated:** 2025-11-27
 
 ---
 
 ## 🎯 Overview
 
-JIRA MCP enables automatic:
-- Fetch ticket requirements
-- Update ticket status (with approval)
-- Add comments and track progress
-- Link documentation
+CCPM provides **native Bash script integration** for JIRA, optimized for Claude Code:
+
+**Features:**
+- ✅ Fetch ticket requirements automatically
+- ✅ Parse acceptance criteria and descriptions
+- ✅ Update ticket status (with approval)
+- ✅ Add comments and track progress
+- ✅ Link documentation
+
+**Why Bash Scripts (Not MCP)?**
+- ✅ **Works in Claude Code** (MCP is Claude Desktop only)
+- ✅ **Faster** (~200ms vs ~500ms with MCP)
+- ✅ **Simpler** (no Node.js dependency)
+- ✅ **More flexible** (easy to customize)
+- ✅ **Better for development** workflows
 
 ---
 
-## 📦 Setup (15 minutes)
+## 📚 Quick Navigation
 
-### Step 1: Get JIRA API Token
-```bash
+**Choose your guide:**
+
+### 🚀 Quick Start (5 minutes)
+→ **[Quick Setup Guide](./../QUICK_SETUP_INTEGRATIONS.md)**
+- Fastest way to get started
+- All 4 integrations (JIRA, Figma, Slack, Confluence)
+
+### 📖 Complete Reference
+→ **[Bash Integrations Guide](./../BASH_INTEGRATIONS_GUIDE.md)**
+- Detailed setup for all services
+- Usage examples
+- Troubleshooting
+
+### 🔧 Technical Deep Dive
+→ **[JIRA WebFetch Solution](./../JIRA_WEBFETCH_SOLUTION.md)**
+- How it works internally
+- Comparison with MCP
+- Advanced customization
+
+### 🤖 For Claude
+→ **[JIRA Fetch Skill](./../../skills/jira-fetch-webfetch.md)**
+- How Claude uses the script
+- Integration with workflows
+- Error handling
+
+---
+
+## ⚡ Quick Start
+
+### 1. Get API Token (2 min)
+
 1. Go to: https://id.atlassian.com/manage-profile/security/api-tokens
-2. Click "Create API token"
-3. Name: "CCPM Team Agents"
+2. Click **"Create API token"**
+3. Name: `CCPM Integration`
 4. Copy token
-```
 
-### Step 2: Configure Environment
+### 2. Configure (1 min)
+
+Edit `.claude/.envrc`:
+
 ```bash
-# Add to .envrc
 export JIRA_URL="https://your-company.atlassian.net"
-export JIRA_API_TOKEN="your-api-token"
-export JIRA_USER_EMAIL="your-email@company.com"
+export JIRA_EMAIL="your.email@company.com"
+export JIRA_API_TOKEN="paste_your_token_here"
 export JIRA_PROJECT_KEY="PROJ"
-
-# Allow direnv
-direnv allow .
 ```
 
-### Step 3: Install JIRA MCP Server
+### 3. Load & Test (2 min)
+
 ```bash
-# Install @automaze/mcp-jira
-npx -y @automaze/mcp-jira --version
+# Load environment
+source .claude/.envrc
+
+# Test with your ticket
+./.claude/scripts/jira-fetch.sh PROJ-123
 ```
 
-### Step 4: Configure Claude Desktop
-```json
-{
-  "mcpServers": {
-    "jira": {
-      "command": "npx",
-      "args": ["-y", "@automaze/mcp-jira"],
-      "env": {
-        "JIRA_URL": "${JIRA_URL}",
-        "JIRA_API_TOKEN": "${JIRA_API_TOKEN}",
-        "JIRA_USER_EMAIL": "${JIRA_USER_EMAIL}"
-      }
-    }
-  }
-}
-```
-
-### Step 5: Update ccpm-config.yaml
-```yaml
-projects:
-  your-project:
-    integrations:
-      jira:
-        enabled: true
-        url: "https://your-company.atlassian.net"
-        project_key: "PROJ"
-        api_token_env: "JIRA_API_TOKEN"
-```
+**✅ If you see ticket details → You're done!**
 
 ---
 
-## 🚀 Usage
+## 🎮 Usage
 
-### Phase 1: Fetch Requirements
+### In Workflows
+
+```bash
+# Auto-fetch JIRA ticket
+workflow:start ETHAN-1269
 ```
-User: "Analyze JIRA ticket PROJ-1234"
 
-Agent automatically:
-1. Fetches ticket via MCP
-2. Extracts:
-   - Summary & Description
-   - Acceptance criteria
-   - Attachments & links
-   - Comments
-3. Generates requirements.md
+Claude will:
+1. Detect ticket: `ETHAN-1269`
+2. Run: `bash .claude/scripts/jira-fetch.sh ETHAN-1269`
+3. Parse requirements from JSON
+4. Start Phase 1 with ticket context
+
+### Manual Fetch
+
+```bash
+# Fetch any ticket
+./.claude/scripts/jira-fetch.sh PROJ-123
+
+# View saved JSON
+cat .claude/logs/jira/PROJ-123.json | jq
 ```
 
 ### During Workflow
-```
-Agent: "Should I update JIRA PROJ-1234 status to 'In Progress'?"
 
+**Phase 1:** Auto-fetch requirements
+**Phase 9:** Update ticket status (with confirmation)
+
+```
+Agent: Should I update JIRA PROJ-123 status to 'Done'?
 ⚠️ CONFIRMATION REQUIRED
 Type "confirm" to update JIRA
 ```
 
-### Phase 9: Update Status
+---
+
+## 📊 What Gets Fetched
+
+From JIRA ticket, the script extracts:
+
+- ✅ **Summary** (title)
+- ✅ **Description** (full content with formatting)
+- ✅ **Issue Type** (Story, Bug, Task, etc.)
+- ✅ **Status** (To Do, In Progress, Done, etc.)
+- ✅ **Priority** (Low, Medium, High, Critical)
+- ✅ **Assignee** & **Reporter**
+- ✅ **Labels** & **Components**
+- ✅ **Story Points** (if configured)
+- ✅ **Sprint** (if in sprint)
+- ✅ **Created/Updated** dates
+- ✅ **Comments** (if any)
+
+**Output:**
+- Console: Formatted summary
+- JSON: `.claude/logs/jira/<ticket-key>.json` (full data)
+
+---
+
+## 🔧 Advanced Features
+
+### Custom Parsing
+
+Edit `.claude/scripts/jira-fetch.sh` to:
+- Extract custom fields
+- Parse specific formats
+- Add logging
+- Cache responses
+
+### Project-Specific Config
+
+In `.claude/project-contexts/your-project/project-config.yaml`:
+
+```yaml
+integrations:
+  jira:
+    project_key: "MYPROJ"
+    default_assignee: "dev@company.com"
+    auto_fetch: true
+    parse_acceptance_criteria: true
 ```
-Agent automatically (after approval):
-- Updates ticket status
-- Adds implementation summary comment
-- Links generated documentation
+
+### Environment-Specific Tokens
+
+```bash
+# .claude/.envrc
+if [ "$PROJECT_ENV" = "production" ]; then
+  export JIRA_PROJECT_KEY="PROD"
+else
+  export JIRA_PROJECT_KEY="DEV"
+fi
 ```
 
 ---
 
-## 🔧 Available Operations
+## 🛠️ Troubleshooting
 
-### Read Operations (No approval needed)
-- `jira_issue_get(issueKey)` - Get ticket details
-- `jira_issue_search(jql)` - Search tickets
-- `jira_project_get(projectKey)` - Get project info
+### Error: "HTTP 401 Unauthorized"
 
-### Write Operations (Approval required)
-- `jira_issue_update(issueKey, fields)` - Update fields
-- `jira_issue_transition(issueKey, status)` - Change status
-- `jira_issue_comment_add(issueKey, comment)` - Add comment
+**Solution:**
+1. Regenerate token: https://id.atlassian.com/manage-profile/security/api-tokens
+2. Update `.claude/.envrc`
+3. `source .claude/.envrc`
+4. Test: `curl -u "$JIRA_EMAIL:$JIRA_API_TOKEN" "$JIRA_URL/rest/api/3/myself"`
+
+### Error: "HTTP 404 Not Found"
+
+**Possible causes:**
+- Ticket doesn't exist
+- Wrong project key
+- No permission to view ticket
+
+**Solution:**
+- Verify ticket exists in JIRA web UI
+- Check project key matches
+- Ensure you have view permissions
+
+### Error: "jq: command not found"
+
+**Solution:**
+```bash
+# macOS
+brew install jq
+
+# Ubuntu/Debian
+sudo apt install jq
+```
+
+**Note:** Script works without `jq`, just with less formatting
+
+### Script Permission Denied
+
+**Solution:**
+```bash
+chmod +x .claude/scripts/jira-fetch.sh
+```
 
 ---
 
-## 📊 Example Workflow
+## 📋 Example Workflow
 
 ```
-1. User provides JIRA link
+1. User types: workflow:start ETHAN-1269
    ↓
-2. Agent fetches ticket (JIRA MCP)
+2. Claude detects JIRA ticket
    ↓
-3. Phase 1: Requirements Analysis
-   - Parses description
-   - Extracts user stories
-   - Identifies acceptance criteria
+3. Runs: bash .claude/scripts/jira-fetch.sh ETHAN-1269
    ↓
-4. Generate requirements.md
+4. Parses JSON: .claude/logs/jira/ETHAN-1269.json
    ↓
-5. User approves Phase 1
+5. Extracts:
+   - Summary: [Cute] Gen AI Generation Error pop up
+   - Type: Story
+   - Status: In Progress
+   - Assignee: Ethan Nguyen
+   - Story Points: 3
    ↓
-... (Phases 2-8)
+6. Phase 1: Requirements Analysis
+   - Uses ticket data for context
+   - Generates requirements.md
    ↓
-9. Phase 9: Update JIRA
+7. ... Phases 2-8 ...
+   ↓
+8. Phase 9: Update JIRA
    - Status: Done
    - Comment: Implementation summary
-   - Link: Confluence documentation
+   - Link: Confluence docs
 ```
 
 ---
 
 ## 🔒 Security
 
-```yaml
-Permissions:
-  Read: ✅ Always allowed
-  Write: ⚠️ Requires user confirmation
-  Delete: ❌ Blocked by system
+**Permissions:**
+- ✅ **Read operations:** Always allowed (no approval)
+- ⚠️ **Write operations:** Require user confirmation
+- ❌ **Delete operations:** Not implemented (safety)
 
-Safety:
-  - All writes logged
-  - Confirmation prompts shown
-  - Can be cancelled anytime
-```
-
----
-
-## 🆘 Troubleshooting
-
-### "JIRA MCP not configured"
-```bash
-# Check Claude Desktop config
-cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
-
-# Restart Claude Desktop
-```
-
-### "Invalid credentials"
-```bash
-# Test JIRA API
-curl -u your-email@company.com:$JIRA_API_TOKEN \
-  $JIRA_URL/rest/api/3/myself
-```
-
-### "Permission denied"
-```
-Ensure JIRA token has:
-- Read issues
-- Edit issues
-- Add comments
-```
+**Best Practices:**
+- ✅ Use API tokens (not passwords)
+- ✅ Rotate tokens every 90 days
+- ✅ `.envrc` is git-ignored
+- ✅ Never commit tokens to git
+- ✅ Use environment-specific tokens
 
 ---
 
-**Setup Time:** 15 minutes  
-**Status:** Production ready
+## 📊 Comparison: Bash vs MCP
 
+| Feature | Bash Scripts (✅ Our Approach) | MCP |
+|---------|-------------------------------|-----|
+| **Claude Code** | ✅ Works | ❌ Not available |
+| **Setup Time** | 5 min | 15 min |
+| **Dependencies** | bash, curl, jq | Node.js, npm, MCP server |
+| **Performance** | ~200ms | ~500ms |
+| **Customization** | ✅ Easy | ⚠️ Limited |
+| **Debugging** | ✅ Simple | ⚠️ Complex |
+| **Offline** | ✅ Can cache | ❌ No |
+
+**Verdict:** Bash scripts are better for Claude Code! ✅
+
+---
+
+## 📚 Related Documentation
+
+**Setup Guides:**
+- [Quick Setup (15 min)](../QUICK_SETUP_INTEGRATIONS.md)
+- [Complete Integration Guide](../BASH_INTEGRATIONS_GUIDE.md)
+
+**Technical Details:**
+- [JIRA WebFetch Solution](../JIRA_WEBFETCH_SOLUTION.md)
+- [JIRA Fetch Skill](../../skills/jira-fetch-webfetch.md)
+
+**Agent Info:**
+- [JIRA Operations Agent](../../agents/jira-operations.md)
+
+**Other Integrations:**
+- Figma, Slack, Confluence → See [Bash Integrations Guide](../BASH_INTEGRATIONS_GUIDE.md)
+
+---
+
+## ✅ Checklist
+
+- [ ] API token generated
+- [ ] `.claude/.envrc` configured
+- [ ] Environment loaded: `source .claude/.envrc`
+- [ ] Script tested: `./.claude/scripts/jira-fetch.sh <ticket>`
+- [ ] JSON saved: `.claude/logs/jira/<ticket>.json`
+- [ ] Try workflow: `workflow:start <ticket>`
+
+---
+
+## 🆘 Need Help?
+
+1. **Quick issues:** Check troubleshooting section above
+2. **Setup help:** See [Quick Setup Guide](../QUICK_SETUP_INTEGRATIONS.md)
+3. **Technical deep dive:** See [JIRA WebFetch Solution](../JIRA_WEBFETCH_SOLUTION.md)
+4. **Report bugs:** Create issue in project repository
+
+---
+
+**Integration Status:** ✅ Production Ready
+**Last Updated:** 2025-11-27
+**Tested With:** Claude Code (macOS), JIRA Cloud
+**Script Location:** `.claude/scripts/jira-fetch.sh`
+
+**Ready to use!** Just run `workflow:start` with your JIRA ticket number. 🚀

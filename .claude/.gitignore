@@ -36,3 +36,5 @@ __MACOSX/
 .idea/
 *.code-workspace
 
+.claude/archive/
+

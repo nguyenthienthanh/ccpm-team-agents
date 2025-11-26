@@ -36,7 +36,7 @@ integrations:
   # JIRA integration
   jira:
     enabled: false
-    # Ticket format: CUBEPH-1234, CUBEMY-5678, etc.
+    # Ticket format: CUTEPH-1234, CUTEMY-5678, etc.
     ticket_format: "[TICKET_FORMAT]"
   
   # Confluence integration
