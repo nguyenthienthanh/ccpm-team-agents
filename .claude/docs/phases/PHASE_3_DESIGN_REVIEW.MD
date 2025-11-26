@@ -51,9 +51,12 @@ Please provide Figma screenshots for:
 
 **How to provide:**
 - Paste images directly in chat
-- Or provide Figma link (I'll remind you I can't access it, but can work from screenshots)
+- Or provide Figma link (I'll use MCP to extract design data if available)
 
-**Note:** I'll analyze images visually to extract design details.
+**Note:** 
+- If Figma link provided, I'll use MCP tools (figma_file_get, etc.) to extract design data
+- If MCP not available, I'll ask for screenshots instead
+- **DO NOT** fetch Figma URLs directly - always use MCP tools
 ```
 
 ---

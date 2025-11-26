@@ -14,8 +14,10 @@ __MACOSX/
 .claude/active-workflow.txt
 
 # Workflow execution data
-.claude/logs/
+# Ignore all files in logs/ but keep folder structure (.gitkeep files)
 .claude/logs/**/*
+!.claude/logs/.gitkeep
+!.claude/logs/**/.gitkeep
 .claude/contexts/
 
 # IDE

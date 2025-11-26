@@ -5,6 +5,14 @@
 
 set -e
 
+# Check bash version (associative arrays require bash 4+)
+if [ "${BASH_VERSION%%.*}" -lt 4 ]; then
+    echo "Error: This script requires bash 4.0 or higher"
+    echo "Current version: $BASH_VERSION"
+    echo "On macOS, install newer bash: brew install bash"
+    exit 1
+fi
+
 # Colors
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -86,7 +94,12 @@ echo "You can configure integrations later by editing .claude/.envrc"
 echo ""
 
 # Initialize variables
-declare -A ENV_VARS
+declare -A ENV_VARS 2>/dev/null || {
+    echo -e "${RED}❌ Error: Associative arrays not supported${NC}"
+    echo "This script requires bash 4.0 or higher"
+    echo "On macOS, install newer bash: brew install bash"
+    exit 1
+}
 
 # Function to prompt for env var
 prompt_env_var() {
@@ -100,6 +113,7 @@ prompt_env_var() {
         prompt_text="$prompt_text [$default_value]"
     fi
     
+    local value=""
     if [ "$is_secret" = true ]; then
         read -sp "$prompt_text: " value
         echo ""
@@ -111,6 +125,9 @@ prompt_env_var() {
     if [ -z "$value" ] && [ -n "$default_value" ]; then
         value="$default_value"
     fi
+    
+    # Escape quotes in value
+    value="${value//\"/\\\"}"
     
     ENV_VARS["$var_name"]="$value"
 }
@@ -170,68 +187,75 @@ sed -i "s/Date: /Date: $(date +%Y-%m-%d)/" "$ENVRC_FILE"
 rm -f "$ENVRC_FILE.bak" 2>/dev/null || true
 
 # Append environment variables
-cat >> "$ENVRC_FILE" << EOF
-
-# ============================================
-# Project Configuration
-# ============================================
-export PROJECT_NAME="${ENV_VARS[PROJECT_NAME]}"
-export PROJECT_ENV="${ENV_VARS[PROJECT_ENV]:-development}"
-
-# ============================================
-# Jira Integration
-# ============================================
-export JIRA_URL="${ENV_VARS[JIRA_URL]}"
-export JIRA_EMAIL="${ENV_VARS[JIRA_EMAIL]}"
-export JIRA_API_TOKEN="${ENV_VARS[JIRA_API_TOKEN]}"
-export JIRA_PROJECT_KEY="${ENV_VARS[JIRA_PROJECT_KEY]}"
-export JIRA_DEFAULT_ASSIGNEE="${ENV_VARS[JIRA_DEFAULT_ASSIGNEE]}"
-export JIRA_DEFAULT_PRIORITY="${ENV_VARS[JIRA_DEFAULT_PRIORITY]:-Medium}"
-export JIRA_BOARD_ID="${ENV_VARS[JIRA_BOARD_ID]}"
-
-# ============================================
-# Confluence Integration
-# ============================================
-export CONFLUENCE_URL="${ENV_VARS[CONFLUENCE_URL]}"
-export CONFLUENCE_EMAIL="${ENV_VARS[CONFLUENCE_EMAIL]}"
-export CONFLUENCE_API_TOKEN="${ENV_VARS[CONFLUENCE_API_TOKEN]}"
-export CONFLUENCE_SPACE_KEY="${ENV_VARS[CONFLUENCE_SPACE_KEY]}"
-export CONFLUENCE_PARENT_PAGE_ID="${ENV_VARS[CONFLUENCE_PARENT_PAGE_ID]}"
-export CONFLUENCE_DEFAULT_LABELS="${ENV_VARS[CONFLUENCE_DEFAULT_LABELS]:-ccpm,generated,documentation}"
-
-# ============================================
-# Slack Integration
-# ============================================
-export SLACK_BOT_TOKEN="${ENV_VARS[SLACK_BOT_TOKEN]}"
-export SLACK_CHANNEL_ID="${ENV_VARS[SLACK_CHANNEL_ID]}"
-export SLACK_WEBHOOK_URL="${ENV_VARS[SLACK_WEBHOOK_URL]}"
-export SLACK_MENTION_DEV="${ENV_VARS[SLACK_MENTION_DEV]:-@developer-team}"
-export SLACK_MENTION_QA="${ENV_VARS[SLACK_MENTION_QA]:-@qa-team}"
-export SLACK_MENTION_PM="${ENV_VARS[SLACK_MENTION_PM]:-@pm-team}"
-
-# ============================================
-# Figma Integration
-# ============================================
-export FIGMA_ACCESS_TOKEN="${ENV_VARS[FIGMA_ACCESS_TOKEN]}"
-export FIGMA_FILE_KEY="${ENV_VARS[FIGMA_FILE_KEY]}"
-export FIGMA_TEAM_ID="${ENV_VARS[FIGMA_TEAM_ID]}"
-export FIGMA_MCP_ENABLED="${ENV_VARS[FIGMA_MCP_ENABLED]:-true}"
-
-# ============================================
-# CCPM Configuration
-# ============================================
-export CCPM_AUTO_APPROVE="${ENV_VARS[CCPM_AUTO_APPROVE]:-true}"
-export CCPM_DEFAULT_COVERAGE="${ENV_VARS[CCPM_DEFAULT_COVERAGE]:-80}"
-export CCPM_TDD_ENFORCE="${ENV_VARS[CCPM_TDD_ENFORCE]:-true}"
-export CCPM_AUTO_NOTIFY="${ENV_VARS[CCPM_AUTO_NOTIFY]:-true}"
-export CCPM_TOKEN_WARNING="${ENV_VARS[CCPM_TOKEN_WARNING]:-150000}"
-
-# ============================================
-# Optional: Git Configuration
-# ============================================
-export GIT_AUTHOR_NAME="${ENV_VARS[GIT_AUTHOR_NAME]}"
-export GIT_AUTHOR_EMAIL="${ENV_VARS[GIT_AUTHOR_EMAIL]}"
-EOF
+# Use printf to avoid heredoc expansion issues
+{
+    echo ""
+    echo "# ============================================"
+    echo "# Project Configuration"
+    echo "# ============================================"
+    printf 'export PROJECT_NAME="%s"\n' "${ENV_VARS[PROJECT_NAME]}"
+    printf 'export PROJECT_ENV="%s"\n' "${ENV_VARS[PROJECT_ENV]:-development}"
+    
+    echo ""
+    echo "# ============================================"
+    echo "# Jira Integration"
+    echo "# ============================================"
+    printf 'export JIRA_URL="%s"\n' "${ENV_VARS[JIRA_URL]}"
+    printf 'export JIRA_EMAIL="%s"\n' "${ENV_VARS[JIRA_EMAIL]}"
+    printf 'export JIRA_API_TOKEN="%s"\n' "${ENV_VARS[JIRA_API_TOKEN]}"
+    printf 'export JIRA_PROJECT_KEY="%s"\n' "${ENV_VARS[JIRA_PROJECT_KEY]}"
+    printf 'export JIRA_DEFAULT_ASSIGNEE="%s"\n' "${ENV_VARS[JIRA_DEFAULT_ASSIGNEE]}"
+    printf 'export JIRA_DEFAULT_PRIORITY="%s"\n' "${ENV_VARS[JIRA_DEFAULT_PRIORITY]:-Medium}"
+    printf 'export JIRA_BOARD_ID="%s"\n' "${ENV_VARS[JIRA_BOARD_ID]}"
+    
+    echo ""
+    echo "# ============================================"
+    echo "# Confluence Integration"
+    echo "# ============================================"
+    printf 'export CONFLUENCE_URL="%s"\n' "${ENV_VARS[CONFLUENCE_URL]}"
+    printf 'export CONFLUENCE_EMAIL="%s"\n' "${ENV_VARS[CONFLUENCE_EMAIL]}"
+    printf 'export CONFLUENCE_API_TOKEN="%s"\n' "${ENV_VARS[CONFLUENCE_API_TOKEN]}"
+    printf 'export CONFLUENCE_SPACE_KEY="%s"\n' "${ENV_VARS[CONFLUENCE_SPACE_KEY]}"
+    printf 'export CONFLUENCE_PARENT_PAGE_ID="%s"\n' "${ENV_VARS[CONFLUENCE_PARENT_PAGE_ID]}"
+    printf 'export CONFLUENCE_DEFAULT_LABELS="%s"\n' "${ENV_VARS[CONFLUENCE_DEFAULT_LABELS]:-ccpm,generated,documentation}"
+    
+    echo ""
+    echo "# ============================================"
+    echo "# Slack Integration"
+    echo "# ============================================"
+    printf 'export SLACK_BOT_TOKEN="%s"\n' "${ENV_VARS[SLACK_BOT_TOKEN]}"
+    printf 'export SLACK_CHANNEL_ID="%s"\n' "${ENV_VARS[SLACK_CHANNEL_ID]}"
+    printf 'export SLACK_WEBHOOK_URL="%s"\n' "${ENV_VARS[SLACK_WEBHOOK_URL]}"
+    printf 'export SLACK_MENTION_DEV="%s"\n' "${ENV_VARS[SLACK_MENTION_DEV]:-@developer-team}"
+    printf 'export SLACK_MENTION_QA="%s"\n' "${ENV_VARS[SLACK_MENTION_QA]:-@qa-team}"
+    printf 'export SLACK_MENTION_PM="%s"\n' "${ENV_VARS[SLACK_MENTION_PM]:-@pm-team}"
+    
+    echo ""
+    echo "# ============================================"
+    echo "# Figma Integration"
+    echo "# ============================================"
+    printf 'export FIGMA_ACCESS_TOKEN="%s"\n' "${ENV_VARS[FIGMA_ACCESS_TOKEN]}"
+    printf 'export FIGMA_FILE_KEY="%s"\n' "${ENV_VARS[FIGMA_FILE_KEY]}"
+    printf 'export FIGMA_TEAM_ID="%s"\n' "${ENV_VARS[FIGMA_TEAM_ID]}"
+    printf 'export FIGMA_MCP_ENABLED="%s"\n' "${ENV_VARS[FIGMA_MCP_ENABLED]:-true}"
+    
+    echo ""
+    echo "# ============================================"
+    echo "# CCPM Configuration"
+    echo "# ============================================"
+    printf 'export CCPM_AUTO_APPROVE="%s"\n' "${ENV_VARS[CCPM_AUTO_APPROVE]:-true}"
+    printf 'export CCPM_DEFAULT_COVERAGE="%s"\n' "${ENV_VARS[CCPM_DEFAULT_COVERAGE]:-80}"
+    printf 'export CCPM_TDD_ENFORCE="%s"\n' "${ENV_VARS[CCPM_TDD_ENFORCE]:-true}"
+    printf 'export CCPM_AUTO_NOTIFY="%s"\n' "${ENV_VARS[CCPM_AUTO_NOTIFY]:-true}"
+    printf 'export CCPM_TOKEN_WARNING="%s"\n' "${ENV_VARS[CCPM_TOKEN_WARNING]:-150000}"
+    
+    echo ""
+    echo "# ============================================"
+    echo "# Optional: Git Configuration"
+    echo "# ============================================"
+    printf 'export GIT_AUTHOR_NAME="%s"\n' "${ENV_VARS[GIT_AUTHOR_NAME]}"
+    printf 'export GIT_AUTHOR_EMAIL="%s"\n' "${ENV_VARS[GIT_AUTHOR_EMAIL]}"
+} >> "$ENVRC_FILE"
 
 echo -e "${GREEN}✅ .envrc file created${NC}"
 echo ""

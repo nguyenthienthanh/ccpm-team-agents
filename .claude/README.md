@@ -242,11 +242,12 @@ document "feature"           # Just documentation (30 min)
 
 ### Rules & Conventions
 
-- **[rules/](rules/)** - CCPM core rules (13 files)
+- **[rules/](rules/)** - CCPM core rules (14 files)
   - [tdd-workflow.md](rules/tdd-workflow.md) - TDD enforcement
   - [safety-rules.md](rules/safety-rules.md) - Safety and security
   - [code-quality.md](rules/code-quality.md) - Code quality standards
   - [smart-commenting.md](rules/smart-commenting.md) - Commenting guidelines
+  - [figma-mcp-handling.md](rules/figma-mcp-handling.md) - Figma MCP integration rules
   - [theme-consistency.md](rules/theme-consistency.md) - Theme usage
   - [direct-hook-access.md](rules/direct-hook-access.md) - Hook patterns
   - [correct-file-extensions.md](rules/correct-file-extensions.md) - File extensions

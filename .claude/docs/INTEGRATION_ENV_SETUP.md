@@ -389,10 +389,13 @@ Once configured, CCPM can:
 - ✅ Compare design vs implementation
 - ✅ Extract assets (icons, images)
 
-**Note:** Since Claude cannot directly access Figma links, you'll need to:
-1. Take screenshots of Figma designs
-2. Paste screenshots in chat
-3. CCPM will analyze the images
+**Note:** 
+- ✅ **Recommended:** Use Figma MCP integration (see [figma-mcp-integration.md](figma-mcp-integration.md))
+  - CCPM will automatically extract design data via MCP when you provide Figma links
+  - No screenshots needed if MCP is configured
+- ⚠️ **Fallback:** If MCP not available, provide screenshots instead
+  - CCPM will analyze images visually
+  - **DO NOT** fetch Figma URLs directly (will cause 403 errors)
 
 ### Usage in CCPM
 

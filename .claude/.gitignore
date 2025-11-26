@@ -7,7 +7,10 @@
 *.env
 
 # Workflow execution data
-logs/
+# Ignore all files in logs/ but keep folder structure (.gitkeep files)
+logs/**/*
+!logs/.gitkeep
+!logs/**/.gitkeep
 context/
 active-workflow.txt
 

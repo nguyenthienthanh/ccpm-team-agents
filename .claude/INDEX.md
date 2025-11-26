@@ -29,7 +29,7 @@
 │   ├── phases/      → 11 detailed phase guides
 │   └── guides/      → Integration guides (Jira, Confluence)
 ├── hooks/           → Pre/post phase automation
-├── rules/           → Quality & safety rules
+├── rules/           → Quality & safety rules (14 rules)
 ├── scripts/         → Helper scripts
 ├── skills/          → 25+ reusable capabilities
 ├── templates/       → 8 document templates
@@ -209,7 +209,7 @@ help
 **Components:** 
 - 14 Agents
 - 45 Commands (Bug Fixing + Refactoring + Testing Added!)
-- 13 Rules
+- 14 Rules (including Figma MCP handling)
 - 25+ Skills
 - 11 Phase Guides
 - 8 Templates

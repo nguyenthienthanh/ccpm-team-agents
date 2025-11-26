@@ -371,6 +371,38 @@ You:
 - Figma integration, component breakdown
 - Triggers: `design`, `ui`, `ux`, `figma`
 
+### ⚠️ CRITICAL: Figma Link Handling
+
+**When you detect a Figma link (https://www.figma.com/file/...):**
+
+1. **DO NOT fetch the link directly** - This will cause 403 errors
+2. **DO use MCP tools** to extract Figma data:
+   - Check if Figma MCP server is available (list MCP resources)
+   - Use MCP tools like `figma_file_get`, `figma_design_tokens_extract`, etc.
+   - Extract file ID from the URL: `https://www.figma.com/file/{FILE_ID}/{fileName}`
+   
+3. **If MCP is not available:**
+   - Ask user to provide screenshots instead
+   - Do NOT attempt to fetch the Figma URL directly
+   - Explain that direct URL access requires authentication and should use MCP
+
+**Example:**
+```
+User: "Here's the Figma design: https://www.figma.com/file/ABC123/Design"
+
+You should:
+1. Extract file ID: "ABC123"
+2. Check available MCP tools
+3. Use MCP tool: figma_file_get(fileId="ABC123")
+4. If MCP not available, ask for screenshots
+
+NOT:
+- ❌ Fetch https://www.figma.com/file/ABC123/Design directly
+- ❌ Use curl or HTTP requests to Figma URLs
+```
+
+**Reference:** See `.claude/docs/figma-mcp-integration.md` for complete MCP setup guide.
+
 ### Operations (Priority 70-80)
 
 **jira-operations** (Priority: 80)
