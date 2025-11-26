@@ -23,88 +23,42 @@ The system includes:
 
 #### Option 1: Claude Code Plugin (Recommended) ⭐
 
-Install directly in Claude Code using the official plugin system:
+This repository is a Claude Code plugin marketplace. Install the CCPM plugin:
 
 ```bash
-# Install from GitHub repository
-/plugin install https://github.com/nguyenthienthanh/ccpm-team-agents
+# Step 1: Add this repository as a plugin marketplace (one-time)
+/plugin marketplace add nguyenthienthanh/ccpm-team-agents
 
-# Verify installation
-/agent:list
+# Step 2: Install the CCPM plugin
+/plugin install ccpm@ethan-ccpm
+
+# Step 3: Verify installation
+/help
+# You should see workflow:start, agent:list, and other CCPM commands
 ```
 
+**Note:** Step 1 is only needed once per machine. After adding the marketplace, you can install, update, or reinstall the plugin without re-adding.
+
+**🔒 Security Notice:**
+- ✅ **Official repository:** `nguyenthienthanh/ccpm-team-agents`
+- ⚠️ **Verify the URL** before installation - malicious forks exist!
+- 📖 **Read security guide:** [ccpm/docs/SECURITY_AND_TRUST.md](ccpm/docs/SECURITY_AND_TRUST.md)
+
 **Benefits:**
-- ✅ One-command installation
+- ✅ Two-command installation
 - ✅ Automatic updates from GitHub
 - ✅ Official Claude Code integration
 - ✅ No manual file copying
 
-**Alternative (if added to official marketplace):**
-```bash
-# If CCPM is listed in Claude Code official marketplace
-/plugin install ccpm-team-agents
-```
+**Post-Installation:**
 
-**Post-Installation Setup:**
-```bash
-# Configure integrations (optional)
-# Edit .claude/.envrc for JIRA, Figma, Slack, Confluence
-source .claude/.envrc
-```
+The plugin is now installed globally! You can use it in any project without copying files.
 
-#### Option 2: Automated Installation Script
-
-Use the installation script to automatically copy `.claude` to your project and configure environment variables:
-
-```bash
-# Clone this repository
-git clone https://github.com/nguyenthienthanh/ccpm-team-agents.git
-cd ccpm-team-agents
-
-# Run installation script
-./install.sh /path/to/your/project
-
-# Or run interactively (script will prompt for project path)
-./install.sh
-```
-
-The script will:
-- ✅ Copy `.claude` directory to your project root
-- ✅ Prompt you for environment variables (Jira, Confluence, Slack, Figma)
-- ✅ Create `.claude/.envrc` with your configuration
-- ✅ Create `.claude/settings.local.json` from template
-
-**Note:** All sensitive files (`.envrc`, `settings.local.json`) are automatically git-ignored.
-
-#### Option 3: Manual Installation
-
-1. Clone this repository:
-```bash
-git clone https://github.com/nguyenthienthanh/ccpm-team-agents.git
-cd ccpm-team-agents
-```
-
-2. Copy the `.claude` directory to your project root:
-```bash
-cp -r .claude /path/to/your/project/
-```
-
-3. Configure environment variables:
-```bash
-cd /path/to/your/project
-cp .claude/.envrc.template .claude/.envrc
-# Edit .claude/.envrc and fill in your values
-```
-
-4. Create local settings:
-```bash
-cp .claude/settings.example.json .claude/settings.local.json
-# Edit .claude/settings.local.json if needed
-```
+For detailed setup guide, see: [ccpm/docs/PLUGIN_INSTALLATION.md](ccpm/docs/PLUGIN_INSTALLATION.md)
 
 ### Usage
 
-To get started with CCPM Team Agents, see the **[detailed guide at `.claude/README.md`](.claude/README.md)**.
+To get started with CCPM Team Agents, see the **[detailed guide at `ccpm/README.md`](ccpm/README.md)**.
 
 That documentation includes:
 - ⚡ Quick Reference - Essential commands
@@ -136,7 +90,7 @@ agent:list
 
 ```
 ccpm-team-agents/
-├── .claude/              # CCPM Team Agents system
+├── ccpm/              # CCPM Team Agents system
 │   ├── README.md         # 📖 Detailed documentation (SEE HERE)
 │   ├── GET_STARTED.md    # Quick start guide
 │   ├── agents/           # 14 AI specialists
@@ -165,7 +119,7 @@ ccpm-team-agents/
 
 ## 📚 Documentation
 
-**👉 See [`.claude/README.md`](.claude/README.md) for complete usage guide.**
+**👉 See [`ccpm/README.md`](ccpm/README.md) for complete usage guide.**
 
 The documentation includes:
 - Quick start guide
@@ -193,10 +147,10 @@ MIT License - See LICENSE for details
 
 ## 📞 Support
 
-- **Documentation:** `.claude/docs/`
+- **Documentation:** `ccpm/docs/`
 - **Issues:** https://github.com/nguyenthienthanh/ccpm-team-agents/issues
 - **Discussions:** https://github.com/nguyenthienthanh/ccpm-team-agents/discussions
 
 ---
 
-**🚀 Get started:** See [`.claude/README.md`](.claude/README.md) for complete guide!
+**🚀 Get started:** See [`ccpm/README.md`](ccpm/README.md) for complete guide!

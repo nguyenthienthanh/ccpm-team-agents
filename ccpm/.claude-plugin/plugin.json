@@ -1,0 +1,13 @@
+{
+  "name": "ccpm",
+  "description": "Claude Code Project Management - AI-powered development workflow with 24 specialized agents, 9-phase TDD workflow, and Bash integrations for JIRA, Figma, Slack, and Confluence",
+  "version": "5.0.0",
+  "author": {
+    "name": "Nguyen Thien Thanh",
+    "email": "nguyenthienthanh.kiyoshi@gmail.com",
+    "url": "https://github.com/nguyenthienthanh"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/nguyenthienthanh/ccpm-team-agents",
+  "homepage": "https://github.com/nguyenthienthanh/ccpm-team-agents#readme"
+}

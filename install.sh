@@ -3,6 +3,16 @@
 # CCPM Installation Script
 # Version: 5.0.0-beta
 # Description: Install CCPM (Claude Code Project Management) into any project
+#
+# ⚠️  DEPRECATED: This script is for manual installation only.
+# ⚠️  The recommended method is now the Claude Code plugin:
+# ⚠️
+# ⚠️  /plugin marketplace add nguyenthienthanh/ccpm-team-agents
+# ⚠️  /plugin install ccpm@ethan-ccpm
+# ⚠️
+# ⚠️  See: ccpm/docs/PLUGIN_INSTALLATION.md
+#
+# This script remains for backwards compatibility and legacy installations.
 
 set -e
 

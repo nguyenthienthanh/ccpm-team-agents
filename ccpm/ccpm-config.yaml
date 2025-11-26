@@ -1,0 +1,228 @@
+# CCPM Configuration
+# Version: 5.0.0
+# Purpose: Main CCPM configuration - project-specific settings in project-contexts/
+
+version: '5.0'
+
+# =============================================================================
+# ACTIVE PROJECT
+# =============================================================================
+# Point to your project context folder
+# CCPM will load project-specific settings from there
+active_project:
+  name: "template"  # Change to your project name
+  context_path: "project-contexts/template"
+
+# Alternatively, you can set via environment variable:
+# export CCPM_PROJECT=my-project
+# export CCPM_PROJECT_CONTEXT="project-contexts/my-project"
+#
+# To create a new project context:
+# 1. Copy project-contexts/template/ to project-contexts/your-project/
+# 2. Update project-config.yaml with your settings
+# 3. Change the active_project name above to your project
+
+# =============================================================================
+# WORKFLOW SETTINGS
+# =============================================================================
+workflow:
+  # 9-Phase Workflow Configuration
+  phases:
+    skip_phases: []  # Phases to skip (e.g., [3] to skip phase 3)
+    # All phases enabled by default: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+  # TDD Enforcement
+  tdd:
+    enforcement: 'strict'  # Options: strict, recommended, optional
+    require_red_phase: true  # Tests must fail before implementation
+    require_green_phase: true  # Tests must pass before refactor
+
+  # Approval Gates
+  approval:
+    require_explicit: true  # User must type "approve"
+    timeout_minutes: 30  # Default timeout for approval (null = no timeout)
+    auto_continue_after_approval: true  # Continue to next phase after approval
+
+  # Auto-save workflow state
+  state:
+    auto_save: true
+    save_path: 'context'  # Relative to project root
+
+# =============================================================================
+# QUALITY SETTINGS
+# =============================================================================
+quality:
+  # Test Coverage Requirements
+  test_coverage:
+    default: 80  # Default coverage target (percentage)
+    strict_mode: true  # Fail workflow if below target
+    exemptions: []  # Files/patterns excluded from coverage (e.g., ['*.test.ts', 'mocks/*'])
+
+  # Code Review Requirements
+  review:
+    require_approval: true  # Approval gates at each phase
+    cross_review: true  # Multi-agent reviews
+    min_reviewers: 1  # Minimum reviewers per phase
+    auto_assign: true  # Auto-assign reviewers from project context
+
+  # Linting & Formatting
+  linting:
+    enforce_zero_warnings: true  # Fail if linter warnings exist
+    auto_fix: false  # Auto-fix linting issues (use with caution)
+
+# =============================================================================
+# DOCUMENTATION SETTINGS
+# =============================================================================
+documentation:
+  # Output Formats
+  formats:
+    markdown: true  # Generate local markdown files
+    confluence: false  # Publish to Confluence (requires integration)
+
+  # Storage Paths
+  paths:
+    local: 'documents'  # Local markdown copies
+    diagrams: 'documents/diagrams'  # Diagram output
+
+  # Documentation Generation
+  generation:
+    auto_generate: true  # Auto-generate docs in Phase 8
+    include_diagrams: true  # Include architecture diagrams
+    include_examples: true  # Include code examples
+
+  # Diagram Tools (in preference order)
+  diagram_tools:
+    - 'mermaid'  # Default, built into markdown
+    - 'draw.io'
+    - 'excalidraw'
+
+# =============================================================================
+# SAFETY & SECURITY SETTINGS
+# =============================================================================
+safety:
+  # Operations Requiring Confirmation
+  require_confirmation:
+    - jira_write  # Confirm before writing to JIRA
+    - confluence_write  # Confirm before publishing
+    - git_push  # Confirm before git push
+    - code_generation  # Confirm before generating code
+    - file_deletion  # Confirm before deleting files
+    - package_install  # Confirm before npm/yarn install
+
+  # Automatic Backups
+  backups:
+    enabled: true  # Backup before modifications
+    path: '.ccpm-backups'  # Backup directory
+    max_backups: 10  # Keep last N backups per file
+
+  # Security Scanning
+  security:
+    scan_dependencies: true  # Check for vulnerable dependencies
+    scan_secrets: true  # Warn if secrets detected in code
+
+# =============================================================================
+# AGENT SETTINGS
+# =============================================================================
+agents:
+  # Auto-activation based on context
+  auto_activation: true
+
+  # Agent Selection
+  selection:
+    # Scoring threshold (0-100): Agents scoring above this are activated
+    # Lower = more agents activated, Higher = fewer agents
+    # 0-20: Very inclusive (activates many agents)
+    # 21-40: Balanced (default)
+    # 41-60: Selective
+    # 61+: Very selective (only highly relevant agents)
+    activation_threshold: 30
+
+    # Maximum concurrent agents per workflow
+    # Limits to prevent token exhaustion and maintain focus
+    # Recommended: 3-7 agents
+    max_active: 5
+
+  # Always-Active Infrastructure Agents
+  # These agents are always present regardless of scoring
+  always_active:
+    - 'pm-operations-orchestrator'  # Workflow coordination
+    - 'project-detector'  # Project type detection
+    - 'project-context-manager'  # Context management
+
+# =============================================================================
+# INTEGRATION DEFAULTS
+# =============================================================================
+# Note: Enable integrations in project-contexts/[project]/project-config.yaml
+# Set credentials in .envrc file (never commit credentials!)
+integrations:
+  jira:
+    enabled: false  # Enable in project context
+    rate_limit: 10  # requests per minute
+    retry_attempts: 3
+    timeout_seconds: 30
+    # Required env vars: JIRA_URL, JIRA_EMAIL, JIRA_API_TOKEN
+    # See: docs/ENV_SETUP_GUIDE.md
+
+  confluence:
+    enabled: false  # Enable in project context
+    rate_limit: 10  # requests per minute
+    retry_attempts: 3
+    timeout_seconds: 30
+    # Required env vars: CONFLUENCE_URL, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN
+    # See: docs/ENV_SETUP_GUIDE.md
+
+  slack:
+    enabled: false  # Enable in project context
+    rate_limit: 1  # message per second
+    retry_attempts: 2
+    timeout_seconds: 10
+    # Required env vars: SLACK_WEBHOOK_URL or SLACK_BOT_TOKEN
+    # See: docs/ENV_SETUP_GUIDE.md
+
+  figma:
+    enabled: true  # Uses screenshots, no API key needed for basic usage
+    screenshot_path: 'documents/designs'
+    # Optional: FIGMA_ACCESS_TOKEN for API access
+    # See: docs/ENV_SETUP_GUIDE.md
+
+# =============================================================================
+# PERFORMANCE & LIMITS
+# =============================================================================
+performance:
+  # Token Usage
+  token_warning_threshold: 150000  # Warn at 75% of 200K limit
+  token_limit: 200000  # Claude Code token limit
+
+  # Execution Timeouts
+  timeouts:
+    phase_execution: 600  # 10 minutes per phase (seconds)
+    external_api: 30  # 30 seconds for external API calls
+
+  # Caching
+  cache:
+    enabled: true
+    ttl_seconds: 900  # 15 minutes cache TTL
+
+# =============================================================================
+# NOTES & DOCUMENTATION
+# =============================================================================
+#
+# Configuration Priority (Highest to Lowest):
+# 1. Environment Variables (.envrc)
+# 2. Project Context (project-contexts/[project]/project-config.yaml)
+# 3. This Global Config (ccpm-config.yaml)
+# 4. Hard-coded Defaults
+#
+# See: docs/CONFIG_LOADING_ORDER.md for detailed explanation
+#
+# Quick Start:
+# 1. Initialize project: project:init
+# 2. Configure integrations: See docs/ENV_SETUP_GUIDE.md
+# 3. Start workflow: workflow:start "Your task"
+#
+# Documentation:
+# - Complete Guide: README.md
+# - Configuration: docs/CONFIG_LOADING_ORDER.md
+# - Environment Setup: docs/ENV_SETUP_GUIDE.md
+# - Project Context: project-contexts/README.md
+#

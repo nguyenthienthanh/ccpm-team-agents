@@ -5,20 +5,20 @@ __MACOSX/
 **/__MACOSX/
 
 # Local configuration files
-.claude/.env
-.claude/.envrc
-.claude/.envrc.local
-.claude/*.env
-.claude/settings.local.json
-.claude/ccpm-config.yaml
-.claude/active-workflow.txt
+ccpm/.env
+ccpm/.envrc
+ccpm/.envrc.local
+ccpm/*.env
+ccpm/settings.local.json
+ccpm/ccpm-config.yaml
+ccpm/active-workflow.txt
 
 # Workflow execution data
 # Ignore all files in logs/ but keep folder structure (.gitkeep files)
-.claude/logs/**/*
-!.claude/logs/.gitkeep
-!.claude/logs/**/.gitkeep
-.claude/contexts/
+ccpm/logs/**/*
+!ccpm/logs/.gitkeep
+!ccpm/logs/**/.gitkeep
+ccpm/contexts/
 
 # IDE
 .vscode/
@@ -34,4 +34,4 @@ __MACOSX/
 *~
 
 
-.claude/archive/
+ccpm/archive/

@@ -1,0 +1,32 @@
+# ================================================
+# CCPM (Claude Code Project Management)
+# ================================================
+# Add these entries to your project's .gitignore
+# to properly handle CCPM-generated files
+# ================================================
+
+# CCPM Project Data
+.claude/logs/**/*           # Workflow execution logs
+!.claude/logs/.gitkeep      # Keep folder structure
+!.claude/logs/**/.gitkeep   # Keep subfolder structure
+.claude/context/            # Active workflow contexts
+.claude/active-workflow.txt # Current workflow state
+.claude/settings.local.json # Personal Claude Code settings
+
+# Environment files with secrets
+.envrc                      # If contains API tokens
+.envrc.local
+*.env
+
+# ================================================
+# What to COMMIT:
+# ✅ .claude/CLAUDE.md
+# ✅ .claude/project-contexts/[project]/ (all files)
+# ✅ .claude/logs/.gitkeep (preserve folder)
+#
+# What to IGNORE:
+# ❌ .claude/logs/**/* (workflow execution data)
+# ❌ .claude/context/ (active workflow state)
+# ❌ .claude/settings.local.json (personal settings)
+# ❌ .envrc (if contains secrets - otherwise commit with examples)
+# ================================================
