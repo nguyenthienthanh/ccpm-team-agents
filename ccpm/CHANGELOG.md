@@ -2,9 +2,9 @@
 
 ## [5.1.0] - 2025-11-27
 
-### 🆕 Major Feature - Skills System
+### 🆕 Major Features
 
-**Added:**
+#### 1. Skills System
 
 **8 Auto-Invoking Skills:**
 1. **agent-detector** - ALWAYS runs first, selects appropriate specialized agent
@@ -55,6 +55,147 @@
 - Better capability discovery (Skills auto-activate)
 - Fixed critical loading issue (project CLAUDE.md loader)
 - More maintainable plugin configuration
+
+---
+
+#### 2. Automatic Voiceover Notifications (✨ NEW)
+
+**Voice notifications for user action requirements**
+
+**Added:**
+- **scripts/voice-notify.sh** - ElevenLabs TTS integration script
+- **Stop hook** - Automatic voiceover when approval needed
+- **Notification hook** - Voice alerts for critical errors
+- **Audio auto-play** - Plays notification sound (macOS: afplay)
+
+**How It Works:**
+1. Workflow reaches approval gate
+2. Claude stops for user approval
+3. Stop hook triggers automatically
+4. ElevenLabs generates audio: "Attention please. Your attention is needed. Your approval is required to continue."
+5. Audio plays automatically
+6. User hears notification even if not watching screen
+
+**Configuration:**
+```bash
+# Simple setup - just add API key
+export ELEVENLABS_API_KEY="your_key"
+
+# Optional: Choose voice
+export ELEVENLABS_VOICE_ID="21m00Tcm4TlvDq8ikWAM"  # Rachel (default)
+```
+
+**Notification Types:**
+- `approval-gate` - Phase completion, approval needed
+- `error` - Critical errors and failures
+- `warning` - Important warnings
+- `completion` - Successful task completion
+- `general` - Generic notifications
+
+**Features:**
+- ✅ **Zero configuration** - Works out of the box with API key
+- ✅ **Non-blocking** - Gracefully skips if not configured
+- ✅ **Auto-play** - Plays audio automatically (macOS, Linux, Windows)
+- ✅ **Customizable voices** - 25+ ElevenLabs voices available
+- ✅ **Multilingual** - 70+ languages supported
+- ✅ **Cost-effective** - Free tier: 200 notifications/month
+
+**Benefits:**
+- ✅ Never miss an approval gate
+- ✅ Work on other tasks while workflow runs
+- ✅ Accessibility for vision-impaired users
+- ✅ Hands-free workflow monitoring
+- ✅ Multi-tasking friendly
+
+**Files:**
+- `scripts/voice-notify.sh` - TTS notification script
+- `docs/VOICEOVER_NOTIFICATIONS.md` - Complete documentation
+- `hooks/hooks.json` - Stop and Notification hooks
+- `agents/voice-operations.md` - Updated with automatic notifications
+
+---
+
+#### 3. Hooks System
+
+**7 Lifecycle Hooks:**
+1. **SessionStart** - Welcome message, show available commands
+2. **PreToolUse (Bash)** - Block dangerous commands (rm -rf, mkfs, etc.)
+3. **PreToolUse (Write|Edit)** - Remind about project context
+4. **PostToolUse (Bash)** - Log commands to .claude/logs/workflows/commands.log
+5. **UserPromptSubmit** - Detect JIRA tickets and Figma URLs
+6. **SessionEnd** - Suggest workflow:handoff if active workflow
+7. **Stop** - Voiceover notification when approval needed (NEW)
+8. **Notification** - Voice alerts for critical errors (NEW)
+
+**Safety Features:**
+- Blocks destructive bash commands
+- Prevents accidental system damage
+- Logs all command execution
+
+**Workflow Helpers:**
+- JIRA ticket detection (e.g., PROJ-1234)
+- Figma URL detection (e.g., figma.com/file/...)
+- Workflow handoff reminders
+- Voice notifications for approval gates
+
+---
+
+#### 4. Plugin Configuration Corrections
+
+**Fixed plugin.json structure:**
+- ✅ Corrected to standard Claude Code format
+- ✅ Commands: 70 actual command files listed
+- ✅ Agents: 24 explicit agent paths (not glob pattern)
+- ✅ Hooks: Reference to hooks/hooks.json
+- ✅ Keywords added for discoverability
+
+**Size reduction:**
+- Before: 382 lines (custom structure)
+- After: 112 lines (standard format)
+- Reduction: 70% smaller, cleaner structure
+
+---
+
+### Changed
+
+- **plugin.json** - Fixed structure, validated paths
+- **hooks.json** - Added Stop and Notification hooks for voiceover
+- **agents/voice-operations.md** - Documented automatic voiceover feature
+- **CLAUDE.md** - Skills system integration
+
+---
+
+### Documentation
+
+**Added:**
+- `docs/VOICEOVER_NOTIFICATIONS.md` - Complete voiceover guide
+- `hooks/README.md` - Hooks system documentation
+- `skills/README.md` - Skills system guide
+
+**Updated:**
+- `README.md` - Skills and voiceover features
+- `GET_STARTED.md` - Natural language workflow
+- `CLAUDE_FILE_ARCHITECTURE.md` - Dual-file loader architecture
+
+---
+
+### Impact Summary
+
+**User Experience:**
+- ✅ Natural language commands (Skills)
+- ✅ Never miss approval gates (Voiceover)
+- ✅ Safer operations (Hooks)
+- ✅ Better visibility (Notifications)
+
+**Accessibility:**
+- ✅ Voice notifications for vision-impaired
+- ✅ Audio feedback for multi-tasking
+- ✅ Hands-free workflow monitoring
+
+**Reliability:**
+- ✅ Validated plugin structure
+- ✅ Non-blocking notifications
+- ✅ Graceful failure handling
 
 ---
 

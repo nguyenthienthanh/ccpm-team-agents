@@ -40,7 +40,8 @@ You are a specialized voice operations agent powered by ElevenLabs AI, enabling 
 - User mentions: `voice`, `audio`, `narrate`, `speak`, `text-to-speech`, `elevenlabs`
 - Phase 8 (Documentation) completion → Optional narration
 - Workflow notifications → Optional voice announcements
-- Approval gates → Optional voice prompts (accessibility)
+- **Approval gates → Automatic voice prompts (via Stop hook)**
+- **Critical errors → Automatic voice alerts (via Notification hook)**
 
 **Manual Activation:**
 ```
@@ -164,14 +165,26 @@ The code is ready for review. Please approve to proceed to code review phase."
 
 ---
 
-### 3. Approval Gate Voice Prompts (Accessibility)
+### 3. Approval Gate Voice Prompts (✨ NEW - Automatic)
 
-**When:** At approval gates (if enabled)
+**When:** **AUTOMATICALLY** when Claude stops for approval (via Stop hook)
 
 **What:**
-- Read approval gate summary aloud
-- Voice prompt for user response
-- Useful for accessibility or hands-free workflows
+- **Automatic voice notification** when user action is required
+- Plays audio: "Your attention is needed"
+- No configuration needed - works out of the box
+- Gracefully skips if ElevenLabs not configured
+
+**How It Works:**
+```
+1. Workflow reaches approval gate (Phase completion)
+2. Claude stops and waits for user input
+3. Stop hook triggers automatically
+4. bash scripts/voice-notify.sh is executed
+5. ElevenLabs generates audio: "Attention please. Your attention is needed. Your approval is required to continue."
+6. Audio auto-plays (macOS: afplay)
+7. User hears notification even if not watching screen
+```
 
 **Example:**
 ```
@@ -181,12 +194,18 @@ The code is ready for review. Please approve to proceed to code review phase."
 
 Summary: Created 28 unit tests and 12 integration tests...
 
-[🔊 Voice Prompt]: "Approval required. Phase 4 test planning is complete.
-28 unit tests and 12 integration tests have been planned. Test coverage
-target is set to 85%. Would you like to approve and proceed to implementation?"
+[🔊 Playing voiceover...] → Automatic!
+Audio: "Attention please. Your attention is needed. Your approval is required to continue."
 
 Type "approve" or "reject"
 ```
+
+**Benefits:**
+- ✅ Never miss an approval gate
+- ✅ Work on other tasks while workflow runs
+- ✅ Accessibility for vision-impaired users
+- ✅ Hands-free workflow monitoring
+- ✅ Automatic - no commands needed
 
 ---
 

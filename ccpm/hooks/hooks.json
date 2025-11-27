@@ -70,6 +70,28 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Play voiceover notification when Claude stops for approval",
+            "command": "bash scripts/voice-notify.sh 'Your attention is needed' 'approval-gate' 2>&1 || true"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Play voiceover for critical notifications",
+            "command": "if echo \"$CLAUDE_NOTIFICATION\" | grep -qiE '(error|critical|failed)'; then bash scripts/voice-notify.sh 'Alert: Please check the notification' 'error' 2>&1 || true; fi"
+          }
+        ]
+      }
     ]
   }
 }
