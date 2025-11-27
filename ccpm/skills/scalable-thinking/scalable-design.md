@@ -2,9 +2,9 @@
 
 **Purpose:** Ensure solutions are designed to scale while keeping implementation simple (KISS)
 
-**Priority:** HIGH (before implementation)
+**Priority:** HIGH (design and implementation)
 
-**Auto-invokes when:** Architecture decisions, API design, data modeling, system design
+**Auto-invokes when:** Architecture decisions, API design, data modeling, system design, database schema creation, code implementation
 
 ---
 
@@ -644,8 +644,14 @@ class LocalStorage implements StorageProvider {
 
 ---
 
-**Applied In:** Phase 1 (Requirements), Phase 2 (Technical Planning), Phase 3 (Design)
+**Applied In:** Phase 1 (Requirements), Phase 2 (Technical Planning), Phase 3 (Design), Phase 5 (Implementation)
 
 **Works With:** KISS Principle, TDD, Code Quality Rules
 
 **Remember:** Scalable ≠ Complex. Scalable = Can grow. KISS = Simple to maintain.
+
+**During Coding (Phase 5):**
+- Think about data model scalability WHILE writing migrations/schemas
+- Design APIs with versioning WHILE creating endpoints
+- Structure code for feature growth WHILE organizing files
+- Implement with simplicity (KISS) but architecture for scale
