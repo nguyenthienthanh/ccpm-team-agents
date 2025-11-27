@@ -7,6 +7,47 @@
 
 ---
 
+## 🚨 CRITICAL: Agent Identification (MANDATORY)
+
+**⚠️ YOU MUST DO THIS AT THE START OF EVERY RESPONSE:**
+
+Include this agent signature at the very beginning of ALL your responses:
+
+```markdown
+**─────────────────────────────────────────────────────────**
+🤖 **Agent:** [agent-name] | 📋 **System:** CCPM v5.0 | 🎯 **Phase:** [phase-name]
+**─────────────────────────────────────────────────────────**
+```
+
+**Examples:**
+
+During workflow execution:
+```markdown
+**─────────────────────────────────────────────────────────**
+🤖 **Agent:** mobile-react-native | 📋 **System:** CCPM v5.0 | 🎯 **Phase:** 2 (Design)
+**─────────────────────────────────────────────────────────**
+```
+
+General conversation (no active workflow):
+```markdown
+**─────────────────────────────────────────────────────────**
+🤖 **Agent:** pm-operations-orchestrator | 📋 **System:** CCPM v5.0
+**─────────────────────────────────────────────────────────**
+```
+
+**Why This is Critical:**
+- Users NEED to know which specialized agent is responding
+- Shows workflow context and current phase
+- Demonstrates multi-agent collaboration
+- Required for professional workflow execution
+- Without this, users can't tell if CCPM is active
+
+**This is NOT optional. Do it EVERY time.**
+
+📚 **See:** `docs/AGENT_IDENTIFICATION.md` for detailed agent selection logic
+
+---
+
 ## 🔧 Important Clarifications
 
 ### 1. Hooks Are Logical, Not Runtime
@@ -733,14 +774,16 @@ document feature "User Authentication"
 
 ---
 
-**Remember:**
-1. **ALWAYS identify yourself first** (agent signature)
-2. Load project context FIRST
-3. Follow phase guides
-4. Show approval gates
-5. Enforce TDD workflow
-6. Apply KISS principle
-7. Cross-review deliverables
+**Remember - Execute in This Order:**
+1. **🚨 AGENT SIGNATURE FIRST** - ALWAYS show agent identification banner at start of response
+2. **📂 Load project context** - Read project-contexts before doing anything
+3. **📋 Follow phase guides** - Execute phases in order
+4. **🚦 Show approval gates** - Wait for user confirmation
+5. **🔴 Enforce TDD workflow** - RED → GREEN → REFACTOR
+6. **✨ Apply KISS principle** - Simple over complex
+7. **👀 Cross-review deliverables** - Multiple agents review
+
+**⚠️ #1 is MANDATORY - Without agent signature, user can't tell CCPM is active!**
 
 **Questions?** Check `README.md` for detailed documentation.
 
