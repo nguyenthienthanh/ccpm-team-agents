@@ -18,13 +18,13 @@ CCPM now includes **automatic voiceover notifications** that alert you when your
 
 **1. Approval Gates (Stop Hook)**
 - Triggers when Claude stops for approval
-- Plays audio: "Attention please. Your attention is needed. Your approval is required to continue."
+- Plays audio: "Hey, I need your input to continue."
 - Auto-plays on macOS (afplay)
 - Happens at every phase completion
 
 **2. Critical Errors (Notification Hook)**
 - Triggers on errors, failures, critical issues
-- Plays audio: "Alert. [error message]. Please review the error and provide guidance."
+- Plays audio: "Heads up, something went wrong. Check the error when you can."
 - Helps catch problems immediately
 
 ---
@@ -116,17 +116,23 @@ bash scripts/voice-notify.sh "Message" "notification-type"
 **Examples:**
 ```bash
 # Approval notification
-bash scripts/voice-notify.sh "Phase complete" "approval-gate"
-# → "Attention please. Phase complete. Your approval is required to continue."
+bash scripts/voice-notify.sh "" "approval-gate"
+# → "Hey, I need your input to continue."
 
 # Error notification
-bash scripts/voice-notify.sh "Build failed" "error"
-# → "Alert. Build failed. Please review the error and provide guidance."
+bash scripts/voice-notify.sh "" "error"
+# → "Heads up, something went wrong. Check the error when you can."
+
+# Warning notification
+bash scripts/voice-notify.sh "" "warning"
+# → "Just a heads up, you might want to check this."
 
 # Completion notification
-bash scripts/voice-notify.sh "All tests passing" "completion"
-# → "Great news. All tests passing. The task has been completed successfully."
+bash scripts/voice-notify.sh "" "completion"
+# → "All done! Task completed successfully."
 ```
+
+**Note:** Messages are now fixed per notification type for natural, conversational tone. The message parameter is ignored for standard types.
 
 ---
 
@@ -171,18 +177,27 @@ Edit `scripts/voice-notify.sh` to customize:
 
 ### Custom Messages
 
-Edit `scripts/voice-notify.sh` case statement:
+Edit `scripts/voice-notify.sh` case statement to change the natural messages:
 
 ```bash
 case "$NOTIFICATION_TYPE" in
   "approval-gate")
-    FULL_MESSAGE="Attention please. $MESSAGE. Your approval is required to continue."
+    FULL_MESSAGE="Hey, I need your input to continue."
+    ;;
+  "error")
+    FULL_MESSAGE="Heads up, something went wrong. Check the error when you can."
     ;;
   "custom-type")
-    FULL_MESSAGE="Your custom prefix. $MESSAGE. Your custom suffix."
+    FULL_MESSAGE="Your custom message here."
     ;;
 esac
 ```
+
+**Tips for natural voiceover:**
+- Keep it short (under 10 words)
+- Use conversational language ("Hey" not "Attention please")
+- Be friendly and casual
+- Avoid robotic phrases like "Your approval is required"
 
 ---
 

@@ -38,16 +38,16 @@ OUTPUT_FILE="$OUTPUT_DIR/${NOTIFICATION_TYPE}_${TIMESTAMP}.mp3"
 # Prepare message based on notification type
 case "$NOTIFICATION_TYPE" in
   "approval-gate")
-    FULL_MESSAGE="Attention please. $MESSAGE. Your approval is required to continue."
+    FULL_MESSAGE="Hey, I need your input to continue."
     ;;
   "error")
-    FULL_MESSAGE="Alert. $MESSAGE. Please review the error and provide guidance."
+    FULL_MESSAGE="Heads up, something went wrong. Check the error when you can."
     ;;
   "warning")
-    FULL_MESSAGE="Warning. $MESSAGE. Please check the details."
+    FULL_MESSAGE="Just a heads up, you might want to check this."
     ;;
   "completion")
-    FULL_MESSAGE="Great news. $MESSAGE. The task has been completed successfully."
+    FULL_MESSAGE="All done! Task completed successfully."
     ;;
   *)
     FULL_MESSAGE="$MESSAGE"
