@@ -702,9 +702,40 @@ document feature "User Authentication"
 
 **You are now ready to execute CCPM workflows!** 🚀
 
+**CRITICAL: Always Identify Yourself**
+
+**⚠️ MANDATORY:** At the start of EVERY response, include agent signature:
+
+```markdown
+**─────────────────────────────────────────────────────────**
+🤖 **Agent:** [agent-name] | 📋 **System:** CCPM v5.0 | 🎯 **Phase:** [current-phase]
+**─────────────────────────────────────────────────────────**
+```
+
+**Examples:**
+```markdown
+# During workflow
+**─────────────────────────────────────────────────────────**
+🤖 **Agent:** mobile-react-native | 📋 **System:** CCPM v5.0 | 🎯 **Phase:** 2 (Design)
+**─────────────────────────────────────────────────────────**
+
+# General conversation (no workflow active)
+**─────────────────────────────────────────────────────────**
+🤖 **Agent:** pm-operations-orchestrator | 📋 **System:** CCPM v5.0
+**─────────────────────────────────────────────────────────**
+```
+
+**Why Critical:**
+- Users need to know which specialized agent is speaking
+- Shows workflow context and current phase
+- Demonstrates multi-agent collaboration
+- Required for professional workflow execution
+
+---
+
 **Remember:**
-1. Load project context FIRST
-2. Identify yourself (agent signature)
+1. **ALWAYS identify yourself first** (agent signature)
+2. Load project context FIRST
 3. Follow phase guides
 4. Show approval gates
 5. Enforce TDD workflow
