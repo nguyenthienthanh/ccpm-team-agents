@@ -8,26 +8,28 @@ echo "🔊 CCPM Voiceover Notification Test"
 echo "===================================="
 echo ""
 
+# Try to load from config file
+CONFIG_FILE="$HOME/.claude/ccpm-voice-config"
+if [ -f "$CONFIG_FILE" ]; then
+  echo "ℹ️  Loading configuration from: $CONFIG_FILE"
+  source "$CONFIG_FILE"
+  echo ""
+fi
+
 # Check if API key is set
 if [ -z "$ELEVENLABS_API_KEY" ]; then
   echo "❌ ELEVENLABS_API_KEY not set"
   echo ""
-  echo "📋 Setup Instructions:"
-  echo "1. Sign up at https://elevenlabs.io (free tier available)"
-  echo "2. Get your API key from https://elevenlabs.io/app/settings/api-keys"
-  echo "3. Add to your environment:"
+  echo "🚀 Quick Setup:"
   echo ""
-  echo "   # Option 1: Add to .envrc (recommended for direnv users)"
-  echo "   echo 'export ELEVENLABS_API_KEY=\"your_key_here\"' >> .envrc"
-  echo "   direnv allow"
+  echo "   Run the setup script to configure voiceover:"
+  echo "   bash scripts/setup-voice.sh"
   echo ""
-  echo "   # Option 2: Add to .env"
-  echo "   echo 'ELEVENLABS_API_KEY=\"your_key_here\"' >> .env"
-  echo "   source .env"
-  echo ""
-  echo "   # Option 3: Add to ~/.zshrc or ~/.bashrc"
-  echo "   echo 'export ELEVENLABS_API_KEY=\"your_key_here\"' >> ~/.zshrc"
-  echo "   source ~/.zshrc"
+  echo "   This will:"
+  echo "   1. Ask for your ElevenLabs API key"
+  echo "   2. Test the API key"
+  echo "   3. Save to config file: $CONFIG_FILE"
+  echo "   4. Work automatically with hooks"
   echo ""
   exit 1
 fi

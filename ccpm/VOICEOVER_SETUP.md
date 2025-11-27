@@ -4,50 +4,60 @@
 
 ---
 
-## ⚡ Quick Setup (2 steps)
+## ⚡ Quick Setup (1 command)
 
-### Step 1: Get ElevenLabs API Key
+### Run Setup Script
 
-1. Sign up at **https://elevenlabs.io** (free tier available)
-2. Go to **Settings → API Keys**: https://elevenlabs.io/app/settings/api-keys
-3. Click "Create API Key" and copy it
+```bash
+cd ~/.claude/plugins/marketplaces/ethan-ccpm/ccpm
+bash scripts/setup-voice.sh
+```
+
+**What it does:**
+1. Asks for your ElevenLabs API key
+2. Tests the API key
+3. Lets you choose a voice (optional)
+4. Saves to `~/.claude/ccpm-voice-config`
+5. Tests voice generation
+6. **Works automatically with hooks!**
+
+**Setup process:**
+```
+🔊 CCPM Voiceover Notification Setup
+=====================================
+
+📋 Step 1: ElevenLabs API Key
+   Sign up at: https://elevenlabs.io
+   Get API key: https://elevenlabs.io/app/settings/api-keys
+
+Enter your ElevenLabs API Key: sk_...
+
+🧪 Testing API key...
+✅ API key is valid!
+
+📋 Step 2: Voice Selection (Optional)
+   Press Enter for default voice (Rachel)
+   Or enter a custom voice ID
+
+Enter Voice ID (or press Enter for default): [Enter]
+Using default voice: Rachel
+
+💾 Saving configuration...
+✅ Configuration saved to: ~/.claude/ccpm-voice-config
+
+🎤 Testing voice generation...
+🔊 Generating voiceover...
+✅ Voiceover saved
+🔊 Playing notification...
+
+✅ Setup complete!
+```
 
 **Free Tier:**
 - 10,000 characters/month
 - ≈200 notifications/month
 - No credit card required
-
----
-
-### Step 2: Add API Key to Environment
-
-**Option A: Using direnv (Recommended)**
-
-```bash
-# Add to .envrc in your project or home directory
-echo 'export ELEVENLABS_API_KEY="your_api_key_here"' >> .envrc
-direnv allow
-```
-
-**Option B: Using .env file**
-
-```bash
-# Add to .env file
-echo 'ELEVENLABS_API_KEY="your_api_key_here"' >> .env
-source .env
-```
-
-**Option C: Add to shell profile**
-
-```bash
-# For zsh users
-echo 'export ELEVENLABS_API_KEY="your_api_key_here"' >> ~/.zshrc
-source ~/.zshrc
-
-# For bash users
-echo 'export ELEVENLABS_API_KEY="your_api_key_here"' >> ~/.bashrc
-source ~/.bashrc
-```
+- Sign up: https://elevenlabs.io
 
 ---
 

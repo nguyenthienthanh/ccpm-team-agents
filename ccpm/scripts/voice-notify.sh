@@ -6,6 +6,12 @@
 
 set -e
 
+# Try to load from config file first (for hooks), then environment
+CONFIG_FILE="$HOME/.claude/ccpm-voice-config"
+if [ -f "$CONFIG_FILE" ]; then
+  source "$CONFIG_FILE"
+fi
+
 # Configuration
 VOICE_ID="${ELEVENLABS_VOICE_ID:-21m00Tcm4TlvDq8ikWAM}"  # Default: Rachel
 API_KEY="${ELEVENLABS_API_KEY}"
