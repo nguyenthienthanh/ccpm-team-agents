@@ -33,7 +33,21 @@ This installs the CCPM plugin from the marketplace you just added.
 
 All without re-adding the marketplace!
 
-**Step 3: Verify Installation**
+**Step 3: Create Local Settings (REQUIRED)**
+
+**⚠️ CRITICAL:** The plugin requires `settings.local.json` to function properly.
+
+```bash
+cd ~/.claude/plugins/marketplaces/ethan-ccpm/ccpm/
+cp settings.example.json settings.local.json
+```
+
+**Why Required:**
+- Controls Claude Code permissions (auto-approve, allowed domains)
+- Git-ignored for security (not included in plugin)
+- Must be created manually after installation
+
+**Step 4: Verify Installation**
 ```bash
 # Check that CCPM commands are available
 /help
@@ -282,6 +296,14 @@ rm -rf .envrc ccpm-config.yaml
 
 ## 🛠️ Troubleshooting
 
+**📚 For comprehensive troubleshooting, see:** [`PLUGIN_TROUBLESHOOTING.md`](PLUGIN_TROUBLESHOOTING.md)
+
+The checklist includes:
+- ✅ Quick fix steps (5-step verification)
+- ✅ Common issues with solutions
+- ✅ Verification scripts
+- ✅ Complete setup validation
+
 ### Issue 1: Plugin Not Found
 
 **Error:**
@@ -400,7 +422,8 @@ After installation, we recommend:
 **Documentation:**
 - [Complete User Guide](./../README.md)
 - [Quick Start Guide](./../GET_STARTED.md)
-- [Bash Integrations Guide](./BASH_INTEGRATIONS_GUIDE.md)
+- [Integration Setup Guide](./INTEGRATION_SETUP_GUIDE.md)
+- [Bash Integrations Reference](./BASH_INTEGRATIONS_REFERENCE.md)
 - [Agent Selection Guide](./AGENT_SELECTION_GUIDE.md)
 
 **External:**

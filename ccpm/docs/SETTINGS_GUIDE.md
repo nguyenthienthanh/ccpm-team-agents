@@ -2,6 +2,11 @@
 
 **Purpose:** Configure which commands Claude Code can run without asking permission every time.
 
+**📚 Related Documentation:**
+- [`CONFIG_LOADING_ORDER.md`](CONFIG_LOADING_ORDER.md) - Understand where settings fit in configuration priority
+- [`INTEGRATION_SETUP_GUIDE.md`](INTEGRATION_SETUP_GUIDE.md) - Environment variables and integration setup
+- [`PLUGIN_INSTALLATION.md`](PLUGIN_INSTALLATION.md) - Plugin installation and setup
+
 ---
 
 ## 📁 Files

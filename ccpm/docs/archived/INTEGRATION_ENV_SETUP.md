@@ -2,6 +2,11 @@
 
 **Purpose:** Configure external integrations (Jira, Confluence, Slack, Figma) using environment variables
 
+> **⚠️ DEPRECATION NOTICE:**
+> This guide has been consolidated into [`INTEGRATION_SETUP_GUIDE.md`](INTEGRATION_SETUP_GUIDE.md).
+> **Please use the new consolidated guide** for the complete integration setup experience.
+> This file will be archived in a future release.
+
 ---
 
 ## 📋 Overview

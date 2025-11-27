@@ -3,6 +3,11 @@
 **Version:** 5.0.0
 **Last Updated:** 2025-11-27
 
+> **⚠️ DEPRECATION NOTICE:**
+> This guide has been consolidated into [`INTEGRATION_SETUP_GUIDE.md`](INTEGRATION_SETUP_GUIDE.md).
+> **Please use the new consolidated guide** for the complete integration setup experience.
+> This file will be archived in a future release.
+
 ---
 
 ## Overview
@@ -15,18 +20,26 @@ CCPM uses environment variables to configure integrations with external services
 
 ### 1. Copy the Template
 
+**Location:** `.envrc` should be in your **project root** (not in ccpm/ plugin directory)
+
 ```bash
-cp ccpm/.envrc.template ccpm/.envrc
+# In your project directory
+cp ~/.claude/plugins/marketplaces/ethan-ccpm/ccpm/.envrc.template .envrc
 ```
+
+**Why project root?**
+- ✅ Standard convention (direnv expects root)
+- ✅ Easier path references
+- ✅ Git-ignored per-project
 
 ### 2. Edit the File
 
-Open `ccpm/.envrc` and replace `{{PLACEHOLDERS}}` with your actual values:
+Open `.envrc` in your project root and replace `{{PLACEHOLDERS}}` with your actual values:
 
 ```bash
-nano ccpm/.envrc
+nano .envrc
 # or
-code ccpm/.envrc
+code .envrc
 ```
 
 ### 3. Load Environment Variables

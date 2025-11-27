@@ -31,16 +31,17 @@ CCPM provides **native Bash script integration** for JIRA, optimized for Claude 
 
 **Choose your guide:**
 
-### 🚀 Quick Start (5 minutes)
-→ **[Quick Setup Guide](./../QUICK_SETUP_INTEGRATIONS.md)**
+### 🚀 Quick Start (15 minutes)
+→ **[Integration Setup Guide](./../INTEGRATION_SETUP_GUIDE.md)**
 - Fastest way to get started
 - All 4 integrations (JIRA, Figma, Slack, Confluence)
+- Quick setup + detailed config in one place
 
-### 📖 Complete Reference
-→ **[Bash Integrations Guide](./../BASH_INTEGRATIONS_GUIDE.md)**
-- Detailed setup for all services
-- Usage examples
-- Troubleshooting
+### 📖 Technical Reference
+→ **[Bash Integrations Reference](./../BASH_INTEGRATIONS_REFERENCE.md)**
+- API documentation
+- Script architecture
+- Extending and customization
 
 ### 🔧 Technical Deep Dive
 → **[JIRA WebFetch Solution](./../JIRA_WEBFETCH_SOLUTION.md)**
@@ -297,8 +298,8 @@ chmod +x scripts/jira-fetch.sh
 ## 📚 Related Documentation
 
 **Setup Guides:**
-- [Quick Setup (15 min)](../QUICK_SETUP_INTEGRATIONS.md)
-- [Complete Integration Guide](../BASH_INTEGRATIONS_GUIDE.md)
+- [Integration Setup Guide](../INTEGRATION_SETUP_GUIDE.md) - Complete setup (quick start + detailed config)
+- [Bash Integrations Reference](../BASH_INTEGRATIONS_REFERENCE.md) - Technical API reference
 
 **Technical Details:**
 - [JIRA WebFetch Solution](../JIRA_WEBFETCH_SOLUTION.md)
@@ -308,7 +309,7 @@ chmod +x scripts/jira-fetch.sh
 - [JIRA Operations Agent](../../agents/jira-operations.md)
 
 **Other Integrations:**
-- Figma, Slack, Confluence → See [Bash Integrations Guide](../BASH_INTEGRATIONS_GUIDE.md)
+- Figma, Slack, Confluence → See [Integration Setup Guide](../INTEGRATION_SETUP_GUIDE.md)
 
 ---
 
@@ -326,7 +327,7 @@ chmod +x scripts/jira-fetch.sh
 ## 🆘 Need Help?
 
 1. **Quick issues:** Check troubleshooting section above
-2. **Setup help:** See [Quick Setup Guide](../QUICK_SETUP_INTEGRATIONS.md)
+2. **Setup help:** See [Integration Setup Guide](../INTEGRATION_SETUP_GUIDE.md)
 3. **Technical deep dive:** See [JIRA WebFetch Solution](../JIRA_WEBFETCH_SOLUTION.md)
 4. **Report bugs:** Create issue in project repository
 

@@ -1,9 +1,61 @@
 # CCPM - Instructions for Claude Code AI
 
 **System:** CCPM Team Agents System
-**Version:** 5.0.0-beta
-**Purpose:** Guide Claude Code AI to operate as specialized agents in structured workflows
-**Last Updated:** 2025-11-26
+**Version:** 5.1.0
+**Purpose:** Guide Claude Code AI to operate as specialized agents in structured workflows with auto-invoking Skills
+**Last Updated:** 2025-11-27
+
+---
+
+## 🚨 CRITICAL: ALWAYS DO THIS FIRST
+
+**1. Priority Hierarchy Awareness:**
+
+Claude Code loads CLAUDE.md files in this order:
+```
+1. .claude/CLAUDE.md (project) ← HIGHEST PRIORITY
+2. ~/.claude/plugins/.../CLAUDE.md (this file) ← MEDIUM
+3. ~/.claude/CLAUDE.md (global) ← LOWEST
+```
+
+**If you see project `.claude/CLAUDE.md`, it should tell you to also read THIS file (plugin CLAUDE.md).** Follow that instruction to get ALL core CCPM system instructions.
+
+**2. Auto-Invoke Skills Based on Context:**
+
+**⚠️ CCPM uses Skills that auto-invoke when context matches. You MUST:**
+
+1. **Read skill descriptions** from `skills/` directory
+2. **Match user intent** to appropriate skill(s)
+3. **Auto-invoke skills** when context matches (no manual invocation needed)
+
+**Available Skills (8 total):**
+- **agent-detector** (`skills/agent-detector/agent-selection.md`) - ALWAYS runs FIRST for every message
+- **workflow-orchestrator** (`skills/workflow-orchestrator/workflow-execution.md`) - Complex features
+- **project-context-loader** (`skills/project-context-loader/context-loading.md`) - Before code generation
+- **bugfix-quick** (`skills/bugfix-quick/quick-fix.md`) - Bug fixes
+- **test-writer** (`skills/test-writer/test-generation.md`) - Test creation
+- **code-reviewer** (`skills/code-reviewer/quality-review.md`) - Code quality review
+- **jira-integration** (`skills/jira-integration/ticket-management.md`) - JIRA ticket detection
+- **figma-integration** (`skills/figma-integration/design-extraction.md`) - Figma URL detection
+
+**How Skills Work:**
+- Skills use **LLM reasoning** to match context
+- Multiple skills can activate for one message
+- Skills are **model-invoked** (you decide when to use them)
+- No manual commands needed - just natural language
+
+**Example:**
+```
+User: "Implement user profile from PROJ-1234"
+↓
+Auto-invokes:
+1. agent-detector (ALWAYS)
+2. jira-integration (ticket detected)
+3. project-context-loader (before implementation)
+4. workflow-orchestrator (complex feature)
+```
+
+**📚 See:** `skills/README.md` for complete Skills documentation
 
 ---
 
@@ -48,90 +100,19 @@ General conversation (no active workflow):
 
 ---
 
-## 🔧 Important Clarifications
+## 🔧 System Behavior
 
-### 1. Hooks Are Logical, Not Runtime
+**📚 Full Details:** See `docs/SYSTEM_CLARIFICATIONS.md` for complete explanations.
 
-**⚠️ IMPORTANT:** Files in `hooks/` are **conceptual guides**, NOT executable scripts.
+**Key Points:**
+1. **Hooks** = Markdown guides (not executable scripts)
+2. **Two workflow modes:** Full 9-phase (complex tasks) vs Lightweight commands (quick fixes)
+3. **Session start:** Show welcome message if `.claude/` folder missing (once per session)
 
-- ✅ They define logic for Claude to follow
-- ✅ They are markdown documentation
-- ❌ They are NOT Node.js/TypeScript scripts
-- ❌ They do NOT run as separate processes
-
-### 2. Workflow Flexibility
-
-#### Mode 1: Full 9-Phase Workflow (High Quality)
-- **Use for:** New features, complex changes, production code
-- **Includes:** Full TDD, code review, QA validation, documentation
-- **Time:** 2-4 hours | **Quality:** Maximum
-
-#### Mode 2: Lightweight Commands (Speed)
-- **Use for:** Small bugs, docs, simple refactors
-- **Includes:** Minimal phases, focused on task
-- **Time:** 30 min - 1 hour | **Quality:** Good
-- **Examples:** `bugfix:quick`, `refactor`, `planning`, `document`
-
-**Claude will:**
-- Default to appropriate mode based on task complexity
-- Suggest lightweight mode for simple tasks
-- Ask if you want full workflow for complex tasks
-
-### 3. Session Start Protocol
-
-**⚠️ AT THE START OF EVERY NEW SESSION:**
-
-When a new conversation begins (plugin loaded, Claude Code starts), Claude MUST:
-
-1. **Check if in a user project directory** (not system directories)
-2. **Check for `.claude/` folder existence**
-3. **If `.claude/` missing OR empty**, show this message:
-
-```markdown
-╔════════════════════════════════════════════════════════════╗
-║  👋 Welcome to CCPM Team Agents!                          ║
-╚════════════════════════════════════════════════════════════╝
-
-🤖 **CCPM v5.0** - AI-powered project management is active!
-
-**📋 Quick Setup Check:**
-
-I noticed this project hasn't been initialized with CCPM yet.
-
-**To get started:**
-```bash
-project:init
-```
-
-**This will:**
-- ✅ Create `.claude/` folder in your project
-- ✅ Analyze your project structure & tech stack
-- ✅ Generate project-specific conventions
-- ✅ Set up configuration files
-- ✅ Prepare CCPM for your workflow
-
-**Or, if you prefer:**
-- 📚 Run `help` to see all available commands
-- 🚀 Start with `workflow:start "your task"` (I'll guide you through setup)
-
-**Once initialized, you'll have access to:**
-- 24 AI specialists (mobile, backend, QA, security, DevOps, etc.)
-- 9-phase workflow (TDD enforced, quality gates, cross-review)
-- Bash integrations (JIRA, Figma, Slack, Confluence)
-
-Ready when you are! 🎯
-```
-
-4. **If `.claude/` exists**, silently proceed (no message needed)
-5. **Don't show this message again** in the same session
-
-**Exception:** If user explicitly runs a workflow command without setup, follow `hooks/on-start.md` logic.
-
-**Purpose:**
-- Proactive onboarding for new users
-- Remind users to initialize CCPM
-- Non-intrusive (only once per session if needed)
-- Clear next steps
+**Workflow Mode Selection:**
+- Use `/workflow:start` for complex features (full 9-phase)
+- Use `bugfix:quick`, `refactor`, etc. for simple tasks
+- Claude suggests appropriate mode based on complexity
 
 ---
 
@@ -141,65 +122,38 @@ You are Claude Code AI operating within **CCPM (Claude Code Project Management)*
 
 - **24 specialized agents** (mobile, backend, QA, UI, security, DevOps, etc.)
 - **9-phase workflow** (Understand → Design → UI → Plan Tests → TDD → Review → Verify → Document → Share)
-- **67 commands** for various development tasks
+- **70 commands** for various development tasks
 - **Project context system** for customization
 - **Quality-first approach** with TDD, KISS principle, cross-review
 
 ---
 
-## 📂 Plugin vs Project Structure
+## 📂 Dual-File Loader Architecture
 
-**CRITICAL:** Understand the difference between plugin files and project files!
+**⚠️ IMPORTANT:** This is the **Plugin CLAUDE.md** - contains ALL CCPM system instructions.
 
-### Plugin Directory (Global)
-**Location:** `~/.claude/plugins/marketplaces/ethan-ccpm/ccpm/`
+**Architecture:**
+- ✅ Project `.claude/CLAUDE.md` - Lightweight loader (tells Claude to read this file)
+- ✅ Plugin `ccpm/CLAUDE.md` (this file) - ALL CCPM system instructions
+- ✅ Project context - `.claude/project-contexts/[project]/` for conventions/rules
 
-**Contains:**
-- `CLAUDE.md` - This file (instructions for Claude)
-- `README.md` - User documentation
-- `agents/` - 24 agent definitions
-- `commands/` - 67 command definitions
-- `rules/` - 14 core quality rules
-- `templates/` - Document templates
-- `skills/` - Reusable skills
-- `docs/` - Plugin documentation
-- `ccpm-config.yaml` - Generated per-project config (references project context)
-- `settings.example.json` - Template for settings
+**Why Dual-File?**
+- Claude Code auto-loads project `.claude/CLAUDE.md` (not plugin files)
+- Project CLAUDE.md instructs Claude to read this plugin file
+- Single source of truth for system instructions (this file)
 
-**Shared across ALL projects using CCPM plugin**
+**📚 Complete Architecture:** See `docs/CLAUDE_FILE_ARCHITECTURE.md`
 
-### Project Directory (Per-Project)
-**Location:** User's project root + `.claude/`
+---
 
-**Created by:** `project:init` command
+## 📂 File Locations
 
-**Contains:**
-- `.claude/CLAUDE.md` - Project guide (what is .claude folder)
-- `.claude/settings.local.json` - Project-specific Claude Code settings
-- `.claude/project-contexts/[project]/` - Project context (conventions, rules, examples)
-- `.claude/logs/` - Workflow execution logs
-- `.claude/context/` - Active workflow state
-- `.envrc` (project root) - Environment variables, integration tokens
+**Plugin:** `~/.claude/plugins/marketplaces/ethan-ccpm/ccpm/` (global, shared across all projects)
+**Project:** `<your-project>/.claude/` (per-project, created by `project:init`)
 
-**Unique to EACH project**
+**Key Principle:** Plugin = system, Project = customization
 
-### How They Work Together
-
-```
-User runs: workflow:start "Add feature"
-     ↓
-Claude loads:
-1. Plugin commands/workflow/start.md  (from ~/.claude/plugins/.../ccpm/)
-2. Plugin ccpm-config.yaml            (from ~/.claude/plugins/.../ccpm/)
-3. Project context                    (from <project>/.claude/project-contexts/)
-4. Project settings                   (from <project>/.claude/settings.local.json)
-     ↓
-Claude executes workflow following project conventions
-     ↓
-Saves logs to: <project>/.claude/logs/workflows/[workflow-id]/
-```
-
-**Key Principle:** Plugin provides the system, project provides the customization.
+**📚 Details:** See `docs/CLAUDE_FILE_ARCHITECTURE.md`
 
 ---
 
@@ -233,16 +187,21 @@ Project Context > CCPM Rules > Generic Defaults
 **Project .claude/ folder structure:**
 ```
 .claude/
-├── CLAUDE.md                    # Project guide
 ├── settings.local.json          # Claude Code permissions (git-ignored)
-├── .claude/project-contexts/[project]/  # Project context
-├── .claude/logs/                        # Workflow logs (git-ignored)
+├── project-contexts/[project]/  # Project context (git-tracked)
+│   ├── project-config.yaml      # Tech stack, team config
+│   ├── conventions.md           # Naming, structure, patterns
+│   ├── rules.md                 # Project-specific rules
+│   └── examples.md              # Code examples
+├── logs/                        # Workflow logs (git-ignored)
 │   ├── workflows/               # Phase deliverables
 │   ├── figma/                   # Figma data
 │   ├── jira/                    # JIRA data
 │   └── audio/                   # Voice narration
 └── context/                     # Active contexts (git-ignored)
 ```
+
+**Note:** No `.claude/CLAUDE.md` in projects - plugin CLAUDE.md is used globally
 
 ### Initialize if Missing
 ```bash
@@ -396,7 +355,7 @@ After approval, IMMEDIATELY execute next phase without waiting. Continue until:
 | `project:init` | Initialize CCPM for project |
 | `project:detect` | Auto-detect project type |
 
-**📚 Complete List:** See `README.md` for all 67 commands
+**📚 Complete List:** See `README.md` for all 70 commands
 
 ---
 
@@ -544,10 +503,10 @@ Wait for User Response
 
 4. **If not configured:**
    - Ask user to set up Figma integration
-   - Guide: `docs/QUICK_SETUP_INTEGRATIONS.md`
+   - Guide: `docs/INTEGRATION_SETUP_GUIDE.md` (Section 2: Quick Setup or Section 3.4: Figma)
    - Or: Ask user for screenshots as fallback
 
-**📚 Details:** See `docs/BASH_INTEGRATIONS_GUIDE.md` (Figma section)
+**📚 Details:** See `docs/INTEGRATION_SETUP_GUIDE.md` (Section 3.4: Figma Integration)
 
 ---
 
@@ -570,8 +529,7 @@ CCPM provides **native Bash script integrations** for external services:
 - ✅ Easy to customize
 
 **Setup:**
-- **Quick (15 min):** `docs/QUICK_SETUP_INTEGRATIONS.md`
-- **Complete Guide:** `docs/BASH_INTEGRATIONS_GUIDE.md`
+- **Complete Guide:** `docs/INTEGRATION_SETUP_GUIDE.md` (all-in-one: quick setup, detailed config, troubleshooting)
 - **Scripts:** `scripts/jira-fetch.sh`, `figma-fetch.sh`, etc.
 
 **Usage in Workflows:**
@@ -583,161 +541,21 @@ workflow:start IGNT-1269
 workflow:start "Implement https://figma.com/file/ABC123/Design"
 ```
 
----
-
-### Developer Tools
-
-**NativeWind (Tailwind for React Native)**
-- Utility-first styling for React Native
-- Rapid component prototyping
-- Consistent cross-platform styling
-- **Docs:** `skills/nativewind-component-generator.md`
-
-**ElevenLabs AI (Voice Operations)**
-- Text-to-speech for documentation (Phase 8)
-- 70+ languages supported
-- Optional narration of docs
-- **Commands:** `voice:test`, `voice:narrate`, `narrate all`
-- **Docs:** `docs/guides/elevenlabs-integration.md`
-
----
-
-## ✅ Quality Checklist
-
-Before completing any phase:
-- [ ] Project context loaded
-- [ ] Conventions followed
-- [ ] Examples referenced
-- [ ] Code quality met
-- [ ] Tests written (if Phase 5)
-- [ ] Coverage target met
-- [ ] Linter passes (0 warnings)
-- [ ] Cross-review completed
-- [ ] Deliverables generated
-- [ ] Approval gate shown
-
----
-
-## 🎯 Success Criteria
-
-CCPM workflow succeeds when:
-- ✅ All 9 phases completed
-- ✅ All approval gates passed
-- ✅ All tests passing
-- ✅ Coverage ≥ target (default 80%)
-- ✅ Code reviewed and approved
-- ✅ Documentation complete
-- ✅ Team notified
-- ✅ Workflow archived
-
----
-
-## 📚 Documentation Structure
-
-```
-ccpm/
-├── CLAUDE.md                  # This file - Core instructions
-├── README.md                  # User guide - All features
-├── GET_STARTED.md             # Quick start guide
-├── SESSION_CONTINUATION_GUIDE.md  # Handoff/resume
-├── TESTING_GUIDE.md           # Testing strategy
-│
-├── agents/                    # 24 specialized agents
-├── commands/                  # 67 workflow commands
-├── rules/                     # 14 quality rules
-├── skills/                    # 25 reusable skills
-├── templates/                 # 8 document templates
-├── hooks/                     # 4 workflow hooks
-│
-├── docs/                      # Detailed documentation
-│   ├── AGENT_IDENTIFICATION.md    # Agent signature format
-│   ├── APPROVAL_GATES.md          # Approval gate format
-│   ├── RULES_COMBINATION.md       # Rule priority system
-│   ├── phases/                    # 9 phase guides
-│   ├── guides/                    # Integration guides
-│   └── examples/                  # Usage examples
-│
-├── .claude/project-contexts/          # Project customization
-│   ├── template/              # Template for new projects
-│   └── [project-name]/        # Your project context
-│
-├── context/                   # Active workflow contexts
-└── .claude/logs/                      # Execution logs
-```
-
----
-
-## 🎓 Quick Start
-
-### For Users
-
-**First Time:**
-```bash
-# 1. Initialize project
-project:init
-
-# 2. Start a workflow
-workflow:start "Add user authentication"
-
-# 3. Respond to approval gates
-approve
-```
-
-**For Bug Fixes:**
-```bash
-bugfix:quick "Fix login button alignment"
-```
-
-**For Documentation:**
-```bash
-document feature "User Authentication"
-```
-
-### For Claude
-
-**Every workflow:**
-1. Load project context FIRST
-2. Activate appropriate agents
-3. Follow phase guides
-4. Show approval gates
-5. Wait for user confirmation
-6. Auto-continue after approval
-
----
-
-## 🆕 What's New in v5.0
-
-- 🎯 **Friendly Phase Names** - "Understand", "Build", "Polish" vs technical jargon
-- 📝 Improved approval gates with taglines
-- 🗂️ Phase grouping (Planning, Build, Review, Share)
-- ✨ 50% faster onboarding for new developers
-- 🤖 Enhanced agent system (24 agents, was 14)
-- 🔒 Security expert agent with OWASP audits
-- 🐳 DevOps agent with Docker, K8s, monitoring
-- 📊 Database specialist agent
-- 🌐 New backend agents (Node.js, Python, Go)
-- 📱 Flutter mobile agent
-
-**Migration from v4.x:** Old phase names still work! Use either:
-- New: `workflow:build` or "Phase 5b: Build"
-- Old: `workflow:phase:5b` or "Phase 5b: TDD GREEN"
-
----
-
 ## 📚 Related Documentation
 
 **Essential Reading:**
 - **User Guide:** `README.md` - Complete feature overview
 - **Quick Start:** `GET_STARTED.md` - Get started in 5 minutes
-- **Agent System:** `agents/smart-agent-detector.md` - How agents work
-- **Testing:** `TESTING_GUIDE.md` - TDD workflow explained
+- **System Behavior:** `docs/SYSTEM_CLARIFICATIONS.md` - Detailed system explanations
+- **File Architecture:** `docs/CLAUDE_FILE_ARCHITECTURE.md` - Plugin/project file coordination
 
 **Reference:**
-- **Agent Identification:** `docs/AGENT_IDENTIFICATION.md`
+- **Agent System:** `agents/smart-agent-detector.md` & `docs/AGENT_IDENTIFICATION.md`
 - **Approval Gates:** `docs/APPROVAL_GATES.md`
-- **Rules Combination:** `docs/RULES_COMBINATION.md`
+- **Testing:** `TESTING_GUIDE.md` - TDD workflow explained
+- **Rules:** `docs/RULES_COMBINATION.md`
 - **Phase Guides:** `docs/phases/` (9 detailed guides)
-- **Integration Guides:** `docs/guides/` (Figma, ElevenLabs, JIRA, etc.)
+- **Integration:** `docs/INTEGRATION_SETUP_GUIDE.md`, `docs/BASH_INTEGRATIONS_REFERENCE.md`
 
 ---
 
@@ -789,11 +607,80 @@ document feature "User Authentication"
 
 ---
 
-**Version:** 5.0.0-beta
-**Last Updated:** 2025-11-26
-**Optimized:** Reduced from 1,472 lines to 570 lines (61% reduction)
+## 🎯 Skills System (NEW in v5.1.0)
+
+**CCPM uses auto-invoking Skills for intelligent capability discovery.**
+
+### What Are Skills?
+
+Skills are **model-invoked capabilities** that Claude automatically activates based on context matching:
+- Skills use LLM reasoning to understand your intent
+- Multiple skills can activate for a single message
+- No manual commands needed - just natural language
+- Skills inject detailed instructions into the conversation
+
+### 8 Available Skills
+
+**1. agent-detector** (Priority: HIGHEST - ALWAYS)
+- Auto-invokes for EVERY message
+- Detects which specialized agent to use
+- File: `skills/agent-detector/agent-selection.md`
+
+**2. workflow-orchestrator** (Priority: CRITICAL)
+- Triggers: "implement", "build", "create feature"
+- Executes 9-phase workflow
+- File: `skills/workflow-orchestrator/workflow-execution.md`
+
+**3. project-context-loader** (Priority: HIGH)
+- Triggers: Before code generation
+- Loads YOUR project conventions and rules
+- File: `skills/project-context-loader/context-loading.md`
+
+**4. bugfix-quick** (Priority: MEDIUM)
+- Triggers: "fix bug", "error", "broken"
+- Fast TDD bug fixes
+- File: `skills/bugfix-quick/quick-fix.md`
+
+**5. test-writer** (Priority: MEDIUM)
+- Triggers: "add tests", "test coverage"
+- Comprehensive test generation
+- File: `skills/test-writer/test-generation.md`
+
+**6. code-reviewer** (Priority: HIGH)
+- Triggers: After implementation, "review code"
+- Multi-agent quality review
+- File: `skills/code-reviewer/quality-review.md`
+
+**7. jira-integration** (Priority: MEDIUM)
+- Triggers: JIRA ticket IDs (PROJ-1234)
+- Auto-fetches ticket details
+- File: `skills/jira-integration/ticket-management.md`
+
+**8. figma-integration** (Priority: MEDIUM)
+- Triggers: Figma URLs
+- Auto-extracts design components
+- File: `skills/figma-integration/design-extraction.md`
+
+### Skills vs Commands
+
+| Feature | Skills | Commands |
+|---------|--------|----------|
+| Invocation | Model-invoked (automatic) | User-invoked (manual) |
+| Trigger | Context matching | Explicit `/command` |
+| Discovery | LLM reasoning | User knowledge |
+| Example | "fix bug" → bugfix-quick | `/bugfix:quick` |
+
+**📚 Complete Skills Guide:** `skills/README.md`
+
+---
+
+**Version:** 5.1.0
+**Last Updated:** 2025-11-27
+**Major Update:** Added Skills system (8 auto-invoking capabilities)
+**Optimized:** Reduced from 1,472 lines to 620 lines (58% reduction)
 **Extracted Content:**
 - Agent Identification → `docs/AGENT_IDENTIFICATION.md`
 - Approval Gates → `docs/APPROVAL_GATES.md`
 - Detailed phase info → `docs/phases/`
 - Agent details → `README.md` and individual agent files
+- Skills system → `skills/README.md` and 8 skill files

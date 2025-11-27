@@ -50,7 +50,7 @@ export CCPM_DEFAULT_COVERAGE="85"
 - ✅ CI/CD configuration
 - ✅ Temporary overrides
 
-**Documentation:** `ENV_SETUP_GUIDE.md`
+**Documentation:** `INTEGRATION_SETUP_GUIDE.md`
 
 ---
 
@@ -103,6 +103,8 @@ team:
 **Location:** `ccpm/settings.local.json`
 
 **Purpose:** Claude Code permissions, auto-approval settings
+
+**📚 Detailed Guide:** See [`SETTINGS_GUIDE.md`](SETTINGS_GUIDE.md) for complete configuration reference
 
 **Example:**
 ```json
@@ -585,7 +587,7 @@ cat .claude/project-contexts/*/project-config.yaml 2>/dev/null | head -20
 
 ## Related Documentation
 
-- **ENV_SETUP_GUIDE.md** - Environment variables setup
+- **INTEGRATION_SETUP_GUIDE.md** - Environment variables and integration setup
 - **RULES_COMBINATION.md** - How rules are merged
 - **project-contexts/template/README.md** - Project context setup
 - **settings.example.json** - Settings template

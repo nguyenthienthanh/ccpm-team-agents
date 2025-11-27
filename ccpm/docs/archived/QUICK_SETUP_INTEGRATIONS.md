@@ -3,6 +3,11 @@
 **Version:** 1.0.0
 **Last Updated:** 2025-11-27
 
+> **⚠️ DEPRECATION NOTICE:**
+> This guide has been consolidated into [`INTEGRATION_SETUP_GUIDE.md`](INTEGRATION_SETUP_GUIDE.md) (Section 2).
+> **Please use the new consolidated guide** for the complete integration setup experience.
+> This file will be archived in a future release.
+
 ---
 
 ## ⚡ Super Quick Setup

@@ -55,8 +55,26 @@ touch "$PROJECT_ROOT/.claude/context/.gitkeep"
 echo "✅ Created .claude/ folder structure"
 ```
 
+**Resulting structure:**
+```
+.claude/
+├── CLAUDE.md                    # ⚠️ Created in step 6.3 (loader file)
+├── settings.local.json          # Created in step 6.2 (git-ignored)
+├── project-contexts/[project]/  # Created in step 4 (git-tracked)
+│   ├── project-config.yaml
+│   ├── conventions.md
+│   ├── rules.md
+│   └── examples.md
+├── logs/                        # Workflow logs (git-ignored)
+│   ├── workflows/
+│   ├── figma/
+│   ├── jira/
+│   └── audio/
+└── context/                     # Active contexts (git-ignored)
+```
+
 **Purpose:**
-- `.claude/` - Project-specific CCPM data
+- `.claude/CLAUDE.md` - **CRITICAL:** Tells Claude to load plugin CLAUDE.md
 - `.claude/project-contexts/` - Project context (conventions, rules, examples)
 - `.claude/logs/` - Workflow execution logs
 - `.claude/context/` - Active workflow contexts
@@ -395,30 +413,32 @@ echo "✅ .claude/settings.local.json already exists (keeping existing)"
 
 #### 6.3. Create Project `.claude/CLAUDE.md`
 
-**Create guide file for project's .claude/ folder:**
+**⚠️ CRITICAL: This file is required for Claude Code to load CCPM instructions!**
+
+**Location:** User's project `.claude/CLAUDE.md`
 
 ```bash
-# Get plugin directory and project root
+# Get plugin directory and project info
 PLUGIN_DIR="$HOME/.claude/plugins/marketplaces/ethan-ccpm/ccpm"
 PROJECT_ROOT=$(pwd)
+PROJECT_NAME=$(basename "$PROJECT_ROOT")
+TECH_STACK="[DETECTED_TECH_STACK]"  # From step 2
 
-# Copy project CLAUDE.md template
+# Copy template and replace placeholders
 cp "$PLUGIN_DIR/templates/project-claude.md" "$PROJECT_ROOT/.claude/CLAUDE.md"
 
-# Replace placeholders with detected values
-sed -i.bak "s/\[PROJECT_NAME\]/$DETECTED_PROJECT_NAME/g" "$PROJECT_ROOT/.claude/CLAUDE.md"
-sed -i.bak "s/\[PROJECT_TYPE\]/$DETECTED_PROJECT_TYPE/g" "$PROJECT_ROOT/.claude/CLAUDE.md"
-sed -i.bak "s/\[FRAMEWORK\]/$DETECTED_FRAMEWORK/g" "$PROJECT_ROOT/.claude/CLAUDE.md"
-rm "$PROJECT_ROOT/.claude/CLAUDE.md.bak"
+# Replace placeholders
+sed -i '' "s/\[PROJECT_NAME\]/$PROJECT_NAME/g" "$PROJECT_ROOT/.claude/CLAUDE.md"
+sed -i '' "s/\[TECH_STACK\]/$TECH_STACK/g" "$PROJECT_ROOT/.claude/CLAUDE.md"
 
-echo "✅ Created .claude/CLAUDE.md"
+echo "✅ Created .claude/CLAUDE.md (tells Claude to read plugin CLAUDE.md)"
 ```
 
-**Purpose:**
-- Explains what `.claude/` folder contains
-- Documents project context system
-- Quick reference for team members
-- Links to plugin documentation
+**Why This File is Critical:**
+- ✅ Claude Code loads `.claude/CLAUDE.md` first (highest priority)
+- ✅ This file tells Claude to read the plugin CLAUDE.md
+- ✅ Without this, Claude won't know about CCPM agents and workflows
+- ✅ Lightweight loader file (not duplicate of plugin CLAUDE.md)
 
 #### 6.4. Setup Project `.envrc`
 
@@ -573,15 +593,14 @@ Team Reviewers:
 📄 Files Created:
 
 ✅ .claude/ (project root) - Project-specific CCPM data folder
-   ├── CLAUDE.md                    - Guide for this folder
    ├── settings.local.json          - Claude Code permissions (git-ignored)
-   ├── .claude/project-contexts/
+   ├── project-contexts/
    │   └── [DETECTED_PROJECT_NAME]/
    │       ├── project-config.yaml  - Tech stack, team config
    │       ├── conventions.md       - File naming, structure, patterns
    │       ├── rules.md             - Project-specific rules
    │       └── examples.md          - Code examples from project
-   ├── .claude/logs/                        - Workflow execution logs (git-ignored)
+   ├── logs/                        - Workflow execution logs (git-ignored)
    │   ├── workflows/               - Phase deliverables
    │   ├── figma/                   - Figma design data
    │   ├── jira/                    - JIRA ticket data
@@ -840,12 +859,13 @@ ccpm-config.yaml → References .claude/project-contexts/[project]/
 **Project .claude/ folder:**
 ```
 .claude/
-├── CLAUDE.md                    # Guide file
 ├── settings.local.json          # Claude Code permissions (git-ignored)
-├── .claude/project-contexts/[project]/  # Project context (git-tracked)
-├── .claude/logs/                        # Workflow logs (git-ignored)
+├── project-contexts/[project]/  # Project context (git-tracked)
+├── logs/                        # Workflow logs (git-ignored)
 └── context/                     # Active contexts (git-ignored)
 ```
+
+**Note:** No project-level CLAUDE.md needed - plugin CLAUDE.md is auto-loaded globally
 
 This keeps all CCPM data organized in one place!
 

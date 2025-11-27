@@ -58,13 +58,14 @@ At each phase, review and approve:
 
 ## 🎯 Overview
 
-CCPM (Claude Code Project Management) is an AI-powered project management system that uses **14 specialized agents** working through a **9-phase structured workflow** with **TDD enforcement** and **quality gates**.
+CCPM (Claude Code Project Management) is an AI-powered project management system that uses **24 specialized agents** working through a **9-phase structured workflow** with **TDD enforcement**, **quality gates**, and **8 auto-invoking Skills**.
 
 ### What You Get
 
-- ✅ **14 Specialized Agents** - Auto-activated based on context
+- ✅ **24 Specialized Agents** - Auto-activated based on context
+- ✅ **8 Auto-Invoking Skills** - Model-invoked capabilities (NEW in v5.1.0)
 - ✅ **9-Phase Workflow** - From requirements to deployment
-- ✅ **45 Commands** - Full workflow control
+- ✅ **70 Commands** - Full workflow control
 - ✅ **TDD Enforcement** - Tests before code, always
 - ✅ **Quality Gates** - Human approval at every critical point
 - ✅ **Multi-Project Support** - Unlimited projects with auto-detection
@@ -74,6 +75,34 @@ CCPM (Claude Code Project Management) is an AI-powered project management system
 ---
 
 ## 🎨 Key Features
+
+### 🆕 Skills System (v5.1.0)
+
+**Auto-invoking capabilities** that activate based on context matching:
+
+```
+User: "Implement user profile from PROJ-1234"
+↓
+Auto-invokes:
+1. agent-detector → Selects mobile-react-native agent
+2. jira-integration → Fetches PROJ-1234 requirements
+3. project-context-loader → Loads your project conventions
+4. workflow-orchestrator → Executes 9-phase workflow
+```
+
+**8 Skills:**
+- **agent-detector** - ALWAYS runs first (selects specialized agent)
+- **workflow-orchestrator** - Complex features ("implement", "build")
+- **project-context-loader** - Loads project conventions
+- **bugfix-quick** - Fast bug fixes ("fix", "error")
+- **test-writer** - Test generation ("add tests")
+- **code-reviewer** - Quality review (after implementation)
+- **jira-integration** - Auto-fetches tickets (PROJ-1234)
+- **figma-integration** - Auto-extracts designs (Figma URLs)
+
+**No manual commands needed** - just describe what you want in natural language!
+
+**📚 See:** [`skills/README.md`](skills/README.md) for complete Skills documentation
 
 ### Intelligent Agent Selection
 Agents auto-activate based on your prompt:
@@ -226,6 +255,7 @@ document "feature"           # Just documentation (30 min)
 ### Usage Guides
 
 - **[docs/USAGE_GUIDE.md](docs/USAGE_GUIDE.md)** - Comprehensive usage guide with examples
+- **[docs/CLAUDE_FILE_ARCHITECTURE.md](docs/CLAUDE_FILE_ARCHITECTURE.md)** - How plugin & project CLAUDE.md files work together
 - **[docs/RULES_COMBINATION.md](docs/RULES_COMBINATION.md)** - How rules are combined (core + project)
 - **[docs/WORKFLOW_STATE_MANAGEMENT.md](docs/WORKFLOW_STATE_MANAGEMENT.md)** - Multi-workflow state management
 - **[docs/TOKEN_TRACKING.md](docs/TOKEN_TRACKING.md)** - Token usage and session management
@@ -233,11 +263,10 @@ document "feature"           # Just documentation (30 min)
 ### Integration Guides
 
 **Bash Script Integrations (JIRA, Figma, Slack, Confluence):**
-- **[docs/QUICK_SETUP_INTEGRATIONS.md](docs/QUICK_SETUP_INTEGRATIONS.md)** - 15-minute setup for all 4 services ⚡
-- **[docs/BASH_INTEGRATIONS_GUIDE.md](docs/BASH_INTEGRATIONS_GUIDE.md)** - Complete reference guide
+- **[docs/INTEGRATION_SETUP_GUIDE.md](docs/INTEGRATION_SETUP_GUIDE.md)** - Complete setup guide (quick start + detailed config) ⚡
+- **[docs/BASH_INTEGRATIONS_REFERENCE.md](docs/BASH_INTEGRATIONS_REFERENCE.md)** - Technical API reference for developers
 - **[docs/guides/JIRA_INTEGRATION.md](docs/guides/JIRA_INTEGRATION.md)** - JIRA integration details
 - **[docs/JIRA_WEBFETCH_SOLUTION.md](docs/JIRA_WEBFETCH_SOLUTION.md)** - Technical deep dive
-- **[docs/INTEGRATION_ENV_SETUP.md](docs/INTEGRATION_ENV_SETUP.md)** - Environment configuration
 
 ### Project Context
 
@@ -265,7 +294,7 @@ document "feature"           # Just documentation (30 min)
 
 ### Agents
 
-- **[agents/](agents/)** - All 14 specialized agents
+- **[agents/](agents/)** - All 24 specialized agents
   - [mobile-react-native.md](agents/mobile-react-native.md) - React Native expert
   - [web-vuejs.md](agents/web-vuejs.md) - Vue.js expert
   - [web-reactjs.md](agents/web-reactjs.md) - React expert
@@ -278,7 +307,7 @@ document "feature"           # Just documentation (30 min)
 ### Commands
 
 - **[commands/README.md](commands/README.md)** - Complete commands directory guide
-- **[commands/](commands/)** - All 45 commands organized by category
+- **[commands/](commands/)** - All 70 commands organized by category
 
 ### Settings & Configuration
 
@@ -341,7 +370,7 @@ export CONFLUENCE_API_TOKEN="your-confluence-token"
 export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/..."
 ```
 
-**📚 See:** [`docs/INTEGRATION_ENV_SETUP.md`](docs/INTEGRATION_ENV_SETUP.md) for complete setup guide
+**📚 See:** [`docs/INTEGRATION_SETUP_GUIDE.md`](docs/INTEGRATION_SETUP_GUIDE.md) for complete setup guide
 
 ### Auto-Approval Settings
 
@@ -369,8 +398,8 @@ Edit `settings.local.json` to auto-approve common commands:
 
 ```
 ccpm/
-├── agents/                # 14 specialized agents
-├── commands/              # 45 workflow commands
+├── agents/                # 24 specialized agents
+├── commands/              # 70 workflow commands
 │   ├── agent/            # Agent management (4)
 │   ├── bugfix/           # Bug fixing (3)
 │   ├── planning/         # Planning (3)
@@ -490,8 +519,8 @@ Set up JIRA, Confluence, Slack, and Figma integrations:
 setup:integrations
 ```
 
-**📚 See:** 
-- [`docs/INTEGRATION_ENV_SETUP.md`](docs/INTEGRATION_ENV_SETUP.md) - Complete setup guide
+**📚 See:**
+- [`docs/INTEGRATION_SETUP_GUIDE.md`](docs/INTEGRATION_SETUP_GUIDE.md) - Complete setup guide
 - [`commands/setup/integrations.md`](commands/setup/integrations.md) - Setup command
 
 ---
@@ -558,9 +587,9 @@ MIT License - See LICENSE for details
 
 ## 🎉 What Makes CCPM Different?
 
-✅ **14 Specialized Agents** - Auto-activated based on context  
-✅ **9-Phase Workflow** - From requirements to deployment  
-✅ **45 Commands** - Full workflow control  
+✅ **24 Specialized Agents** - Auto-activated based on context
+✅ **9-Phase Workflow** - From requirements to deployment
+✅ **70 Commands** - Full workflow control  
 ✅ **TDD Enforcement** - Tests before code, always enforced  
 ✅ **Quality Gates** - Human approval at every critical point  
 ✅ **Project-Aware** - Follows your project conventions and rules  

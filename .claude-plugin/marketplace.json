@@ -9,8 +9,8 @@
     {
       "name": "ccpm",
       "source": "./ccpm",
-      "description": "Claude Code Project Management - AI-powered development workflow with 24 specialized agents, 9-phase TDD workflow, and Bash integrations for JIRA, Figma, Slack, and Confluence",
-      "version": "5.0.0"
+      "description": "Claude Code Project Management - AI-powered development workflow with 24 specialized agents, 9-phase TDD workflow, 8 auto-invoking Skills, and Bash integrations for JIRA, Figma, Slack, and Confluence",
+      "version": "5.1.0"
     }
   ]
 }

@@ -1,0 +1,1 @@
+../../../scripts/figma-fetch.sh

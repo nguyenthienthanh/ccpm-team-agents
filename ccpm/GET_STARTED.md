@@ -70,11 +70,20 @@ workflow:status
 ---
 
 ### Test 2: Start Simple Task
+
+**🆕 Using Skills (Natural Language):**
+```
+Analyze the current component structure
+```
+
+**Or using command:**
 ```
 workflow:start Analyze the current component structure
 ```
 
-**Expected:** 
+**Expected:**
+- **agent-detector** skill auto-invokes → Selects appropriate agent
+- **workflow-orchestrator** skill auto-invokes → Starts 9-phase workflow
 - Claude analyzes your code
 - Shows Phase 1: Requirements Analysis
 - Displays approval gate

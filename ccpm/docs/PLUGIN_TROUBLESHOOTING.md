@@ -1,14 +1,23 @@
-# Plugin Setup Checklist
+# CCPM Plugin Troubleshooting Guide
 
 **Version:** 1.0.0
-**Purpose:** Ensure CCPM plugin works correctly after installation
+**Purpose:** Diagnose and fix CCPM plugin issues
 **Last Updated:** 2025-11-27
+
+**📚 For Installation:** See [`PLUGIN_INSTALLATION.md`](PLUGIN_INSTALLATION.md)
 
 ---
 
-## Issue: Plugin Not Working From Other Projects
+## Overview
 
-If you installed CCPM plugin but agent identification or other features aren't working, follow this checklist.
+If your CCPM plugin isn't working correctly, this guide will help you diagnose and fix common issues.
+
+**Common Symptoms:**
+- ❌ Agent identification not showing
+- ❌ Commands not available
+- ❌ Plugin not loading
+- ❌ Settings not being applied
+- ❌ Integrations failing
 
 ---
 
@@ -101,7 +110,7 @@ cp ~/.claude/plugins/marketplaces/ethan-ccpm/ccpm/.envrc.template .envrc
 # Then edit .envrc with your credentials
 ```
 
-**See:** `docs/ENV_SETUP_GUIDE.md` for detailed setup
+**See:** `docs/INTEGRATION_SETUP_GUIDE.md` for detailed setup
 
 ---
 
@@ -245,7 +254,7 @@ bash ~/.claude/plugins/marketplaces/ethan-ccpm/ccpm/scripts/jira-fetch.sh TEST-1
 ├── settings.example.json         # Template
 ├── .envrc.template               # Template for integrations
 ├── agents/                       # 24 agent definitions
-├── commands/                     # 67 commands
+├── commands/                     # 70 commands
 ├── rules/                        # Quality rules
 ├── docs/                         # Documentation
 └── scripts/                      # Integration scripts
@@ -359,28 +368,11 @@ chmod +x verify-ccpm-setup.sh
 
 ---
 
-## 🚀 Quick Setup (TL;DR)
+## 🚀 Need to Install from Scratch?
 
-```bash
-# 1. Install plugin (if not already)
-/plugin install ccpm@ethan-ccpm
+**See:** [`PLUGIN_INSTALLATION.md`](PLUGIN_INSTALLATION.md) for complete installation guide.
 
-# 2. Create settings.local.json
-cd ~/.claude/plugins/marketplaces/ethan-ccpm/ccpm/
-cp settings.example.json settings.local.json
-
-# 3. In your project, initialize CCPM
-cd /path/to/your/project
-# Then in Claude Code:
-# project:init
-
-# 4. (Optional) Set up integrations
-cp ~/.claude/plugins/marketplaces/ethan-ccpm/ccpm/.envrc.template .envrc
-nano .envrc  # Add your credentials
-
-# 5. Start using CCPM
-workflow:start "Your task description"
-```
+This troubleshooting guide assumes CCPM is already installed and you're experiencing issues.
 
 ---
 
@@ -413,7 +405,7 @@ If you've followed all steps and it still doesn't work:
 ## 📚 Related Documentation
 
 - **Plugin Installation:** `docs/PLUGIN_INSTALLATION.md`
-- **Environment Setup:** `docs/ENV_SETUP_GUIDE.md`
+- **Integration Setup:** `docs/INTEGRATION_SETUP_GUIDE.md`
 - **Configuration Loading:** `docs/CONFIG_LOADING_ORDER.md`
 - **Agent Identification:** `docs/AGENT_IDENTIFICATION.md`
 - **Main README:** `README.md`

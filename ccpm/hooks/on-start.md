@@ -230,7 +230,7 @@ After running project:init:
    • Edit .envrc in your project root to add integration tokens
    • Run 'direnv allow' to enable environment variables
    • Customize .claude/settings.local.json if needed
-   • Review .claude/CLAUDE.md for project guide
+   • Review .claude/CLAUDE.md (loader file that reads plugin CLAUDE.md)
 
 ╔════════════════════════════════════════════════════════════╗
 ║  Continue workflow anyway? (y/n)                          ║

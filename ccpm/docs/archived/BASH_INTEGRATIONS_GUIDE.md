@@ -4,6 +4,14 @@
 **Last Updated:** 2025-11-27
 **Purpose:** Native integrations for JIRA, Figma, Slack, and Confluence without MCP
 
+> **⚠️ DEPRECATION NOTICE:**
+> This guide has been consolidated into [`INTEGRATION_SETUP_GUIDE.md`](INTEGRATION_SETUP_GUIDE.md) (Sections 3-5).
+> **Please use the new consolidated guide** for setup and usage.
+>
+> **For technical/development details, see:** [`BASH_INTEGRATIONS_REFERENCE.md`](BASH_INTEGRATIONS_REFERENCE.md)
+>
+> This file will be archived in a future release.
+
 ---
 
 ## 🎯 Overview

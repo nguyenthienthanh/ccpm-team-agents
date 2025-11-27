@@ -20,7 +20,7 @@
 
 # ================================================
 # What to COMMIT:
-# ✅ .claude/CLAUDE.md
+# ✅ .claude/CLAUDE.md (loader file - tells Claude to read plugin)
 # ✅ .claude/project-contexts/[project]/ (all files)
 # ✅ .claude/logs/.gitkeep (preserve folder)
 #
