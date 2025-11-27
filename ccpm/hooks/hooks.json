@@ -77,7 +77,7 @@
           {
             "type": "command",
             "comment": "Play voiceover notification when Claude stops for approval",
-            "command": "bash scripts/voice-notify.sh 'Your attention is needed' 'approval-gate' 2>&1 || true"
+            "command": "PLUGIN_DIR=\"$HOME/.claude/plugins/marketplaces/ethan-ccpm/ccpm\"; if [ -f \"$PLUGIN_DIR/scripts/voice-notify.sh\" ]; then bash \"$PLUGIN_DIR/scripts/voice-notify.sh\" 'Your attention is needed' 'approval-gate' 2>&1 || true; fi"
           }
         ]
       }
@@ -88,7 +88,7 @@
           {
             "type": "command",
             "comment": "Play voiceover for critical notifications",
-            "command": "if echo \"$CLAUDE_NOTIFICATION\" | grep -qiE '(error|critical|failed)'; then bash scripts/voice-notify.sh 'Alert: Please check the notification' 'error' 2>&1 || true; fi"
+            "command": "PLUGIN_DIR=\"$HOME/.claude/plugins/marketplaces/ethan-ccpm/ccpm\"; if [ -f \"$PLUGIN_DIR/scripts/voice-notify.sh\" ] && echo \"$CLAUDE_NOTIFICATION\" | grep -qiE '(error|critical|failed)'; then bash \"$PLUGIN_DIR/scripts/voice-notify.sh\" 'Alert: Please check the notification' 'error' 2>&1 || true; fi"
           }
         ]
       }
