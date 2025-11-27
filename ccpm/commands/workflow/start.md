@@ -54,6 +54,7 @@ Based on task keywords, activate agents:
 - Refactoring/implementation strategy
 - Success criteria
 - Risk assessment
+- Initial estimation (story points, time, confidence)
 
 **Agent Actions:**
 - **PM Orchestrator:** Coordinate workflow
@@ -76,6 +77,11 @@ Based on task keywords, activate agents:
 ✅ Success Criteria:
    ✅ [Criterion 1]
    ✅ [Criterion 2]
+
+📊 Initial Estimation:
+   • Story Points: [X] points ([Complexity Level])
+   • Time Estimate: [Y-Z] hours (~[W] days)
+   • Confidence: [High/Medium/Low]
 
 ⏭️  Next Phase: Phase 2 - Technical Planning
 

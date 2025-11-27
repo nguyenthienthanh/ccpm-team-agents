@@ -105,6 +105,12 @@ Implement social media sharing feature for PH mobile app.
 Platforms: Facebook, Instagram, LinkedIn
 Content types: Image, Video, Text+Image
 
+📊 Initial Estimation:
+- Story Points: 8 points (Complex)
+- Time Estimate: 16-24 hours (~2-3 days)
+- Confidence: Medium
+- Complexity: High (3rd-party integrations, multi-platform support)
+
 ❓ Review and respond:
 - "approve" → Continue to Technical Planning
 - "reject: [reason]" → Restart phase

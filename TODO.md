@@ -33,6 +33,7 @@
 - ✅ Improved workflow configuration (skip_phases, timeout_minutes, etc.)
 - ✅ Documented agent scoring system with detailed comments
 - ✅ Moved file naming conventions to project context template
+- ✅ **NEW:** Story points missing from workflow execution - Fixed templates and agent files
 
 **Improvements Made:**
 
@@ -69,11 +70,21 @@
 - Added examples and detailed patterns
 - Conventions now project-specific as intended
 
+**Issue #13:** Story points missing from workflow execution:
+- **Problem:** Workflow showed "Effort: 5 minutes, Priority: High" instead of story points
+- **Root Cause:** Templates and agent files not updated with story points format
+- **Files Fixed:**
+  - `templates/requirements.md` - Added comprehensive estimation section
+  - `agents/pm-operations-orchestrator.md` - Updated Phase 1 approval gate format
+  - `commands/workflow/start.md` - Added story points to deliverables and approval gate
+- **Result:** Now shows story points, complexity, time estimate, and confidence level
+- **Reference:** Follows `docs/STORY_POINTS_GUIDE.md` Fibonacci scale
+
 ---
 
 ## 🔵 LOW PRIORITY / IMPROVEMENTS
 
-### 13. YAML Formatting
+### 14. YAML Formatting
 **File:** `ccpm/ccpm-config.yaml`
 **Issue:** Inconsistent spacing and indentation
 **Action:**
@@ -81,7 +92,7 @@
 - [ ] Add yamllint configuration
 - [ ] Run through YAML formatter
 
-### 14. Configuration Comments
+### 15. Configuration Comments
 **File:** `ccpm-config.example.yaml`
 **Issue:** Some settings lack explanation
 - Line 6: What is "mobile-react-native" vs other types?
@@ -91,7 +102,7 @@
 - [ ] Reference docs for complex settings
 - [ ] Add examples for common configurations
 
-### 15. Settings Example Improvements
+### 16. Settings Example Improvements
 **File:** `ccpm/settings.example.json`
 **Issue:** Missing some common permissions
 **Action:**
@@ -102,7 +113,7 @@
 - [ ] Add more examples in comments
 - [ ] Group permissions by category
 
-### 16. Environment Variable Naming
+### 17. Environment Variable Naming
 **File:** `ccpm/.envrc.template`
 **Issue:** Inconsistent naming patterns
 - Some use `PROJECT_*` prefix
@@ -116,7 +127,7 @@
 - [ ] Update all references
 - [ ] Document in ENV_SETUP_GUIDE.md
 
-### 17. Template Improvements
+### 18. Template Improvements
 **File:** `ccpm/project-contexts/template/project-config.yaml`
 **Issue:** Template is comprehensive but could be better
 **Action:**
@@ -125,7 +136,7 @@
 - [ ] Add validation rules
 - [ ] Create project type presets (mobile, backend, fullstack)
 
-### 18. Config Validation
+### 19. Config Validation
 **Issue:** No validation of config files on load
 **Action:**
 - [ ] Create JSON schema for settings files
@@ -137,7 +148,7 @@
 
 ## 📋 DOCUMENTATION IMPROVEMENTS
 
-### 19. Missing Guides
+### 20. Missing Guides
 **Action:**
 - [ ] Create `CONFIG_LOADING_ORDER.md`
 - [ ] Create `ENV_SETUP_GUIDE.md`
@@ -145,7 +156,7 @@
 - [ ] Create `PERMISSION_PATTERNS.md`
 - [ ] Update `QUICK_SETUP_INTEGRATIONS.md` with env var setup
 
-### 20. Configuration Examples
+### 21. Configuration Examples
 **Action:**
 - [ ] Add example configs for common project types:
   - React Native mobile app
@@ -159,14 +170,14 @@
 
 ## 🛠️ TOOLING & AUTOMATION
 
-### 21. Setup Scripts
+### 22. Setup Scripts
 **Action:**
 - [ ] Create `scripts/setup-config.sh` - Interactive config setup
 - [ ] Create `scripts/validate-config.sh` - Validate all configs
 - [ ] Create `scripts/migrate-config.sh` - Migrate from v4 to v5
 - [ ] Create `scripts/check-env.sh` - Check env var setup
 
-### 22. Config Management Commands
+### 23. Config Management Commands
 **Action:**
 - [ ] Add `config:init` - Interactive config setup
 - [ ] Add `config:validate` - Validate configs
@@ -178,14 +189,14 @@
 
 ## 🔒 SECURITY IMPROVEMENTS
 
-### 23. Secrets Management
+### 24. Secrets Management
 **Action:**
 - [ ] Add `.env.example` with all required vars but no values
 - [ ] Document secret rotation process
 - [ ] Add secrets scanning to CI/CD
 - [ ] Create `SECURITY_CHECKLIST.md`
 
-### 24. Permission Auditing
+### 25. Permission Auditing
 **Action:**
 - [ ] Add `permissions:audit` command
 - [ ] Log all dangerous operations

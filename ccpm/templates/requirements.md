@@ -85,3 +85,50 @@ Brief description of the feature.
 - [ ] Performance benchmarks met
 - [ ] Zero critical bugs
 
+---
+
+## Initial Estimation
+
+### Story Points
+**Total:** [X] story points (Fibonacci scale: 1, 2, 3, 5, 8, 13, 21)
+
+**Complexity Assessment:** [Trivial / Simple / Moderate / Complex / Very Complex / Extensive]
+
+**Breakdown:**
+- Phase 1 (Understand): [0.5] points
+- Phase 2 (Design): [1-2] points
+- Phase 3 (UI Breakdown): [0.5-1] points
+- Phase 4 (Plan Tests): [0.5-1] points
+- Phase 5a (Write Tests): [1-3] points
+- Phase 5b (Implementation): [2-8] points
+- Phase 5c (Refactor): [0.5-2] points
+- Phase 6 (Code Review): [0.25] points
+- Phase 7 (QA Verification): [0.25-1] points
+- Phase 8 (Documentation): [0.5-1] points
+- Phase 9 (Share): [0] points (automated)
+
+### Time Estimate
+**Range:** [Y-Z] hours (~[W] days)
+
+**Breakdown:**
+- Optimistic: [Y] hours
+- Most Likely: [Y+X] hours
+- Pessimistic: [Z] hours
+
+### Confidence Level
+**Level:** [High / Medium / Low]
+
+**Reasoning:**
+- Requirements clarity: [High/Medium/Low]
+- Technical familiarity: [High/Medium/Low]
+- Dependencies: [None/Few/Many]
+- Unknowns: [None/Some/Many]
+
+### Effort Components
+- **Effort (40%):** [How much work? How many files?]
+- **Complexity (30%):** [How hard is the logic? Edge cases?]
+- **Uncertainty (20%):** [How many unknowns? Familiar tech?]
+- **Risk (10%):** [What can go wrong? How critical?]
+
+**📚 Reference:** See `docs/STORY_POINTS_GUIDE.md` for detailed estimation guidance
+
