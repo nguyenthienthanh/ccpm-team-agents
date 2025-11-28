@@ -1,5 +1,5 @@
 {
-  "name": "ethan-ccpm",
+  "name": "aurafrog",
   "owner": {
     "name": "Nguyen Thien Thanh",
     "email": "nguyenthienthanh.kiyoshi@gmail.com",
@@ -7,10 +7,10 @@
   },
   "plugins": [
     {
-      "name": "ccpm",
-      "source": "./ccpm",
-      "description": "Claude Code Project Management - AI-powered development workflow with 24 specialized agents, 9-phase TDD workflow, 8 auto-invoking Skills, and Bash integrations for JIRA, Figma, Slack, and Confluence",
-      "version": "5.1.0"
+      "name": "aura-frog",
+      "source": "./aura-frog",
+      "description": "Aura Frog - A Claude Code plugin for AI-powered development with 24 specialized agents, 9-phase TDD workflow, and main character energy 🐸✨",
+      "version": "1.0.0"
     }
   ]
 }

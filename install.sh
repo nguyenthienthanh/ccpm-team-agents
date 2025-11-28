@@ -1,16 +1,18 @@
 #!/bin/bash
 
-# CCPM Installation Script
-# Version: 5.0.0-beta
-# Description: Install CCPM (Claude Code Project Management) into any project
+# Aura Frog Installation Script
+# Version: 1.0.0
+# Description: Install Aura Frog - A Claude Code plugin for AI-powered development! 🐸✨
+# Platform: Claude Code (https://docs.anthropic.com/en/docs/claude-code)
 #
 # ⚠️  DEPRECATED: This script is for manual installation only.
-# ⚠️  The recommended method is now the Claude Code plugin:
+# ⚠️  The recommended method is now the Claude Code plugin system:
 # ⚠️
-# ⚠️  /plugin marketplace add nguyenthienthanh/ccpm-team-agents
-# ⚠️  /plugin install ccpm@ethan-ccpm
+# ⚠️  In Claude Code terminal, run:
+# ⚠️  /plugin marketplace add nguyenthienthanh/aura-frog
+# ⚠️  /plugin install aura-frog@aurafrog
 # ⚠️
-# ⚠️  See: ccpm/docs/PLUGIN_INSTALLATION.md
+# ⚠️  See: aura-frog/docs/PLUGIN_INSTALLATION.md
 #
 # This script remains for backwards compatibility and legacy installations.
 
@@ -24,16 +26,17 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-CCPM_VERSION="5.0.0-beta"
+CCPM_VERSION="1.0.0"
 INSTALL_DIR=".claude"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Functions
 print_header() {
     echo ""
-    echo -e "${BLUE}╔══════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║${NC}  🚀 CCPM Installation Script v${CCPM_VERSION}               ${BLUE}║${NC}"
-    echo -e "${BLUE}╚══════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "🐸 Aura Frog Installation v${CCPM_VERSION}"
+    echo -e "A Plugin for Claude Code ✨"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
 }
 
@@ -108,10 +111,10 @@ detect_project_type() {
     echo "$project_type"
 }
 
-# Check if CCPM is already installed
+# Check if Aura Frog is already installed
 check_existing_installation() {
     if [ -d "$INSTALL_DIR" ]; then
-        print_warning "CCPM is already installed in this project"
+        print_warning "Aura Frog is already installed in this project"
         read -p "Do you want to reinstall/update? (y/n): " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -128,15 +131,18 @@ check_existing_installation() {
 install_core() {
     print_info "Installing core files..."
 
-    # Check if .claude directory exists in script directory
-    if [ ! -d "$SCRIPT_DIR/.claude" ]; then
-        print_error "Source .claude directory not found at $SCRIPT_DIR/.claude"
-        print_info "Please run this script from the CCPM repository root"
+    # Check if aura-frog directory exists in script directory
+    if [ ! -d "$SCRIPT_DIR/aura-frog" ]; then
+        print_error "Source aura-frog directory not found at $SCRIPT_DIR/aura-frog"
+        print_info "Please run this script from the Aura Frog repository root"
         exit 1
     fi
 
-    # Copy .claude directory
-    cp -r "$SCRIPT_DIR/.claude" "./"
+    # Create .claude directory structure
+    mkdir -p "$INSTALL_DIR"
+
+    # Copy core files from aura-frog to .claude
+    cp -r "$SCRIPT_DIR/aura-frog/"* "$INSTALL_DIR/"
 
     print_success "Core files installed"
 }
@@ -356,9 +362,9 @@ run_health_check() {
 # Show next steps
 show_next_steps() {
     echo ""
-    echo -e "${GREEN}╔══════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${GREEN}║${NC}  ✅ CCPM Installation Complete!                          ${GREEN}║${NC}"
-    echo -e "${GREEN}╚══════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${GREEN}✅ Aura Frog Installation Complete!${NC}"
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
     echo -e "${BLUE}📚 Next Steps:${NC}"
     echo ""
@@ -374,7 +380,7 @@ show_next_steps() {
     echo -e "${BLUE}📖 Documentation:${NC}"
     echo "  • Quick Start: $INSTALL_DIR/GET_STARTED.md"
     echo "  • Full Guide: $INSTALL_DIR/README.md"
-    echo "  • Integrations: $INSTALL_DIR/docs/BASH_INTEGRATIONS_GUIDE.md"
+    echo "  • Integrations: $INSTALL_DIR/docs/INTEGRATION_SETUP_GUIDE.md"
     echo ""
     echo -e "${BLUE}🔧 Useful Commands:${NC}"
     echo "  • agent:list          - List all available agents"

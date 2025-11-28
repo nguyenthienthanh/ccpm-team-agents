@@ -1,0 +1,22 @@
+{
+  "name": "aura-frog",
+  "version": "1.0.0",
+  "description": "Aura Frog - A Claude Code plugin for AI-powered development with 24 specialized agents, 9-phase TDD workflow, and main character energy 🐸✨",
+  "author": {
+    "name": "Nguyen Thien Thanh",
+    "email": "nguyenthienthanh.kiyoshi@gmail.com",
+    "url": "https://github.com/nguyenthienthanh"
+  },
+  "homepage": "https://github.com/nguyenthienthanh/aura-frog#readme",
+  "repository": "https://github.com/nguyenthienthanh/aura-frog",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "aura-frog",
+    "ai-agents",
+    "workflow",
+    "tdd",
+    "multi-agent"
+  ]
+}

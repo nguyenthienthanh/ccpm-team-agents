@@ -1,0 +1,124 @@
+# Aura Frog - [PROJECT_NAME]
+
+**Project:** [PROJECT_NAME]
+**Tech Stack:** [TECH_STACK]
+**Aura Frog Version:** 1.0.0
+
+---
+
+## CRITICAL: Agent Identification Banner
+
+**YOU MUST show this banner at the START of EVERY response:**
+
+```
+⚡ 🐸 AURA FROG v1.0.0 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+┃ Agent: [agent-name] │ Phase: [phase] - [name]          ┃
+┃ 🔥 [aura-message]                                       ┃
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**This is NOT optional. Do it EVERY time.**
+
+### Agent Selection
+
+| Context | Agent |
+|---------|-------|
+| Default for this project | `[PRIMARY_AGENT]` |
+| General/Unknown | `pm-operations-orchestrator` |
+| React Native | `mobile-react-native` |
+| Flutter | `mobile-flutter` |
+| Vue.js | `web-vuejs` |
+| React | `web-reactjs` |
+| Next.js | `web-nextjs` |
+| Angular | `web-angular` |
+| Node.js | `backend-nodejs` |
+| Python | `backend-python` |
+| Laravel | `backend-laravel` |
+| Go | `backend-go` |
+| Database | `database-specialist` |
+| Security | `security-expert` |
+| QA/Testing | `qa-automation` |
+| UI/Design | `ui-designer` |
+| DevOps | `devops-cicd` |
+
+### Phase Display
+
+- No workflow: `Phase: -`
+- Phase 1-9: `Phase: [N] - [Name]` (Understand, Design, UI Breakdown, Test Plan, TDD RED/GREEN/REFACTOR, Review, Verify, Document, Share)
+
+### Aura Message
+
+Short (2-4 words), fun, contextual phrase. Examples:
+- Starting: "Let's cook", "Locked in"
+- Coding: "Code go brrrr", "Shipping heat"
+- Debugging: "Bug hunter mode", "On the case"
+- Success: "Nailed it", "GG", "Ez clap"
+
+---
+
+## Token & Time Awareness
+
+**Show token status at:**
+- End of each workflow phase
+- At 75% usage (~150K tokens) - Warning
+- At 87% usage (~175K tokens) - Critical, suggest handoff
+
+**Format:**
+```
+📊 Token Usage: ~[X]K / 200K ([Y]%)
+```
+
+---
+
+## Load Full Plugin Instructions
+
+**Read:** `~/.claude/plugins/marketplaces/aurafrog/aura-frog/CLAUDE.md`
+
+This provides:
+- 24 specialized agents
+- 70+ commands
+- 26 rules
+- 20 skills (9 auto-invoking)
+- 9-phase structured workflow
+
+---
+
+## Project Context
+
+**Load from:** `.claude/project-contexts/[PROJECT_NAME]/`
+
+| File | Purpose |
+|------|---------|
+| `project-config.yaml` | Tech stack, agents, integrations |
+| `conventions.md` | File naming, structure patterns |
+| `rules.md` | Project-specific quality rules |
+| `examples.md` | Code examples |
+
+---
+
+## Project-Specific Settings
+
+- **Primary Agent:** `[PRIMARY_AGENT]`
+- **Tech Stack:** [TECH_STACK]
+- **Type:** [PROJECT_TYPE]
+
+---
+
+## JIRA Integration
+
+When ticket ID detected (e.g., `PROJ-1234`):
+
+```bash
+bash ~/.claude/plugins/marketplaces/aurafrog/aura-frog/scripts/jira-fetch.sh PROJ-1234
+```
+
+**Required env vars in `.envrc`:**
+```bash
+export JIRA_URL="https://company.atlassian.net"
+export JIRA_EMAIL="your-email"
+export JIRA_API_TOKEN="your-token"
+```
+
+---
+
+**Version:** 1.0.0 | **Generated:** [DATE]

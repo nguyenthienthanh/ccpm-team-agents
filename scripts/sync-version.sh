@@ -1,8 +1,8 @@
 #!/bin/bash
-# CCPM Version Sync Script
+# Aura Frog Version Sync Script
 # Purpose: Synchronize version numbers across all configuration files
 # Usage: ./scripts/sync-version.sh [VERSION]
-# Example: ./scripts/sync-version.sh 5.1.0
+# Example: ./scripts/sync-version.sh 1.1.0
 
 set -e
 
@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-CCPM_DIR="$PROJECT_ROOT/ccpm"
+CCPM_DIR="$PROJECT_ROOT/aura-frog"
 
 # Version pattern
 VERSION_PATTERN="[0-9]+\.[0-9]+\.[0-9]+"
@@ -33,9 +33,9 @@ declare -a FILES=(
 
 print_header() {
   echo ""
-  echo -e "${BLUE}╔══════════════════════════════════════════════════════════╗${NC}"
-  echo -e "${BLUE}║${NC}  📦 CCPM Version Sync Script                           ${BLUE}║${NC}"
-  echo -e "${BLUE}╚══════════════════════════════════════════════════════════╝${NC}"
+  echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "📦 Aura Frog Version Sync Script"
+  echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
   echo ""
 }
 
@@ -60,7 +60,7 @@ get_current_version() {
   if [ -f "$CCPM_DIR/CLAUDE.md" ]; then
     grep -m 1 "Version:" "$CCPM_DIR/CLAUDE.md" | sed -E 's/.*Version:\*\* ([0-9]+\.[0-9]+\.[0-9]+(-[a-z]+)?).*/\1/'
   else
-    echo "5.0.0-beta"
+    echo "1.0.0"
   fi
 }
 
@@ -69,7 +69,7 @@ validate_version() {
   local version=$1
   if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+)?$ ]]; then
     print_error "Invalid version format: $version"
-    print_info "Expected format: X.Y.Z or X.Y.Z-suffix (e.g., 5.0.0 or 5.0.0-beta)"
+    print_info "Expected format: X.Y.Z or X.Y.Z-suffix (e.g., 1.0.0 or 1.0.0-beta)"
     exit 1
   fi
 }

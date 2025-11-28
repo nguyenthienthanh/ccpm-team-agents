@@ -1,15 +1,19 @@
 <div align="center">
 
-# 🚀 CCPM Team Agents System
+![Aura Frog](assets/logo/github_banner.png)
 
-**Transform Claude Code into a Structured Development Platform**
+# 🐸 Aura Frog
 
-[![Version](https://img.shields.io/badge/version-5.2.0-blue.svg)](CHANGELOG.md)
+### A Plugin for [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
+
+> **Code with main character energy** ✨
+
+AI-powered development plugin for **Claude Code** with 24 specialized agents, 9-phase TDD workflow.
+
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](aura-frog/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-purple.svg)](https://claude.ai)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-purple.svg)](https://docs.anthropic.com/en/docs/claude-code)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-
-*AI-powered project management with multi-agent collaboration, TDD enforcement, and quality gates*
 
 [Quick Start](#-quick-start) • [Features](#-key-features) • [Documentation](#-documentation) • [Contributing](#-contributing)
 
@@ -23,14 +27,14 @@
 
 | **Agents** | **Skills** | **Rules** | **Phases** | **Commands** |
 |:----------:|:----------:|:---------:|:----------:|:------------:|
-| **24** | **15** | **21** | **9** | **70** |
+| **24** | **20** | **25** | **9** | **70** |
 
 </div>
 
 **What's Inside:**
 - 🤖 **24 Specialized Agents** — Mobile, Web, Backend, QA, Security, DevOps, and more
-- ⚡ **15 Skills** — 8 auto-invoking + 7 reference skills for specialized tasks
-- 📏 **21 Quality Rules** — YAGNI, DRY, error handling, accessibility, and more
+- ⚡ **20 Skills** — 9 auto-invoking + 11 reference skills for specialized tasks
+- 📏 **25 Quality Rules** — YAGNI, DRY, error handling, accessibility, and more
 - 🔄 **9-Phase Workflow** — From requirements to deployment with quality gates
 - 🎮 **70 Commands** — Full workflow control at your fingertips
 - 🔗 **4 Integrations** — JIRA, Figma, Slack, Confluence (via Bash scripts)
@@ -39,17 +43,25 @@
 
 ## ⚡ Quick Start
 
+### Prerequisites
+
+- **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** — Install Anthropic's CLI first
+- **Git** — Version control
+- **Node.js 18+** or your project's runtime
+
 ### Installation
 
-```bash
-# Step 1: Add CCPM Marketplace (one-time)
-/plugin marketplace add nguyenthienthanh/ccpm-team-agents
+In Claude Code terminal:
 
-# Step 2: Install CCPM Plugin
-/plugin install ccpm@ethan-ccpm
+```bash
+# Step 1: Add Aura Frog Marketplace (one-time)
+/plugin marketplace add nguyenthienthanh/aura-frog
+
+# Step 2: Install Aura Frog Plugin
+/plugin install aura-frog@aurafrog
 
 # Step 3: Create local settings (required)
-cd ~/.claude/plugins/marketplaces/ethan-ccpm/ccpm/
+cd ~/.claude/plugins/marketplaces/aurafrog/aura-frog/
 cp settings.example.json settings.local.json
 ```
 
@@ -70,18 +82,20 @@ At each phase, review and respond:
 - `reject: <reason>` — Restart current phase
 - `modify: <changes>` — Adjust deliverables
 
-**📚 See:** [GET_STARTED.md](GET_STARTED.md) for complete guide
+**📚 See:** [aura-frog/GET_STARTED.md](aura-frog/GET_STARTED.md) for complete guide
 
 ---
 
 ## 🎯 Overview
 
-CCPM (Claude Code Project Management) transforms Claude Code into a **structured development platform** with specialized agents, enforced TDD, and quality gates at every step.
+**Aura Frog** is a plugin for **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** (Anthropic's official CLI for Claude) that transforms it into a **structured development platform** with specialized agents, enforced TDD, and quality gates at every step.
 
-### Why CCPM?
+> **What is Claude Code?** Claude Code is Anthropic's agentic coding tool that operates in your terminal, understands your codebase, and helps you code faster through natural conversation. Aura Frog extends Claude Code with structured workflows and specialized agents.
 
-| Traditional Development | With CCPM |
-|------------------------|-----------|
+### Why Aura Frog?
+
+| Traditional Development | With Aura Frog |
+|------------------------|----------------|
 | Manual task management | AI-powered 9-phase workflow |
 | Generic AI responses | 24 specialized agents auto-selected |
 | Testing as afterthought | TDD enforced (RED → GREEN → REFACTOR) |
@@ -157,7 +171,7 @@ Agents auto-activate based on your prompt context:
 
 ---
 
-### ⚡ 15 Skills (8 Auto-Invoking + 7 Reference)
+### ⚡ 20 Skills (9 Auto-Invoking + 11 Reference)
 
 Skills activate automatically based on your message context — no commands needed:
 
@@ -182,7 +196,7 @@ Auto-invokes:
 | `jira-integration` | PROJ-1234 patterns | Auto-fetch ticket details |
 | `figma-integration` | Figma URLs | Extract design components |
 
-**Reference Skills (7):** refactor-expert, api-designer, performance-optimizer, migration-helper, phase-skipping, estimation, documentation (ADR/Runbook)
+**Reference Skills (11):** refactor-expert, api-designer, performance-optimizer, migration-helper, scalable-thinking, documentation, pm-expert, qa-expert, dev-expert, design-expert, nativewind-component-generator
 
 **📚 See:** [skills/README.md](skills/README.md) for complete documentation
 
@@ -214,7 +228,7 @@ Auto-invokes:
 
 ### 🧪 TDD Enforcement
 
-TDD is **non-negotiable** in CCPM:
+TDD is **non-negotiable** in Aura Frog:
 
 ```
 ┌─────────┐    ┌─────────┐    ┌───────────┐
@@ -232,9 +246,9 @@ TDD is **non-negotiable** in CCPM:
 
 ---
 
-### 📏 21 Quality Rules
+### 📏 25 Quality Rules
 
-CCPM enforces consistent quality through comprehensive rules:
+Aura Frog enforces consistent quality through comprehensive rules:
 
 <details>
 <summary><b>Code Quality Rules (8)</b></summary>
@@ -363,7 +377,7 @@ document "API endpoints"           # 30 min
 
 | Command | Description |
 |---------|-------------|
-| `project:init` | Initialize CCPM for project |
+| `project:init` | Initialize Aura Frog for project |
 | `project:detect` | Auto-detect project type |
 | `project:regen` | Re-generate context |
 | `agent:list` | Show all agents |
@@ -377,7 +391,7 @@ document "API endpoints"           # 30 min
 
 ## 🔗 Integrations
 
-CCPM includes native Bash script integrations:
+Aura Frog includes native Bash script integrations:
 
 | Integration | Purpose | Auto-Trigger |
 |-------------|---------|--------------|
@@ -430,25 +444,29 @@ workflow:start "Build https://figma.com/file/ABC123/Design"
 ## 🏗️ Architecture
 
 ```
-ccpm/
-├── agents/                    # 24 specialized agents
-├── skills/                    # 15 skills (8 auto + 7 reference)
-├── commands/                  # 70 workflow commands
-├── rules/                     # 21 quality rules
-├── docs/                      # Comprehensive documentation
-│   └── phases/               # 9 phase guides
-├── hooks/                     # Lifecycle hooks
-├── scripts/                   # Integration scripts
-└── templates/                 # Document templates
+aura-frog/                           # Repository root
+├── aura-frog/                       # Main plugin directory
+│   ├── agents/                      # 24 specialized agents
+│   ├── skills/                      # 20 skills (9 auto + 11 reference)
+│   ├── commands/                    # 70 workflow commands
+│   ├── rules/                       # 25 quality rules
+│   ├── docs/                        # Comprehensive documentation
+│   │   └── phases/                  # 9 phase guides
+│   ├── hooks/                       # Lifecycle hooks
+│   ├── scripts/                     # Integration scripts
+│   └── templates/                   # Document templates
+├── assets/                          # Logo and images
+├── scripts/                         # Development scripts
+└── README.md                        # This file
 ```
 
 ### Rules Priority
 
 ```
-Project Context > CCPM Core Rules > Generic Defaults
+Project Context > Aura Frog Core Rules > Generic Defaults
 ```
 
-Your project conventions always win over CCPM defaults.
+Your project conventions always win over Aura Frog defaults.
 
 ---
 
@@ -464,7 +482,7 @@ Contributions welcome! Here's how you can help:
 | 🟡 Medium | Docs | Improve documentation |
 | 🟢 Low | Templates | Add document templates |
 
-Submit issues or pull requests to [GitHub](https://github.com/nguyenthienthanh/ccpm-team-agents)
+Submit issues or pull requests to [GitHub](https://github.com/nguyenthienthanh/aura-frog)
 
 ---
 
@@ -484,9 +502,9 @@ MIT License — See [LICENSE](LICENSE) for details
 
 <div align="center">
 
-**Transform your development workflow with intelligent automation.**
+**Code with main character energy! 🐸✨**
 
-[Get Started](GET_STARTED.md) • [Documentation](docs/) • [Report Issue](https://github.com/nguyenthienthanh/ccpm-team-agents/issues)
+[Get Started](aura-frog/GET_STARTED.md) • [Documentation](aura-frog/docs/) • [Report Issue](https://github.com/nguyenthienthanh/aura-frog/issues)
 
 ---
 

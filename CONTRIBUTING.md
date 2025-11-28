@@ -1,6 +1,18 @@
-# Contributing to CCPM Team Agents
+<div align="center">
 
-Thank you for your interest in contributing to CCPM! This guide will help you get started.
+![Contributing to Aura Frog](assets/logo/mascot_coding_scene.png)
+
+# Contributing to Aura Frog
+
+### A Plugin for [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
+
+> **Code with main character energy** ✨
+
+</div>
+
+---
+
+Thank you for your interest in contributing to Aura Frog! This is a plugin for **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** (Anthropic's official CLI for Claude). This guide will help you get started.
 
 ---
 
@@ -29,18 +41,18 @@ This project follows the [Contributor Covenant](https://www.contributor-covenant
 
 ### Prerequisites
 
-- **Claude Code** - The AI-powered IDE this plugin is built for
-- **Git** - Version control
-- **Bash** - For running scripts (macOS/Linux/WSL)
-- **jq** - JSON processing (for integration scripts)
+- **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** — Anthropic's agentic coding CLI (this plugin is built for it)
+- **Git** — Version control
+- **Bash** — For running scripts (macOS/Linux/WSL)
+- **jq** — JSON processing (for integration scripts)
 
 ### Fork and Clone
 
 ```bash
 # Fork the repository on GitHub
 # Then clone your fork
-git clone https://github.com/YOUR-USERNAME/ccpm-team-agents.git
-cd ccpm-team-agents
+git clone https://github.com/YOUR-USERNAME/aura-frog.git
+cd aura-frog
 ```
 
 ---
@@ -51,16 +63,16 @@ cd ccpm-team-agents
 
 ```bash
 # In Claude Code, add your local repository as a marketplace
-/plugin marketplace add /path/to/your/ccpm-team-agents
+/plugin marketplace add /path/to/your/aura-frog
 
 # Install from your local marketplace
-/plugin install ccpm@local-dev
+/plugin install aura-frog@local-dev
 ```
 
 ### 2. Create Local Settings
 
 ```bash
-cd ccpm
+cd aura-frog
 cp settings.example.json settings.local.json
 ```
 
@@ -76,25 +88,25 @@ cp .envrc.template .envrc
 ## Project Structure
 
 ```
-ccpm-team-agents/
-├── ccpm/                       # Main plugin directory
-│   ├── CLAUDE.md              # Core AI instructions
-│   ├── README.md              # User documentation
-│   ├── ccpm-config.yaml       # Configuration file
-│   ├── agents/                # 24 specialized agents
-│   ├── commands/              # 67+ workflow commands
-│   ├── docs/                  # Documentation
-│   ├── rules/                 # Quality rules
-│   ├── skills/                # Reusable skills
-│   ├── templates/             # Document templates
-│   ├── hooks/                 # Workflow hooks
-│   ├── scripts/               # Bash integration scripts
-│   └── project-contexts/      # Project templates
-├── scripts/                   # Development scripts
-│   └── sync-version.sh       # Version synchronization
-├── archive/                   # Archived documentation
-├── CONTRIBUTING.md           # This file
-└── README.md                 # Project overview
+aura-frog/                           # Repository root
+├── aura-frog/                       # Main plugin directory
+│   ├── CLAUDE.md                    # Core AI instructions
+│   ├── README.md                    # User documentation
+│   ├── ccpm-config.yaml             # Configuration file
+│   ├── agents/                      # 24 specialized agents
+│   ├── commands/                    # 67+ workflow commands
+│   ├── docs/                        # Documentation
+│   ├── rules/                       # Quality rules
+│   ├── skills/                      # Reusable skills
+│   ├── templates/                   # Document templates
+│   ├── hooks/                       # Workflow hooks
+│   ├── scripts/                     # Bash integration scripts
+│   └── project-contexts/            # Project templates
+├── assets/                          # Logo and images
+├── scripts/                         # Development scripts
+│   └── sync-version.sh              # Version synchronization
+├── CONTRIBUTING.md                  # This file
+└── README.md                        # Project overview
 ```
 
 ---
@@ -156,27 +168,27 @@ Use the version sync script to update versions across all files:
 
 ```bash
 # Update to new version
-./scripts/sync-version.sh 5.1.0
+./scripts/sync-version.sh 1.0.0
 
 # Review changes
 git diff
 
 # Commit
-git commit -am "chore: Bump version to 5.1.0"
+git commit -am "chore: Bump version to 1.0.0"
 ```
 
 ### Files with Version Numbers
 
 The sync script updates:
-- `ccpm/CLAUDE.md`
-- `ccpm/README.md`
-- `ccpm/ccpm-config.yaml`
-- `ccpm/GET_STARTED.md`
-- `ccpm/TODO.md`
+- `aura-frog/CLAUDE.md`
+- `aura-frog/README.md`
+- `aura-frog/ccpm-config.yaml`
+- `aura-frog/GET_STARTED.md`
+- `aura-frog/TODO.md`
 - `README.md`
 
 **Manual Update:**
-- `ccpm/CHANGELOG.md` - Add release notes
+- `aura-frog/CHANGELOG.md` - Add release notes
 
 ---
 
@@ -204,22 +216,22 @@ The sync script updates:
 
 ### Documentation Types
 
-1. **User Documentation** (`ccpm/docs/`)
+1. **User Documentation** (`aura-frog/docs/`)
    - Setup guides
    - Integration guides
    - Troubleshooting
 
-2. **Developer Documentation** (`ccpm/docs/`)
+2. **Developer Documentation** (`aura-frog/docs/`)
    - Technical references
    - API documentation
    - Architecture guides
 
-3. **Agent Documentation** (`ccpm/agents/`)
+3. **Agent Documentation** (`aura-frog/agents/`)
    - Agent capabilities
    - Configuration
    - Examples
 
-4. **Command Documentation** (`ccpm/commands/`)
+4. **Command Documentation** (`aura-frog/commands/`)
    - Command usage
    - Parameters
    - Examples
@@ -227,8 +239,8 @@ The sync script updates:
 ### Updating Documentation
 
 When adding features:
-1. Update relevant guide in `ccpm/docs/`
-2. Update `ccpm/README.md` if user-facing
+1. Update relevant guide in `aura-frog/docs/`
+2. Update `aura-frog/README.md` if user-facing
 3. Add examples to appropriate files
 4. Update CHANGELOG.md
 
@@ -247,7 +259,7 @@ When adding features:
 **Test Checklist:**
 ```bash
 # 1. Plugin installation
-/plugin install ccpm@local-dev
+/plugin install aura-frog@local-dev
 
 # 2. Project initialization
 cd ~/test-project
@@ -260,7 +272,7 @@ workflow:start "Test feature"
 agent:list
 
 # 5. Integration scripts (if applicable)
-bash ccpm/scripts/jira-fetch.sh TEST-123
+bash aura-frog/scripts/jira-fetch.sh TEST-123
 ```
 
 ### Integration Testing
@@ -274,7 +286,7 @@ export JIRA_EMAIL="test@example.com"
 export JIRA_API_TOKEN="test-token"
 
 # Run script
-bash ccpm/scripts/jira-fetch.sh TEST-123
+bash aura-frog/scripts/jira-fetch.sh TEST-123
 
 # Verify output format
 ```
@@ -309,7 +321,7 @@ We use **Conventional Commits**:
 feat(agents): Add Python backend agent
 fix(workflow): Fix approval gate auto-continue
 docs(integration): Update JIRA setup guide
-chore(deps): Bump version to 5.1.0
+chore(deps): Bump version to 1.0.0
 ```
 
 ### Pull Request Process
@@ -362,7 +374,7 @@ Brief description of changes
 1. **Update Version**
 ```bash
 # Sync version across files
-./scripts/sync-version.sh 5.1.0
+./scripts/sync-version.sh 1.0.0
 
 # Update CHANGELOG.md
 # Add release date and notes
@@ -371,8 +383,8 @@ Brief description of changes
 2. **Commit and Tag**
 ```bash
 git add .
-git commit -m "chore: Release v5.1.0"
-git tag v5.1.0
+git commit -m "chore: Release v1.0.0"
+git tag v1.0.0
 git push origin main --tags
 ```
 
@@ -401,8 +413,8 @@ git push origin main --tags
 ## Getting Help
 
 **Questions?**
-- 📖 Read the [documentation](ccpm/docs/)
-- 🐛 Check [existing issues](https://github.com/nguyenthienthanh/ccpm-team-agents/issues)
+- 📖 Read the [documentation](aura-frog/docs/)
+- 🐛 Check [existing issues](https://github.com/nguyenthienthanh/aura-frog/issues)
 - 💬 Open a new issue for discussion
 
 **Found a Bug?**
@@ -432,6 +444,6 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-**Thank you for contributing to CCPM Team Agents!** 🚀
+**Thank you for contributing to Aura Frog Team Agents!** 🚀
 
 Your contributions help make AI-powered project management better for everyone.
