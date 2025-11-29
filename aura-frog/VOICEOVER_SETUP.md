@@ -1,10 +1,10 @@
-# 🔊 Voiceover Setup Guide
+# Voiceover Setup Guide (Streaming)
 
-**Quick setup for Aura Frog voiceover notifications**
+**Quick setup for Aura Frog voiceover notifications with realtime streaming**
 
 ---
 
-## ⚡ Quick Setup (1 command)
+## Quick Setup (1 command)
 
 ### Run Setup Script
 
@@ -14,54 +14,89 @@ bash scripts/setup-voice.sh
 ```
 
 **What it does:**
-1. Asks for your ElevenLabs API key
-2. Tests the API key
-3. Lets you choose a voice (optional)
-4. Saves to `~/.claude/aura-frog-voice-config`
-5. Tests voice generation
-6. **Works automatically with hooks!**
+1. Checks for streaming audio player (ffplay, mpv, sox)
+2. Asks for your ElevenLabs API key
+3. Tests the API key
+4. Lets you choose a voice (optional)
+5. Saves to `~/.claude/aura-frog-voice-config`
+6. Tests streaming voice playback
+7. **Works automatically with hooks!**
 
 **Setup process:**
 ```
-🔊 Aura Frog Voiceover Notification Setup
-=====================================
+Aura Frog Voiceover Notification Setup (Streaming)
+==================================================
 
-📋 Step 1: ElevenLabs API Key
+Step 0: Checking streaming audio player...
+   ffplay (FFmpeg) - Found (recommended)
+
+Step 1: ElevenLabs API Key
    Sign up at: https://elevenlabs.io
    Get API key: https://elevenlabs.io/app/settings/api-keys
 
 Enter your ElevenLabs API Key: sk_...
 
-🧪 Testing API key...
-✅ API key is valid!
+Testing API key...
+API key is valid!
 
-📋 Step 2: Voice Selection (Optional)
+Step 2: Voice Selection (Optional)
    Press Enter for default voice (Rachel)
    Or enter a custom voice ID
 
 Enter Voice ID (or press Enter for default): [Enter]
 Using default voice: Rachel
 
-💾 Saving configuration...
-✅ Configuration saved to: ~/.claude/aura-frog-voice-config
+Saving configuration...
+Configuration saved to: ~/.claude/aura-frog-voice-config
 
-🎤 Testing voice generation...
-🔊 Generating voiceover...
-✅ Voiceover saved
-🔊 Playing notification...
+Testing realtime streaming voice generation...
+Streaming voiceover...
+Voiceover complete
 
-✅ Setup complete!
+Setup complete!
+
+Key benefits of streaming:
+   No file creation (audio plays directly)
+   Lower latency (starts immediately)
+   No cleanup needed
 ```
 
 **Free Tier:**
 - 10,000 characters/month
-- ≈200 notifications/month
+- ~200 notifications/month
 - No credit card required
 - Sign up: https://elevenlabs.io
 
 ---
 
-## ✅ Test Your Setup
+## Prerequisites
+
+### Streaming Audio Player (Required)
+
+Aura Frog uses realtime streaming - audio plays directly without creating files.
+
+**Install one of these (macOS):**
+```bash
+brew install ffmpeg  # Recommended - includes ffplay
+brew install mpv     # Alternative
+brew install sox     # Fallback
+```
+
+**Linux (Debian/Ubuntu):**
+```bash
+sudo apt install ffmpeg  # Recommended
+sudo apt install mpv     # Alternative
+```
+
+### ElevenLabs API Key (Required)
+
+1. Sign up at https://elevenlabs.io
+2. Go to Settings → API Keys
+3. Create and copy your API key
+
+---
+
+## Test Your Setup
 
 Run the test script:
 
@@ -72,75 +107,100 @@ bash scripts/test-voice.sh
 
 **Expected output:**
 ```
-🔊 Aura Frog Voiceover Notification Test
-====================================
+Aura Frog Voiceover Notification Test (Streaming)
+=================================================
 
-✅ ELEVENLABS_API_KEY is set
-✅ voice-notify.sh script found
-🧪 Testing ElevenLabs API connection...
-✅ API connection successful (HTTP 200)
-🎤 Testing voice generation...
-🔊 Generating voiceover...
-✅ Voiceover saved: .claude/logs/audio/general_20251127_143022.mp3
-🔊 Playing notification...
-✅ Voice generation successful!
+Loading configuration from: ~/.claude/aura-frog-voice-config
+
+ELEVENLABS_API_KEY is set
+   Key: sk_12345678...abcd
+
+Checking streaming audio players...
+   ffplay (FFmpeg) - Available (recommended)
+
+voice-notify.sh script found
+
+Testing ElevenLabs API connection...
+API connection successful (HTTP 200)
+
+Testing realtime streaming voice generation...
+   Message: 'This is a test of the streaming voice system'
+   Player: ffplay
+
+Streaming voiceover...
+Voiceover complete
+
+Streaming voice generation successful!
+
+Key benefits of streaming:
+   - No file creation (plays directly)
+   - Lower latency (starts playing faster)
+   - No cleanup needed
+
+Setup complete! Voiceover notifications are working.
 ```
 
-**You should hear:** "This is a test notification"
+**You should hear:** "This is a test of the streaming voice system"
 
 ---
 
-## 🎯 How It Works in Workflows
+## How It Works in Workflows
 
 Once configured, voiceover automatically plays when:
 
 1. **Approval Gates** - Phase completes, waiting for approval
-   - Audio: "Attention please. Your attention is needed. Your approval is required to continue."
+   - Audio: "Hey, I need your input to continue."
 
 2. **Critical Errors** - Errors occur during workflow
-   - Audio: "Alert. [error message]. Please review the error and provide guidance."
+   - Audio: "Heads up, something went wrong."
 
 **No commands needed** - completely automatic!
 
+**Streaming benefits:**
+- No files created
+- Lower latency
+- No cleanup needed
+
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
+
+### Issue: "No streaming audio player found"
+
+**Solution:**
+```bash
+# Install ffmpeg (recommended)
+brew install ffmpeg
+
+# Verify ffplay works
+ffplay -version
+```
 
 ### Issue: "ELEVENLABS_API_KEY not set"
 
 **Solution:**
 ```bash
-# Check if set
-echo $ELEVENLABS_API_KEY
+# Run setup script to configure
+bash scripts/setup-voice.sh
 
-# If empty, add to environment (see Step 2 above)
-export ELEVENLABS_API_KEY="your_key"
-
-# Verify
-echo $ELEVENLABS_API_KEY
+# Or check config file
+cat ~/.claude/aura-frog-voice-config
 ```
 
 ### Issue: "No sound plays"
 
 **Check 1: System volume**
+- Ensure your system is not muted
+
+**Check 2: Test streaming player**
 ```bash
-# macOS: Check system volume is not muted
-```
-
-**Check 2: Test audio manually**
-```bash
-# macOS
-afplay ~/.claude/plugins/marketplaces/aurafrog/aura-frog/.claude/logs/audio/general_*.mp3
-
-# Linux (install mpg123 if needed)
-mpg123 ~/.claude/plugins/marketplaces/aurafrog/aura-frog/.claude/logs/audio/general_*.mp3
-
-# Windows
-start %USERPROFILE%\.claude\plugins\marketplaces\aurafrog\aura-frog\.claude\logs\audio\general_*.mp3
+# Test ffplay directly (download any mp3)
+curl -s "https://www.soundjay.com/button/beep-01a.mp3" | ffplay -nodisp -autoexit -i pipe:0
 ```
 
 **Check 3: Verify API key is valid**
 ```bash
+source ~/.claude/aura-frog-voice-config
 curl -X GET "https://api.elevenlabs.io/v1/voices" \
   -H "xi-api-key: $ELEVENLABS_API_KEY"
 
@@ -152,8 +212,7 @@ curl -X GET "https://api.elevenlabs.io/v1/voices" \
 **Solution:**
 1. Verify API key at https://elevenlabs.io/app/settings/api-keys
 2. Copy the key again (may have expired)
-3. Update environment variable
-4. Restart terminal/IDE
+3. Re-run setup: `bash scripts/setup-voice.sh`
 
 ### Issue: "HTTP 429 - Rate limit exceeded"
 
@@ -162,28 +221,21 @@ curl -X GET "https://api.elevenlabs.io/v1/voices" \
 2. Free tier limit: 10,000 characters/month
 3. Wait until next month or upgrade plan
 
-### Issue: "File not found: scripts/voice-notify.sh"
-
-**Solution:**
-```bash
-# The hook uses absolute path now
-# Verify file exists:
-ls -la ~/.claude/plugins/marketplaces/aurafrog/aura-frog/scripts/voice-notify.sh
-
-# Should show: -rwxr-xr-x (executable)
-```
-
 ---
 
-## 🎨 Customization
+## Customization
 
 ### Change Voice
 
 ```bash
-# Add to environment
-export ELEVENLABS_VOICE_ID="21m00Tcm4TlvDq8ikWAM"  # Rachel (default)
+# Re-run setup to change voice
+bash scripts/setup-voice.sh
 
-# Other voices:
+# Or edit config directly
+nano ~/.claude/aura-frog-voice-config
+
+# Popular voices:
+# - 21m00Tcm4TlvDq8ikWAM (Rachel - calm, default)
 # - EXAVITQu4vr4xnSDxMaL (Bella - warm)
 # - ErXwobaYiN019PkySvjV (Antoni - deep)
 # - MF3mGyEYCl7XYWbV9V6O (Elli - energetic)
@@ -196,23 +248,23 @@ export ELEVENLABS_VOICE_ID="21m00Tcm4TlvDq8ikWAM"  # Rachel (default)
 
 **Temporarily:**
 ```bash
-# Remove API key from environment
-unset ELEVENLABS_API_KEY
+# Rename or remove config file
+mv ~/.claude/aura-frog-voice-config ~/.claude/aura-frog-voice-config.bak
 
 # Script will gracefully skip
 ```
 
 **Permanently:**
-Remove the Stop and Notification hooks from `hooks/hooks.json`
+Remove the Stop hook from `hooks/hooks.json`
 
 ---
 
-## 📊 Usage & Cost
+## Usage & Cost
 
 **Free Tier:**
 - 10,000 characters/month
-- Each notification ≈ 50 characters
-- ≈ **200 notifications/month free**
+- Each notification ~ 50 characters
+- ~ **200 notifications/month free**
 
 **Paid Plans:**
 - Starter: $5/month - 30,000 characters (600 notifications)
@@ -222,37 +274,25 @@ Remove the Stop and Notification hooks from `hooks/hooks.json`
 
 ---
 
-## 🆘 Still Not Working?
+## Debug
 
-1. **Run test script:**
-   ```bash
-   bash scripts/test-voice.sh
-   ```
+Run debug script for detailed diagnostics:
 
-2. **Check plugin installation:**
-   ```bash
-   /plugin list | grep aura-frog
-   ```
+```bash
+cd ~/.claude/plugins/marketplaces/aurafrog/aura-frog
+bash scripts/debug-voice.sh
+```
 
-3. **Verify hooks:**
-   ```bash
-   cat ~/.claude/plugins/marketplaces/aurafrog/aura-frog/hooks/hooks.json | grep -A5 "Stop"
-   ```
-
-4. **Manual test:**
-   ```bash
-   cd ~/.claude/plugins/marketplaces/aurafrog/aura-frog
-   bash scripts/voice-notify.sh "Manual test" "general"
-   ```
-
-5. **Check logs:**
-   ```bash
-   ls -la .claude/logs/audio/
-   ```
+This checks:
+1. Streaming audio player availability
+2. Config file and API key
+3. API authentication
+4. Account quota
+5. Realtime streaming test
 
 ---
 
-## ✅ Setup Complete!
+## Setup Complete!
 
 Once you hear the test notification, voiceover is ready!
 
@@ -260,10 +300,10 @@ Once you hear the test notification, voiceover is ready!
 ```
 workflow:start "Test task"
 # Wait for approval gate
-# Listen for: "Your attention is needed. Your approval is required to continue."
+# Listen for: "Hey, I need your input to continue."
 ```
 
-**Never miss an approval gate again!** 🎉
+**Never miss an approval gate again!**
 
 ---
 

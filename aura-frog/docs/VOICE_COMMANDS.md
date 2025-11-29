@@ -1,33 +1,46 @@
-# Voice Commands Reference
+# Voice Commands Reference (Streaming Mode)
 
 **Aura Frog Feature:** ElevenLabs AI Voice Operations
 **Version:** 1.0.0
-**Last Updated:** 2025-11-26
+**Mode:** Realtime Streaming (no file creation)
+**Last Updated:** 2025-11-29
 
 ---
 
-## 🎙️ Quick Reference
+## Quick Reference
 
 ### Essential Commands
 
 | Command | Purpose | Example |
 |---------|---------|---------|
-| `voice:test` | Test voice generation | `voice:test` |
-| `voice:narrate` | Convert text to speech | `voice:narrate "Hello world"` |
-| `voice:narrate:file` | Narrate from file | `voice:narrate:file README.md` |
+| `voice:test` | Test streaming voice | `voice:test` |
+| `voice:narrate` | Stream text to speech | `voice:narrate "Hello world"` |
 | `voice:settings` | View/edit settings | `voice:settings` |
 | `voice:voices` | List available voices | `voice:voices` |
-| `narrate all` | Narrate all docs (Phase 8) | `narrate all` |
-| `narrate summary` | Narrate summary only | `narrate summary` |
-| `skip narration` | Skip audio generation | `skip narration` |
 
 ---
 
-## 📖 Detailed Command Reference
+## How Streaming Works
+
+Aura Frog uses **realtime streaming** for voice notifications:
+
+1. Text is sent to ElevenLabs streaming API
+2. Audio is piped directly to your audio player
+3. **No files are created** - audio plays immediately
+4. Lower latency than file-based approach
+
+**Supported Players (priority order):**
+- `ffplay` (FFmpeg) - Recommended
+- `mpv` - Alternative
+- `sox/play` - Fallback
+
+---
+
+## Detailed Command Reference
 
 ### voice:test
 
-Test voice generation with sample text.
+Test streaming voice generation.
 
 **Usage:**
 ```
@@ -36,15 +49,21 @@ voice:test
 
 **Output:**
 ```
-🎙️ Testing Voice Generation
+Aura Frog Voiceover Notification Test (Streaming)
+=================================================
 
-Sample Text: "Hello! This is a test..."
-Generating audio...
-✅ Success!
+ELEVENLABS_API_KEY is set
+Checking streaming audio players...
+   ffplay (FFmpeg) - Available (recommended)
 
-Generated: .claude/logs/audio/voice_test_2025-11-26.mp3
-Duration: 8 seconds
-Voice quality: ⭐⭐⭐⭐⭐
+Testing realtime streaming voice generation...
+   Message: 'This is a test of the streaming voice system'
+   Player: ffplay
+
+Streaming voiceover...
+Voiceover complete
+
+Streaming voice generation successful!
 ```
 
 **When to use:**
@@ -56,25 +75,21 @@ Voice quality: ⭐⭐⭐⭐⭐
 
 ### voice:narrate
 
-Convert text to speech directly.
+Stream text to speech directly.
 
 **Usage:**
 ```
 voice:narrate <text>
 voice:narrate <text> --voice=<voice-id>
-voice:narrate <text> --language=<lang-code>
 ```
 
 **Examples:**
 ```bash
-# Basic narration
+# Basic narration (streams directly)
 voice:narrate "The implementation is complete and all tests are passing."
 
 # With specific voice
 voice:narrate "This is important" --voice="Antoni"
-
-# Multilingual
-voice:narrate "Hola, ¿cómo estás?" --language="es"
 
 # With emotion tags
 voice:narrate "Great news [laughs]! The feature is done."
@@ -85,117 +100,43 @@ voice:narrate "This is [whispers] confidential information."
 
 **Parameters:**
 - `--voice=<id>` - Voice ID (default: Rachel)
-- `--language=<code>` - Language code (auto-detected if not specified)
-- `--output=<path>` - Custom output path
 
-**Output:**
-```
-🎙️ Generating voice narration...
-
-Voice: Rachel (default)
-Language: English
-Duration: ~12 seconds
-
-✅ Generated: .claude/logs/audio/narration_2025-11-26_143022.mp3
-
-Preview: [Audio waveform shown]
-
-Play: open .claude/logs/audio/narration_2025-11-26_143022.mp3
-```
-
----
-
-### voice:narrate:file
-
-Narrate contents of a file.
-
-**Usage:**
-```
-voice:narrate:file <file-path>
-voice:narrate:file <file-path> --voice=<voice-id>
-voice:narrate:file <file-path> --language=<lang>
-```
-
-**Examples:**
-```bash
-# Narrate markdown file
-voice:narrate:file README.md
-
-# Narrate with specific voice
-voice:narrate:file IMPLEMENTATION.md --voice="Josh"
-
-# Narrate in Spanish
-voice:narrate:file GUIA.md --language="es"
-```
-
-**Supported File Types:**
-- `.md` - Markdown
-- `.txt` - Plain text
-- `.rst` - reStructuredText
-
-**File Processing:**
-- Strips markdown formatting
-- Removes code blocks (or reads them as "code block")
-- Converts headings to spoken form
-- Maintains paragraph breaks
-
-**Output:**
-```
-🎙️ Generating narration for README.md
-
-File: README.md
-Size: 3.2 KB
-Words: ~850
-Estimated duration: ~5 minutes
-
-Generating audio...
-✅ Generated: .claude/logs/audio/readme_narration.mp3
-
-Duration: 5:24
-Size: 2.1 MB
-```
+**Note:** Audio streams directly to your speakers - no files are created.
 
 ---
 
 ### voice:settings
 
-View and configure voice settings.
+View voice settings and API status.
 
 **Usage:**
 ```
 voice:settings
-voice:settings:edit
 ```
 
 **Output:**
 ```
-🎙️ ElevenLabs Voice Settings
+ElevenLabs Voice Settings (Streaming Mode)
 
-Current Configuration:
-  ✅ Enabled: true
-  🎤 Voice: Rachel (21m00Tcm4TlvDq8ikWAM)
-  🌍 Model: eleven_multilingual_v2
-  📊 Stability: 0.5
-  🎯 Similarity: 0.75
-  🎨 Style: 0
+Configuration:
+  Enabled: true
+  Voice: Rachel (21m00Tcm4TlvDq8ikWAM)
+  Model: eleven_turbo_v2_5
+  Stability: 0.5
+  Similarity: 0.75
 
-Features:
-  ❌ Workflow Notifications: disabled
-  ✅ Documentation Narration: enabled
-  ❌ Approval Prompts: disabled
-
-Output:
-  📁 Directory: .claude/logs/audio/
-  📄 Format: mp3_44100_128
+Streaming:
+  Mode: Realtime (no files created)
+  Player: ffplay
+  Latency: Low
 
 API Status:
-  ✅ API Key: Configured
-  ✅ Connection: OK
-  📊 Character Quota: 85,432 / 100,000 (85%)
+  API Key: Configured
+  Connection: OK
+  Character Quota: 85,432 / 100,000 (85%)
 
 Actions:
-- "voice:settings:edit" → Edit configuration
-- "voice:test" → Test voice
+- "voice:test" → Test streaming
 - "voice:voices" → List voices
 ```
 
@@ -208,171 +149,47 @@ List all available ElevenLabs voices.
 **Usage:**
 ```
 voice:voices
-voice:voices --filter=<type>
 ```
 
 **Output:**
 ```
-🎤 Available ElevenLabs Voices
+Available ElevenLabs Voices
 
 Pre-made Voices:
 
-  1. Rachel (21m00Tcm4TlvDq8ikWAM) - ⭐ Default
+  1. Rachel (21m00Tcm4TlvDq8ikWAM) - Default
      Gender: Female
      Accent: American
      Description: Calm, clear, professional
-     Best for: Documentation, tutorials
 
   2. Antoni (ErXwobaYiN019PkySvjV)
      Gender: Male
      Accent: American
      Description: Well-rounded, versatile
-     Best for: General narration
 
   3. Bella (EXAVITQu4vr4xnSDxMaL)
      Gender: Female
      Accent: American
      Description: Soft, gentle
-     Best for: Friendly communication
 
   4. Josh (TxGEqnHWrfWFTfGW9XjX)
      Gender: Male
      Accent: American
      Description: Deep, authoritative
-     Best for: Serious announcements
 
   5. Elli (MF3mGyEYCl7XYWbV9V6O)
      Gender: Female
      Accent: American
      Description: Energetic, youthful
-     Best for: Engaging content
-
-Custom Voices:
-  (None configured)
 
 To change voice:
-1. Copy voice ID
-2. Edit .claude/project-contexts/[project]/project-config.yaml
-3. Update default_voice_id: "voice-id-here"
-```
-
-**Filters:**
-- `--filter=male` - Male voices only
-- `--filter=female` - Female voices only
-- `--filter=custom` - Custom voices only
-
----
-
-### narrate all
-
-Generate audio for all documentation (Phase 8 only).
-
-**Usage:**
-```
-narrate all
-narrate all --multilingual
-```
-
-**When Available:**
-- Only at Phase 8 approval gate
-- After documentation generation completes
-
-**Example:**
-```
-Phase 8 Complete: Documentation
-
-Options:
-  "narrate all" → Generate audio for all documents
-  "narrate summary" → Only implementation summary
-  "skip narration" → No audio
-
-Your choice: narrate all
-```
-
-**Output:**
-```
-🎙️ Generating Audio Narration...
-
-[1/4] IMPLEMENTATION_SUMMARY.md
-      Converting 1,245 words → ~8 min audio
-      ✅ Generated: implementation_summary.mp3 (3.2 MB)
-
-[2/4] DEPLOYMENT_GUIDE.md
-      Converting 823 words → ~5 min audio
-      ✅ Generated: deployment_guide.mp3 (2.1 MB)
-
-[3/4] API_DOCUMENTATION.md
-      Converting 1,567 words → ~10 min audio
-      ✅ Generated: api_documentation.mp3 (4.5 MB)
-
-[4/4] CHANGELOG.md
-      Converting 342 words → ~2 min audio
-      ✅ Generated: changelog.mp3 (1.1 MB)
-
-✅ All audio files generated!
-
-📁 Location: .claude/logs/audio/workflow-123/
-Total duration: ~25 minutes
-Total size: 10.9 MB
-
-🔗 Next Steps:
-- Play: open .claude/logs/audio/workflow-123/
-- Upload to Confluence
-- Share with team
+1. Run: bash scripts/setup-voice.sh
+2. Enter voice ID when prompted
 ```
 
 ---
 
-### narrate summary
-
-Generate audio for implementation summary only (Phase 8).
-
-**Usage:**
-```
-narrate summary
-```
-
-**Output:**
-```
-🎙️ Generating narration for IMPLEMENTATION_SUMMARY.md
-
-Converting 1,245 words → ~8 min audio
-✅ Generated: implementation_summary.mp3 (3.2 MB)
-
-📁 Location: .claude/logs/audio/workflow-123/
-Duration: 8:24
-Size: 3.2 MB
-
-Play: open .claude/logs/audio/workflow-123/implementation_summary.mp3
-```
-
-**When to use:**
-- Want audio for summary only
-- Save on character quota
-- Quick overview for team
-
----
-
-### skip narration
-
-Skip audio generation and proceed to Phase 9.
-
-**Usage:**
-```
-skip narration
-skip
-```
-
-**Output:**
-```
-⏭️  Skipping audio narration
-
-Proceeding to Phase 9 (Notification)...
-```
-
----
-
-## 🎨 Emotional Tags
+## Emotional Tags
 
 Add emotion and expression to narration.
 
@@ -396,141 +213,77 @@ voice:narrate "The feature is complete [clears throat]. Let me walk you through 
 # Casual update
 voice:narrate "Hey team! The tests are passing [laughs]. All 87 of them!"
 
-# Confidential information
-voice:narrate "The API key is [whispers] stored in the environment variables."
-
-# Disappointed but moving forward
-voice:narrate "We missed the deadline [sighs], but we'll deploy tomorrow."
-
 # Surprised by results
 voice:narrate "The performance improved by [gasps] 300 percent!"
 ```
 
 ---
 
-## 🌍 Language Codes
+## Language Codes
 
 Commonly used language codes for `--language` parameter.
 
-| Code | Language | Example |
-|------|----------|---------|
-| `en` | English | `--language="en"` |
-| `es` | Spanish | `--language="es"` |
-| `fr` | French | `--language="fr"` |
-| `de` | German | `--language="de"` |
-| `it` | Italian | `--language="it"` |
-| `pt` | Portuguese | `--language="pt"` |
-| `ja` | Japanese | `--language="ja"` |
-| `ko` | Korean | `--language="ko"` |
-| `zh` | Chinese (Mandarin) | `--language="zh"` |
-| `ar` | Arabic | `--language="ar"` |
-| `hi` | Hindi | `--language="hi"` |
-| `ru` | Russian | `--language="ru"` |
-| `nl` | Dutch | `--language="nl"` |
-| `pl` | Polish | `--language="pl"` |
-| `tr` | Turkish | `--language="tr"` |
-| `fil` | Filipino | `--language="fil"` |
-| `ms` | Malay | `--language="ms"` |
-| `id` | Indonesian | `--language="id"` |
-| `th` | Thai | `--language="th"` |
-| `vi` | Vietnamese | `--language="vi"` |
+| Code | Language |
+|------|----------|
+| `en` | English |
+| `es` | Spanish |
+| `fr` | French |
+| `de` | German |
+| `it` | Italian |
+| `pt` | Portuguese |
+| `ja` | Japanese |
+| `ko` | Korean |
+| `zh` | Chinese (Mandarin) |
+| `vi` | Vietnamese |
 
-**Note:** Auto-detection works for most languages. Specify `--language` only if needed.
+**Note:** Auto-detection works for most languages.
 
 ---
 
-## 🎬 Common Workflows
+## Automatic Notifications
 
-### Workflow 1: Test Setup
+### Approval Gate Notifications
+
+When a workflow reaches an approval gate:
+
+1. Claude stops and waits for input
+2. Stop hook triggers automatically
+3. ElevenLabs streams audio to your speakers
+4. You hear: "Hey, I need your input to continue."
+
+**No commands needed** - completely automatic!
+
+### Error Notifications
+
+When errors occur:
+- Audio: "Heads up, something went wrong. Check the error when you can."
+
+---
+
+## Tips & Best Practices
+
+### Streaming Player Selection
 
 ```bash
-# 1. Test voice generation
-voice:test
+# Check which player is available
+which ffplay mpv play
 
-# 2. Check settings
-voice:settings
+# Install recommended player (macOS)
+brew install ffmpeg
 
-# 3. List available voices
-voice:voices
-
-# 4. Try narrating text
-voice:narrate "Hello Aura Frog team! Voice integration is working."
-
-# ✅ Setup complete!
+# Install recommended player (Linux)
+sudo apt install ffmpeg
 ```
-
----
-
-### Workflow 2: Generate Audio Documentation
-
-```bash
-# During Phase 8 approval gate:
-
-1. Documentation complete
-2. Prompt appears: "Generate audio narration?"
-3. Choose option:
-   - "narrate all" → All documents
-   - "narrate summary" → Summary only
-   - "skip narration" → No audio
-
-# Audio files saved to:
-logs/audio/workflow-{id}/
-
-# Listen:
-open .claude/logs/audio/workflow-{id}/implementation_summary.mp3
-```
-
----
-
-### Workflow 3: Manual Narration
-
-```bash
-# 1. Create documentation
-document feature "User Authentication"
-
-# 2. Narrate the document
-voice:narrate:file USER_AUTHENTICATION.md
-
-# 3. Output location
-logs/audio/user_authentication_narration.mp3
-
-# 4. Share with team
-# Upload to Confluence or team drive
-```
-
----
-
-### Workflow 4: Multilingual Team
-
-```bash
-# Generate docs in multiple languages (Phase 8)
-
-1. Type: "narrate all --multilingual"
-
-2. Generates audio in configured languages:
-   - implementation_summary_en.mp3 (English)
-   - implementation_summary_es.mp3 (Spanish)
-   - implementation_summary_fil.mp3 (Filipino)
-   - implementation_summary_zh.mp3 (Chinese)
-
-3. Share appropriate version with each region
-```
-
----
-
-## 💡 Tips & Best Practices
 
 ### Character Quota Management
 
 ```bash
-# Check quota before large generation
+# Check quota
 voice:settings  # View remaining characters
 
-# Use selective narration
-narrate summary  # Instead of "narrate all"
-
-# Summarize long docs first
-# 2,000-word doc → 500-word summary → Narrate summary
+# Free tier: 10,000 characters/month
+# Each notification ~ 50 characters
+# ~ 200 notifications/month free
 ```
 
 ### Voice Selection
@@ -544,42 +297,31 @@ narrate summary  # Instead of "narrate all"
 
 # Authoritative announcements
 --voice="Josh"  # Deep, commanding
-
-# General purpose
---voice="Antoni"  # Versatile, natural
-```
-
-### Audio Quality
-
-```bash
-# Best quality (larger files)
-# Edit project-config.yaml:
-elevenlabs:
-  output:
-    format: "mp3_44100_192"
-
-# Balanced (recommended)
-format: "mp3_44100_128"
-
-# Smaller files (lower quality)
-format: "mp3_22050_32"
 ```
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
+
+### "No streaming audio player found"
+
+```bash
+# Install ffmpeg (recommended)
+brew install ffmpeg  # macOS
+sudo apt install ffmpeg  # Linux
+
+# Verify
+ffplay -version
+```
 
 ### "API key not found"
 
 ```bash
-# Check environment variable
-echo $ELEVENLABS_API_KEY
+# Run setup script
+bash scripts/setup-voice.sh
 
-# If empty, set it
-export ELEVENLABS_API_KEY="your_key_here"
-
-# Test again
-voice:test
+# Or check config
+cat ~/.claude/aura-frog-voice-config
 ```
 
 ### "Quota exceeded"
@@ -590,44 +332,29 @@ voice:settings
 
 # Options:
 1. Wait for monthly reset
-2. Upgrade plan
-3. Use selective narration
-```
-
-### "Voice sounds unnatural"
-
-```bash
-# Adjust stability/similarity
-# Edit project-config.yaml:
-elevenlabs:
-  voice:
-    stability: 0.6  # Increase
-    similarity_boost: 0.85  # Increase
+2. Upgrade plan at https://elevenlabs.io/pricing
 ```
 
 ---
 
-## 📚 Related Documentation
+## Related Documentation
 
-- **Setup Guide:** `docs/guides/elevenlabs-integration.md`
+- **Setup Guide:** `VOICEOVER_SETUP.md`
 - **Agent Documentation:** `agents/voice-operations.md`
-- **Phase 8 Workflow:** `commands/workflow/phase-8.md`
-- **Project Configuration:** `.claude/project-contexts/template/project-config.yaml`
+- **Integration Guide:** `docs/guides/elevenlabs-integration.md`
 
 ---
 
-## 📞 Support
+## Support
 
 **ElevenLabs Issues:**
 - https://elevenlabs.io/support
 
 **Aura Frog Issues:**
-- https://github.com/anthropics/claude-code/issues
-
-**API Documentation:**
-- https://elevenlabs.io/docs
+- https://github.com/nguyenthienthanh/aura-frog/issues
 
 ---
 
-**Last Updated:** 2025-11-26
+**Last Updated:** 2025-11-29
 **Version:** 1.0.0
+**Mode:** Realtime Streaming

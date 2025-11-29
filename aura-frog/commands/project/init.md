@@ -41,7 +41,7 @@ mkdir -p "$PROJECT_ROOT/.claude/project-contexts"
 mkdir -p "$PROJECT_ROOT/.claude/logs/workflows"
 mkdir -p "$PROJECT_ROOT/.claude/logs/figma"
 mkdir -p "$PROJECT_ROOT/.claude/logs/jira"
-mkdir -p "$PROJECT_ROOT/.claude/logs/audio"
+# Audio directory not needed - streaming mode doesn't create files
 mkdir -p "$PROJECT_ROOT/.claude/context"
 
 # Create .gitkeep files to preserve folder structure
@@ -49,7 +49,6 @@ touch "$PROJECT_ROOT/.claude/logs/.gitkeep"
 touch "$PROJECT_ROOT/.claude/logs/workflows/.gitkeep"
 touch "$PROJECT_ROOT/.claude/logs/figma/.gitkeep"
 touch "$PROJECT_ROOT/.claude/logs/jira/.gitkeep"
-touch "$PROJECT_ROOT/.claude/logs/audio/.gitkeep"
 touch "$PROJECT_ROOT/.claude/context/.gitkeep"
 
 echo "✅ Created .claude/ folder structure"
@@ -69,8 +68,7 @@ echo "✅ Created .claude/ folder structure"
 ├── logs/                        # Workflow logs (git-ignored)
 │   ├── workflows/
 │   ├── figma/
-│   ├── jira/
-│   └── audio/
+│   └── jira/
 └── context/                     # Active contexts (git-ignored)
 ```
 
@@ -672,8 +670,7 @@ Team Reviewers:
    ├── logs/                        - Workflow execution logs (git-ignored)
    │   ├── workflows/               - Phase deliverables
    │   ├── figma/                   - Figma design data
-   │   ├── jira/                    - JIRA ticket data
-   │   └── audio/                   - Voice narration (if enabled)
+   │   └── jira/                    - JIRA ticket data
    └── context/                     - Active workflow contexts (git-ignored)
 
 ✅ .envrc (project root)

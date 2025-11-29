@@ -4,6 +4,52 @@ All notable changes to Aura Frog will be documented in this file.
 
 ---
 
+## [1.0.1] - 2025-11-29
+
+### Voice Notifications: Realtime Streaming Mode
+
+Voice notifications now use **realtime streaming** instead of creating audio files.
+
+#### Key Changes
+
+**Streaming Architecture:**
+- Audio streams directly to speakers (ffplay, mpv, or sox)
+- No files created - zero disk usage
+- Lower latency - starts playing immediately
+- No cleanup needed
+
+**Updated Scripts:**
+- `voice-notify.sh` - Complete rewrite for streaming API
+- `test-voice.sh` - Updated for streaming tests
+- `setup-voice.sh` - Added streaming player checks
+- `debug-voice.sh` - Updated for streaming diagnostics
+
+**Removed:**
+- `cleanup-voice.sh` - No longer needed (no files to clean)
+- `logs/audio/` directory - No longer created
+
+**Documentation Updates:**
+- `VOICEOVER_SETUP.md` - Streaming setup guide
+- `docs/VOICE_COMMANDS.md` - Streaming command reference
+- `docs/guides/elevenlabs-integration.md` - Streaming integration guide
+- `docs/VOICEOVER_NOTIFICATIONS.md` - Streaming notifications
+- `agents/voice-operations.md` - Streaming agent documentation
+
+**Streaming API:**
+- Endpoint: `/v1/text-to-speech/{voice_id}/stream`
+- Model: `eleven_turbo_v2_5` (optimized for low latency)
+
+**Prerequisites:**
+```bash
+# Install streaming player (macOS)
+brew install ffmpeg  # Recommended
+
+# Linux
+sudo apt install ffmpeg
+```
+
+---
+
 ## [1.0.0] - 2025-11-28
 
 ### 🐸 Rebranding: CCPM → Aura Frog

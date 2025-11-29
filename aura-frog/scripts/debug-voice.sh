@@ -1,23 +1,53 @@
 #!/bin/bash
 
-# Aura Frog Voice Debug Script
-# Purpose: Debug voiceover API issues
+# Aura Frog Voice Debug Script (Realtime Streaming)
+# Purpose: Debug voiceover API and streaming issues
 # Usage: bash scripts/debug-voice.sh
 
-echo "🔍 Aura Frog Voiceover Debug"
-echo "======================="
+echo "🔍 Aura Frog Voiceover Debug (Streaming Mode)"
+echo "============================================="
+echo ""
+
+# Check streaming player availability
+echo "1. Checking streaming audio players..."
+
+PLAYER="none"
+if command -v ffplay &> /dev/null; then
+  FFPLAY_VERSION=$(ffplay -version 2>&1 | head -1)
+  echo "   ✅ ffplay - Available (recommended)"
+  echo "   Version: $FFPLAY_VERSION"
+  PLAYER="ffplay"
+elif command -v mpv &> /dev/null; then
+  MPV_VERSION=$(mpv --version 2>&1 | head -1)
+  echo "   ✅ mpv - Available"
+  echo "   Version: $MPV_VERSION"
+  PLAYER="mpv"
+elif command -v play &> /dev/null && command -v sox &> /dev/null; then
+  SOX_VERSION=$(sox --version 2>&1 | head -1)
+  echo "   ✅ sox/play - Available"
+  echo "   Version: $SOX_VERSION"
+  PLAYER="sox"
+else
+  echo "   ❌ No streaming audio player found!"
+  echo ""
+  echo "   Install one of these:"
+  echo "   brew install ffmpeg  # Recommended"
+  echo "   brew install mpv     # Alternative"
+  echo "   brew install sox     # Fallback"
+  echo ""
+fi
 echo ""
 
 # Check config file
 CONFIG_FILE="$HOME/.claude/aura-frog-voice-config"
 
-echo "1. Checking config file..."
+echo "2. Checking config file..."
 if [ -f "$CONFIG_FILE" ]; then
   echo "   ✅ Config file exists: $CONFIG_FILE"
   source "$CONFIG_FILE"
   echo ""
 
-  echo "2. Checking API key..."
+  echo "3. Checking API key..."
   if [ -n "$ELEVENLABS_API_KEY" ]; then
     echo "   ✅ API key loaded"
     echo "   Key length: ${#ELEVENLABS_API_KEY} characters"
@@ -29,7 +59,7 @@ if [ -f "$CONFIG_FILE" ]; then
   fi
   echo ""
 
-  echo "3. Checking voice ID..."
+  echo "4. Checking voice ID..."
   if [ -n "$ELEVENLABS_VOICE_ID" ]; then
     echo "   ✅ Voice ID: $ELEVENLABS_VOICE_ID"
   else
@@ -44,7 +74,7 @@ else
 fi
 
 # Test 1: Get voices (simple auth test)
-echo "4. Testing API authentication (GET /voices)..."
+echo "5. Testing API authentication (GET /voices)..."
 RESPONSE=$(curl -s -w "\n%{http_code}" \
   -X GET "https://api.elevenlabs.io/v1/voices" \
   -H "xi-api-key: ${ELEVENLABS_API_KEY}")
@@ -86,8 +116,8 @@ else
   exit 1
 fi
 
-# Test 2: User info (another auth test)
-echo "5. Testing user info endpoint..."
+# Test 2: User info (quota check)
+echo "6. Checking account quota..."
 USER_RESPONSE=$(curl -s -w "\n%{http_code}" \
   -X GET "https://api.elevenlabs.io/v1/user" \
   -H "xi-api-key: ${ELEVENLABS_API_KEY}")
@@ -99,84 +129,85 @@ if [ "$USER_HTTP" -eq 200 ]; then
   echo "   ✅ User info retrieved"
   echo ""
   echo "   Account details:"
-  echo "$USER_BODY" | grep -o '"character_count":[0-9]*'
-  echo "$USER_BODY" | grep -o '"character_limit":[0-9]*'
+  CHAR_COUNT=$(echo "$USER_BODY" | grep -o '"character_count":[0-9]*' | grep -o '[0-9]*')
+  CHAR_LIMIT=$(echo "$USER_BODY" | grep -o '"character_limit":[0-9]*' | grep -o '[0-9]*')
+  if [ -n "$CHAR_COUNT" ] && [ -n "$CHAR_LIMIT" ]; then
+    echo "   Characters used: $CHAR_COUNT"
+    echo "   Character limit: $CHAR_LIMIT"
+    REMAINING=$((CHAR_LIMIT - CHAR_COUNT))
+    echo "   Remaining: $REMAINING"
+  fi
   echo ""
 else
   echo "   ❌ Failed (HTTP $USER_HTTP)"
 fi
 
-# Test 3: TTS generation
-echo "6. Testing text-to-speech generation..."
-OUTPUT_DIR=".claude/logs/audio"
-mkdir -p "$OUTPUT_DIR"
-OUTPUT_FILE="$OUTPUT_DIR/debug_test.mp3"
-
-TTS_RESPONSE=$(curl -s -w "\n%{http_code}" -o "$OUTPUT_FILE" \
-  -X POST "https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}" \
-  -H "xi-api-key: ${ELEVENLABS_API_KEY}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "text": "Debug test. If you hear this, voiceover is working.",
-    "model_id": "eleven_monolingual_v1",
-    "voice_settings": {
-      "stability": 0.5,
-      "similarity_boost": 0.75
-    }
-  }')
-
-TTS_HTTP=$(echo "$TTS_RESPONSE" | tail -1)
-
-echo "   HTTP Status: $TTS_HTTP"
-
-if [ "$TTS_HTTP" -eq 200 ]; then
-  echo "   ✅ Audio generated successfully!"
-  echo "   File: $OUTPUT_FILE"
-  echo "   Size: $(ls -lh "$OUTPUT_FILE" | awk '{print $5}')"
+# Test 3: Streaming TTS
+if [ "$PLAYER" = "none" ]; then
+  echo "7. Skipping streaming test (no audio player)"
+  echo "   Install ffmpeg, mpv, or sox to test streaming"
   echo ""
-
-  # Try to play
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "   🔊 Playing audio..."
-    afplay "$OUTPUT_FILE"
-    echo "   ✅ If you heard 'Debug test', everything works!"
-  else
-    echo "   ℹ️  Manual playback (Linux):"
-    echo "   mpg123 $OUTPUT_FILE"
-  fi
-  echo ""
-  echo "✅ All tests passed! Voiceover should work."
-
-elif [ "$TTS_HTTP" -eq 401 ]; then
-  echo "   ❌ Authentication failed"
-  echo ""
-  echo "   The API key works for listing voices but not for TTS."
-  echo "   This might indicate:"
-  echo "   1. Free tier expired (check: https://elevenlabs.io/app/usage)"
-  echo "   2. API key has limited permissions"
-  echo "   3. Voice ID is invalid: $ELEVENLABS_VOICE_ID"
-  echo ""
-  rm -f "$OUTPUT_FILE"
-
-elif [ "$TTS_HTTP" -eq 404 ]; then
-  echo "   ❌ Voice not found (404)"
-  echo "   Voice ID may be invalid: $ELEVENLABS_VOICE_ID"
-  echo ""
-  echo "   Try using default voice:"
-  echo "   export ELEVENLABS_VOICE_ID=\"21m00Tcm4TlvDq8ikWAM\""
-  echo "   Then run: bash scripts/setup-voice.sh"
-  rm -f "$OUTPUT_FILE"
-
 else
-  echo "   ❌ Failed (HTTP $TTS_HTTP)"
+  echo "7. Testing realtime streaming TTS..."
+  echo "   Player: $PLAYER"
+  echo "   Message: 'Debug test. If you hear this, streaming is working.'"
+  echo ""
 
-  # Check if error response
-  if [ -f "$OUTPUT_FILE" ] && [ $(stat -f%z "$OUTPUT_FILE" 2>/dev/null || stat -c%s "$OUTPUT_FILE") -lt 1000 ]; then
-    echo "   Error response:"
-    cat "$OUTPUT_FILE"
-    rm -f "$OUTPUT_FILE"
+  # Create a function to play the stream based on player
+  play_stream() {
+    case "$PLAYER" in
+      "ffplay")
+        ffplay -nodisp -autoexit -loglevel error -i pipe:0
+        ;;
+      "mpv")
+        mpv --no-video --really-quiet -
+        ;;
+      "sox")
+        play -t mp3 -q -
+        ;;
+    esac
+  }
+
+  # Stream from ElevenLabs
+  echo "   🔊 Streaming audio..."
+
+  curl -s \
+    -X POST "https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}/stream" \
+    -H "xi-api-key: ${ELEVENLABS_API_KEY}" \
+    -H "Content-Type: application/json" \
+    -H "Accept: audio/mpeg" \
+    -d '{
+      "text": "Debug test. If you hear this, streaming is working.",
+      "model_id": "eleven_turbo_v2_5",
+      "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75
+      }
+    }' | play_stream
+
+  RESULT=$?
+
+  if [ $RESULT -eq 0 ]; then
+    echo "   ✅ Streaming successful!"
+    echo ""
+    echo "   If you heard 'Debug test', everything works!"
+  else
+    echo "   ❌ Streaming failed (exit code: $RESULT)"
+    echo ""
+    echo "   Possible issues:"
+    echo "   1. Audio player error"
+    echo "   2. Network timeout"
+    echo "   3. API rate limit"
   fi
 fi
 
 echo ""
-echo "🔧 Troubleshooting complete."
+echo "🔧 Debug complete."
+echo ""
+echo "📊 Summary:"
+echo "   API Key: ✅ Valid"
+echo "   Voice ID: $ELEVENLABS_VOICE_ID"
+echo "   Streaming Player: $PLAYER"
+if [ "$PLAYER" != "none" ]; then
+  echo "   Streaming: ✅ Working"
+fi

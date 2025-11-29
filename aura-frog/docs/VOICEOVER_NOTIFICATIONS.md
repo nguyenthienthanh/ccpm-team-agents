@@ -1,94 +1,90 @@
-# Voiceover Notifications System
+# Voiceover Notifications System (Streaming Mode)
 
 **Version:** 1.0.0
+**Mode:** Realtime Streaming
 **Purpose:** Automatic voice notifications for approval gates and critical events
-**Last Updated:** 2025-11-27
+**Last Updated:** 2025-11-29
 
 ---
 
-## 🎯 Overview
+## Overview
 
-Aura Frog now includes **automatic voiceover notifications** that alert you when your action is required during workflows. Never miss an approval gate again!
+Aura Frog includes **automatic voiceover notifications** using realtime streaming that alert you when your action is required during workflows. Audio plays directly without creating files.
+
+**Key Benefits:**
+- No file creation (zero disk usage)
+- Lower latency (starts playing immediately)
+- No cleanup needed
+- Never miss an approval gate
 
 ---
 
-## ✨ Features
+## Features
 
 ### Automatic Notifications
 
-**1. Approval Gates (Stop Hook) - Context-Aware! 🎯**
+**1. Approval Gates (Stop Hook) - Context-Aware!**
 - Triggers when Claude stops for approval
 - **Intelligently reads conversation context**
-- Auto-plays on macOS (afplay)
+- Streams audio directly to speakers
 - Happens at every phase completion
 
 **Example Messages:**
 - Generic: "Hey, I need your input to continue."
 - Phase 2: "Hey, Phase 2 - Design deliverables ready for review"
-- Phase 5a: "Hey, Phase 5a approval needed"
 - Tests: "Hey, All tests passed - review needed"
 - Code Review: "Hey, Code review complete - approval needed"
 
-**How It Works:**
-- Reads the conversation transcript
-- Extracts phase information and context
-- Summarizes key points (under 15 words)
-- Plays natural, context-aware message
-
 **2. Critical Errors (Notification Hook)**
 - Triggers on errors, failures, critical issues
-- Plays audio: "Heads up, something went wrong. Check the error when you can."
+- Streams audio: "Heads up, something went wrong."
 - Helps catch problems immediately
 
 ---
 
-## 🔧 Setup
+## Setup
 
 ### Prerequisites
 
 **Required:**
+- Streaming audio player (ffplay, mpv, or sox)
 - ElevenLabs API account (free tier available)
 - API key from https://elevenlabs.io/app/settings/api-keys
 
-**Optional:**
-- macOS for auto-play (uses afplay)
-- Linux: install `mpg123` or similar
-- Windows: install audio player
+### Install Streaming Player
+
+**macOS:**
+```bash
+brew install ffmpeg  # Recommended - includes ffplay
+```
+
+**Linux:**
+```bash
+sudo apt install ffmpeg
+```
 
 ### Quick Setup
 
-**1. Get ElevenLabs API Key:**
+**Run the setup script:**
 ```bash
-# Sign up at https://elevenlabs.io
-# Navigate to Settings → API Keys
-# Copy your API key
+cd ~/.claude/plugins/marketplaces/aurafrog/aura-frog
+bash scripts/setup-voice.sh
 ```
 
-**2. Add to Environment:**
-```bash
-# Add to .envrc (recommended) or .env
-export ELEVENLABS_API_KEY="your_api_key_here"
-
-# Optional: Choose voice
-export ELEVENLABS_VOICE_ID="21m00Tcm4TlvDq8ikWAM"  # Rachel (default)
-```
-
-**3. Reload Environment:**
-```bash
-# If using .envrc with direnv
-direnv allow
-
-# Or source manually
-source .envrc
-```
+**What it does:**
+1. Checks for streaming audio player
+2. Asks for your ElevenLabs API key
+3. Tests the API key
+4. Saves configuration to `~/.claude/aura-frog-voice-config`
+5. Tests streaming playback
 
 **That's it!** Voiceover notifications will now work automatically.
 
 ---
 
-## 🎙️ How It Works
+## How It Works
 
-### Approval Gate Flow (Context-Aware)
+### Streaming Architecture
 
 ```
 Workflow Phase Completes
@@ -103,24 +99,19 @@ hooks/stop-voice-notify.sh is executed
   ↓
 Read conversation transcript (JSON)
   ↓
-Extract context:
-  - Phase number (Phase 2, Phase 5a, etc.)
-  - Deliverables type (design, tests, code review)
-  - Status (passed, failed, complete)
+Extract context (phase, deliverables, status)
   ↓
 Summarize to under 15 words
   ↓
 Call scripts/voice-notify.sh with context
   ↓
-ElevenLabs API generates audio
+curl streams from ElevenLabs /stream endpoint
   ↓
-Audio saved to .claude/logs/audio/approval-gate_*.mp3
+Audio piped directly to ffplay/mpv/sox
   ↓
-Auto-plays (macOS: afplay)
+User hears: "Hey, Phase 2 - Design deliverables ready"
   ↓
-User hears: "Hey, Phase 2 - Design deliverables ready for review"
-  ↓
-Audio file deleted after playback
+No files created - streaming complete
 ```
 
 ### Context Extraction Examples
@@ -128,16 +119,17 @@ Audio file deleted after playback
 **Transcript contains:** `"Phase 2: Design - Technical Architecture..."`
 **Voiceover says:** "Hey, Phase 2 - Design deliverables ready for review"
 
-**Transcript contains:** `"All tests pass. ✅ Ready for review"`
+**Transcript contains:** `"All tests pass. Ready for review"`
 **Voiceover says:** "Hey, All tests passed - review needed"
-
-**Transcript contains:** `"Code review complete. Please approve to continue."`
-**Voiceover says:** "Hey, Code review complete - approval needed"
 
 **No specific context found:**
 **Voiceover says:** "Hey, I need your input to continue."
 
-### Script: stop-voice-notify.sh (NEW!)
+---
+
+## Script Reference
+
+### stop-voice-notify.sh
 
 **Location:** `hooks/stop-voice-notify.sh`
 
@@ -156,11 +148,7 @@ Audio file deleted after playback
 - Test status: `tests pass`, `tests fail`
 - Code review: `code review complete`
 
-**Automatic Invocation:** Called by Stop hook in `hooks.json`
-
----
-
-### Script: voice-notify.sh
+### voice-notify.sh
 
 **Location:** `scripts/voice-notify.sh`
 
@@ -182,36 +170,34 @@ bash scripts/voice-notify.sh "Context message" "notification-type"
 bash scripts/voice-notify.sh "" "approval-gate"
 # → "Hey, I need your input to continue."
 
-# Approval with context (from stop-voice-notify.sh)
+# Approval with context
 bash scripts/voice-notify.sh "Phase 2 approval needed" "approval-gate"
 # → "Hey, Phase 2 approval needed"
 
-bash scripts/voice-notify.sh "Design deliverables ready for review" "approval-gate"
-# → "Hey, Design deliverables ready for review"
-
 # Error notification
 bash scripts/voice-notify.sh "" "error"
-# → "Heads up, something went wrong. Check the error when you can."
-
-# Warning notification
-bash scripts/voice-notify.sh "" "warning"
-# → "Just a heads up, you might want to check this."
+# → "Heads up, something went wrong."
 
 # Completion notification
 bash scripts/voice-notify.sh "" "completion"
 # → "All done! Task completed successfully."
 ```
 
-**Note:**
-- For `approval-gate` type: Context message is prefixed with "Hey, " automatically
-- For other types: Fixed messages are used (context ignored)
-- Keep context under 15 words for natural speech
-
 ---
 
-## 🎨 Customization
+## Customization
 
 ### Change Voice
+
+**Re-run setup:**
+```bash
+bash scripts/setup-voice.sh
+```
+
+**Or edit config directly:**
+```bash
+nano ~/.claude/aura-frog-voice-config
+```
 
 **Available Voices:**
 ```bash
@@ -233,24 +219,9 @@ export ELEVENLABS_VOICE_ID="TxGEqnHWrfWFTfGW9XjX"
 
 **Browse more voices:** https://elevenlabs.io/voice-library
 
-### Adjust Voice Settings
-
-Edit `scripts/voice-notify.sh` to customize:
-
-```json
-{
-  "voice_settings": {
-    "stability": 0.5,           // 0-1 (higher = more consistent)
-    "similarity_boost": 0.75,   // 0-1 (higher = closer to original)
-    "style": 0.0,               // 0-1 (exaggeration level)
-    "use_speaker_boost": true   // Enhance clarity
-  }
-}
-```
-
 ### Custom Messages
 
-Edit `scripts/voice-notify.sh` case statement to change the natural messages:
+Edit `scripts/voice-notify.sh` case statement:
 
 ```bash
 case "$NOTIFICATION_TYPE" in
@@ -258,7 +229,7 @@ case "$NOTIFICATION_TYPE" in
     FULL_MESSAGE="Hey, I need your input to continue."
     ;;
   "error")
-    FULL_MESSAGE="Heads up, something went wrong. Check the error when you can."
+    FULL_MESSAGE="Heads up, something went wrong."
     ;;
   "custom-type")
     FULL_MESSAGE="Your custom message here."
@@ -268,160 +239,63 @@ esac
 
 **Tips for natural voiceover:**
 - Keep it short (under 10 words)
-- Use conversational language ("Hey" not "Attention please")
+- Use conversational language
 - Be friendly and casual
-- Avoid robotic phrases like "Your approval is required"
 
 ---
 
-## 🔕 Disable Voiceover
+## Disable Voiceover
 
 ### Temporarily Disable
 
 ```bash
-# Remove or comment out API key
-# export ELEVENLABS_API_KEY=""
+# Rename config file
+mv ~/.claude/aura-frog-voice-config ~/.claude/aura-frog-voice-config.bak
 
-# Script will gracefully skip if no API key
+# Script will gracefully skip if no config
 ```
 
 ### Permanently Disable
 
-**Option 1: Remove hooks**
-
-Edit `hooks/hooks.json`, remove Stop and Notification hooks:
-```json
-{
-  "hooks": {
-    // Remove "Stop" and "Notification" sections
-  }
-}
-```
-
-**Option 2: Disable in script**
-
-Add to top of `scripts/voice-notify.sh`:
-```bash
-exit 0  # Always skip voiceover
-```
+Edit `hooks/hooks.json`, remove Stop hook section.
 
 ---
 
-## 🎵 Audio Output
-
-### File Location
-
-```
-.claude/logs/audio/
-├── approval-gate_20251127_143022.mp3
-├── approval-gate_20251127_143145.mp3
-├── error_20251127_143230.mp3
-└── completion_20251127_143401.mp3
-```
-
-### File Naming
-
-Pattern: `{type}_{timestamp}.mp3`
-- `type`: approval-gate, error, warning, completion, general
-- `timestamp`: YYYYMMDD_HHMMSS
-
-### Audio Format
-
-- **Format:** MP3
-- **Sample Rate:** 44.1 kHz
-- **Bitrate:** 128 kbps
-- **Channels:** Mono
-- **Size:** ~20-50KB per notification (3-5 seconds)
-- **Model:** eleven_turbo_v2_5 (free tier compatible)
-
----
-
-## 🧹 Automatic Cleanup
-
-**Voice files are automatically deleted after playback!**
-
-### How It Works
-
-**Immediate Deletion (macOS):**
-- Audio plays synchronously (afplay waits for completion)
-- File is deleted immediately after playback
-- Zero disk usage
-- No manual cleanup needed
-
-**Example output:**
-```
-🔊 Generating voiceover...
-✅ Voiceover generated
-🔊 Playing notification...
-🗑️  Audio file deleted after playback
-```
-
-**Non-macOS Platforms:**
-- Files are saved to `.claude/logs/audio/`
-- User needs to manually play and delete
-- Use cleanup script for batch deletion
-
-### Manual Cleanup (Non-macOS or Troubleshooting)
-
-**If you need to clean up manually:**
-```bash
-cd ~/.claude/plugins/marketplaces/aurafrog/aura-frog
-bash scripts/cleanup-voice.sh
-```
-
-**Example output:**
-```
-🧹 Aura Frog Voice File Cleanup
-==========================
-
-📊 Audio files statistics:
-   Directory: .claude/logs/audio
-   Total files: 5
-   Total size: 150K
-
-🔍 Finding files older than 7 days...
-   Found 5 files
-
-Delete 5 old audio files? (y/N) y
-
-✅ Cleanup complete!
-```
-
-### Storage Impact
-
-**macOS (Automatic deletion):**
-- ✅ Zero disk usage
-- ✅ Files deleted immediately after playback
-- ✅ No manual maintenance
-
-**Non-macOS:**
-- Files accumulate in `.claude/logs/audio/`
-- Use cleanup script periodically
-- Each file ≈ 30KB
-
----
-
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Issue: No audio plays
 
-**Check:**
-1. API key set correctly: `echo $ELEVENLABS_API_KEY`
-2. Script executable: `chmod +x scripts/voice-notify.sh`
-3. ElevenLabs credits available: Check dashboard
-4. Audio file created: `ls -la .claude/logs/audio/`
+**Check 1: Streaming player installed**
+```bash
+which ffplay mpv play
+```
 
-**macOS:** Verify afplay works: `afplay /System/Library/Sounds/Glass.aiff`
+**Check 2: API key configured**
+```bash
+cat ~/.claude/aura-frog-voice-config
+```
+
+**Check 3: Test streaming**
+```bash
+bash scripts/test-voice.sh
+```
+
+### Issue: "No streaming audio player found"
+
+```bash
+# Install ffmpeg (includes ffplay)
+brew install ffmpeg  # macOS
+sudo apt install ffmpeg  # Linux
+
+# Verify
+ffplay -version
+```
 
 ### Issue: "API key not configured"
 
 ```bash
-# Verify environment variable
-echo $ELEVENLABS_API_KEY
-
-# If empty, add to .envrc
-echo 'export ELEVENLABS_API_KEY="your_key"' >> .envrc
-direnv allow
+# Run setup script
+bash scripts/setup-voice.sh
 ```
 
 ### Issue: Script fails but workflow continues
@@ -429,36 +303,17 @@ direnv allow
 **Expected behavior!** Voice notifications are non-blocking:
 - Script uses `|| true` to never fail workflows
 - If ElevenLabs unavailable, workflow continues silently
-- Check `.claude/logs/audio/` for error logs
 
-### Issue: Audio doesn't auto-play
+### Debug Mode
 
-**Platform-specific:**
-
-**macOS:**
+Run full diagnostics:
 ```bash
-# Test afplay
-afplay .claude/logs/audio/approval-gate_*.mp3
-```
-
-**Linux:**
-```bash
-# Install audio player
-sudo apt-get install mpg123
-
-# Edit voice-notify.sh, replace afplay with:
-mpg123 "$OUTPUT_FILE" &
-```
-
-**Windows:**
-```bash
-# Edit voice-notify.sh, replace afplay with:
-start "$OUTPUT_FILE" &
+bash scripts/debug-voice.sh
 ```
 
 ---
 
-## 💡 Use Cases
+## Use Cases
 
 ### 1. Multi-tasking Development
 - Start workflow
@@ -473,7 +328,7 @@ start "$OUTPUT_FILE" &
 
 ### 3. Long-running Workflows
 - Phase 1-4 planning takes time
-- Get notified when ready for Phase 5 (implementation)
+- Get notified when ready for Phase 5
 - No need to watch screen constantly
 
 ### 4. Team Notifications
@@ -483,48 +338,43 @@ start "$OUTPUT_FILE" &
 
 ---
 
-## 📊 API Usage & Cost
+## API Usage & Cost
 
 ### ElevenLabs Free Tier
 - **10,000 characters/month** free
-- Each notification ≈ 50 characters
-- ≈ **200 notifications/month** free
+- Each notification ~ 50 characters
+- ~ **200 notifications/month** free
 
 ### Paid Plans
 - **Starter:** $5/month - 30,000 characters
 - **Creator:** $22/month - 100,000 characters
 - **Professional:** $99/month - 500,000 characters
 
-### Cost Per Notification
-- Average notification: 50 characters
-- Starter plan: $0.17 per 1,000 notifications
-- Very cost-effective for team use
-
 **Learn more:** https://elevenlabs.io/pricing
 
 ---
 
-## 🔗 Related Documentation
+## Related Documentation
 
+- **Setup Guide:** `VOICEOVER_SETUP.md`
 - **Voice Operations Agent:** `agents/voice-operations.md`
+- **Integration Guide:** `docs/guides/elevenlabs-integration.md`
 - **Hooks System:** `hooks/README.md`
-- **Integration Setup:** `docs/INTEGRATION_SETUP_GUIDE.md`
-- **Approval Gates:** `docs/APPROVAL_GATES.md`
 
 ---
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
 **Planned Features:**
-- Custom messages per phase
 - Different voices per notification type
 - Volume control
-- Notification preferences (which events to voice)
+- Notification preferences
 - Multi-language support
-- Voice command responses ("Approved" → Voice: "Proceeding to next phase")
+- Voice command responses
 
 ---
 
 **Version:** 1.0.0
-**Last Updated:** 2025-11-27
-**Status:** Active feature - Works out of the box with ElevenLabs API key
+**Mode:** Realtime Streaming
+**Last Updated:** 2025-11-29
+**Status:** Active - Works with ElevenLabs API key

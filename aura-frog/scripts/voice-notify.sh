@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Aura Frog Voice Notification Script
-# Purpose: Generate voiceover for user action requirements
+# Aura Frog Voice Notification Script (Realtime Streaming)
+# Purpose: Generate and play voiceover in realtime using ElevenLabs streaming API
 # Usage: bash scripts/voice-notify.sh "Your attention is needed" "approval-gate"
 
 set -e
@@ -15,11 +15,7 @@ fi
 # Configuration
 VOICE_ID="${ELEVENLABS_VOICE_ID:-21m00Tcm4TlvDq8ikWAM}"  # Default: Rachel
 API_KEY="${ELEVENLABS_API_KEY}"
-OUTPUT_DIR=".claude/logs/audio"
 NOTIFICATION_TYPE="${2:-general}"
-
-# Create output directory
-mkdir -p "$OUTPUT_DIR"
 
 # Message
 MESSAGE="${1:-Your attention is needed for approval}"
@@ -30,10 +26,6 @@ if [ -z "$API_KEY" ]; then
   echo "Set ELEVENLABS_API_KEY in .envrc to enable voice notifications." >&2
   exit 0  # Don't fail, just skip
 fi
-
-# Generate timestamp for filename
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-OUTPUT_FILE="$OUTPUT_DIR/${NOTIFICATION_TYPE}_${TIMESTAMP}.mp3"
 
 # Prepare message based on notification type
 case "$NOTIFICATION_TYPE" in
@@ -59,13 +51,61 @@ case "$NOTIFICATION_TYPE" in
     ;;
 esac
 
-# Call ElevenLabs API
-echo "🔊 Generating voiceover..." >&2
+# Function to detect available audio player for streaming
+detect_player() {
+  if command -v ffplay &> /dev/null; then
+    echo "ffplay"
+  elif command -v mpv &> /dev/null; then
+    echo "mpv"
+  elif command -v sox &> /dev/null && command -v play &> /dev/null; then
+    echo "sox"
+  else
+    echo "none"
+  fi
+}
 
-HTTP_CODE=$(curl -s -w "%{http_code}" -o "$OUTPUT_FILE" \
-  -X POST "https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}" \
+# Function to play audio stream
+play_stream() {
+  local player="$1"
+
+  case "$player" in
+    "ffplay")
+      # FFplay from FFmpeg - best option, supports stdin streaming
+      ffplay -nodisp -autoexit -loglevel error -i pipe:0
+      ;;
+    "mpv")
+      # MPV - another excellent option
+      mpv --no-video --really-quiet -
+      ;;
+    "sox")
+      # Sox/Play - fallback
+      play -t mp3 -q -
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+# Detect player
+PLAYER=$(detect_player)
+
+if [ "$PLAYER" = "none" ]; then
+  echo "⚠️ No streaming audio player found. Install ffmpeg, mpv, or sox." >&2
+  echo "   brew install ffmpeg  # Recommended" >&2
+  echo "   brew install mpv     # Alternative" >&2
+  exit 0  # Don't fail, just skip
+fi
+
+# Stream and play audio using ElevenLabs streaming API
+echo "🔊 Streaming voiceover..." >&2
+
+# Use the streaming endpoint for lower latency
+curl -s \
+  -X POST "https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/stream" \
   -H "xi-api-key: ${API_KEY}" \
   -H "Content-Type: application/json" \
+  -H "Accept: audio/mpeg" \
   -d "{
     \"text\": \"${FULL_MESSAGE}\",
     \"model_id\": \"eleven_turbo_v2_5\",
@@ -75,28 +115,14 @@ HTTP_CODE=$(curl -s -w "%{http_code}" -o "$OUTPUT_FILE" \
       \"style\": 0.0,
       \"use_speaker_boost\": true
     }
-  }")
+  }" | play_stream "$PLAYER"
 
-# Check HTTP status
-if [ "$HTTP_CODE" -eq 200 ]; then
-  echo "✅ Voiceover generated" >&2
+RESULT=$?
 
-  # Auto-play on macOS
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "🔊 Playing notification..." >&2
-    afplay "$OUTPUT_FILE"  # Play synchronously (wait for completion)
-
-    # Delete after playing
-    rm -f "$OUTPUT_FILE"
-    echo "🗑️  Audio file deleted after playback" >&2
-  else
-    # Non-macOS: Save file path for manual playback
-    echo "$OUTPUT_FILE"
-  fi
-
+if [ $RESULT -eq 0 ]; then
+  echo "✅ Voiceover complete" >&2
   exit 0
 else
-  echo "❌ Failed to generate voiceover (HTTP $HTTP_CODE)" >&2
-  rm -f "$OUTPUT_FILE"
+  echo "❌ Failed to stream voiceover" >&2
   exit 0  # Don't fail the workflow
 fi

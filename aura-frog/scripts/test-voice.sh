@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Aura Frog Voice Notification Test Script
-# Purpose: Test ElevenLabs voiceover setup
+# Aura Frog Voice Notification Test Script (Realtime Streaming)
+# Purpose: Test ElevenLabs voiceover setup with streaming playback
 # Usage: bash scripts/test-voice.sh
 
-echo "🔊 Aura Frog Voiceover Notification Test"
-echo "===================================="
+echo "🔊 Aura Frog Voiceover Notification Test (Streaming)"
+echo "================================================="
 echo ""
 
 # Try to load from config file
@@ -48,6 +48,31 @@ else
 fi
 echo ""
 
+# Check streaming player availability
+echo "🎵 Checking streaming audio players..."
+
+PLAYER="none"
+if command -v ffplay &> /dev/null; then
+  echo "   ✅ ffplay (FFmpeg) - Available (recommended)"
+  PLAYER="ffplay"
+elif command -v mpv &> /dev/null; then
+  echo "   ✅ mpv - Available"
+  PLAYER="mpv"
+elif command -v play &> /dev/null && command -v sox &> /dev/null; then
+  echo "   ✅ sox/play - Available"
+  PLAYER="sox"
+else
+  echo "   ❌ No streaming audio player found!"
+  echo ""
+  echo "   Install one of these (macOS):"
+  echo "   brew install ffmpeg  # Recommended - includes ffplay"
+  echo "   brew install mpv     # Alternative"
+  echo "   brew install sox     # Fallback"
+  echo ""
+  exit 1
+fi
+echo ""
+
 # Check if voice-notify.sh exists
 if [ ! -f "scripts/voice-notify.sh" ]; then
   echo "❌ scripts/voice-notify.sh not found"
@@ -81,47 +106,32 @@ else
 fi
 echo ""
 
-# Test voice generation
-echo "🎤 Testing voice generation..."
-echo "   Message: 'This is a test notification'"
+# Test streaming voice generation
+echo "🎤 Testing realtime streaming voice generation..."
+echo "   Message: 'This is a test of the streaming voice system'"
+echo "   Player: $PLAYER"
 echo ""
 
-bash scripts/voice-notify.sh "This is a test notification" "general"
+bash scripts/voice-notify.sh "This is a test of the streaming voice system" "general"
 
 if [ $? -eq 0 ]; then
   echo ""
-  echo "✅ Voice generation successful!"
+  echo "✅ Streaming voice generation successful!"
   echo ""
-  echo "📁 Audio file saved to: .claude/logs/audio/"
-  echo "   Latest file:"
-  ls -lt .claude/logs/audio/*.mp3 | head -1
-  echo ""
-
-  # Check if audio played
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "🔊 Audio should have played automatically (macOS afplay)"
-    echo ""
-    echo "   If you didn't hear anything:"
-    echo "   1. Check your system volume"
-    echo "   2. Try playing manually:"
-    echo "      afplay .claude/logs/audio/general_*.mp3"
-  else
-    echo "ℹ️  Auto-play is macOS only"
-    echo "   To play audio on Linux:"
-    echo "      mpg123 .claude/logs/audio/general_*.mp3"
-    echo "   To play audio on Windows:"
-    echo "      start .claude\\logs\\audio\\general_*.mp3"
-  fi
+  echo "🎯 Key benefits of streaming:"
+  echo "   - No file creation (plays directly)"
+  echo "   - Lower latency (starts playing faster)"
+  echo "   - No cleanup needed"
   echo ""
   echo "✅ Setup complete! Voiceover notifications are working."
   echo ""
   echo "🎯 How to test in workflow:"
   echo "   1. Start a workflow: workflow:start 'Test task'"
   echo "   2. Wait for approval gate"
-  echo "   3. Listen for: 'Your attention is needed. Your approval is required to continue.'"
+  echo "   3. Listen for: 'Hey, I need your input to continue.'"
 else
   echo ""
-  echo "❌ Voice generation failed"
+  echo "❌ Streaming voice generation failed"
   echo "   Check the error messages above"
   exit 1
 fi
