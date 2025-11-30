@@ -53,26 +53,54 @@ log "INFO" "Fetching ticket: $TICKET_KEY"
 # Load environment variables - check multiple locations
 ENVRC_LOADED=false
 
-# Priority 1: Current directory .envrc
-if [ -f ".envrc" ]; then
-  log "INFO" "Loading .envrc from current directory"
-  source .envrc
+# Helper function to safely source envrc files
+source_envrc() {
+  local file="$1"
+  if [ -f "$file" ]; then
+    log "INFO" "Found $file, attempting to load..."
+    # Use set +e to prevent exit on error
+    set +e
+    # Extract and execute only export statements (safer than full source)
+    while IFS= read -r line; do
+      # Skip comments and empty lines
+      [[ "$line" =~ ^[[:space:]]*# ]] && continue
+      [[ -z "$line" ]] && continue
+      # Only process export statements
+      if [[ "$line" =~ ^[[:space:]]*export[[:space:]] ]]; then
+        eval "$line" 2>/dev/null
+      fi
+    done < "$file"
+    set -e
+    return 0
+  fi
+  return 1
+}
+
+# Check if already set in environment (e.g., by direnv)
+if [ -n "$JIRA_URL" ] && [ -n "$JIRA_EMAIL" ] && [ -n "$JIRA_API_TOKEN" ]; then
+  log "INFO" "JIRA credentials already set in environment"
   ENVRC_LOADED=true
-# Priority 2: Project .claude/.envrc
-elif [ -f ".claude/.envrc" ]; then
-  log "INFO" "Loading .envrc from .claude/"
-  source .claude/.envrc
-  ENVRC_LOADED=true
-# Priority 3: Home directory .envrc
-elif [ -f "$HOME/.envrc" ]; then
-  log "INFO" "Loading .envrc from home directory"
-  source "$HOME/.envrc"
-  ENVRC_LOADED=true
-# Priority 4: Plugin directory .envrc
-elif [ -f "${PLUGIN_DIR}/.envrc" ]; then
-  log "INFO" "Loading .envrc from plugin directory"
-  source "${PLUGIN_DIR}/.envrc"
-  ENVRC_LOADED=true
+fi
+
+# If not already set, try loading from files
+if [ "$ENVRC_LOADED" = false ]; then
+  # Priority 1: Current directory .envrc
+  if source_envrc ".envrc"; then
+    log "INFO" "Loaded from current directory .envrc"
+    ENVRC_LOADED=true
+  # Priority 2: Project .claude/.envrc
+  elif source_envrc ".claude/.envrc"; then
+    log "INFO" "Loaded from .claude/.envrc"
+    ENVRC_LOADED=true
+  # Priority 3: Home directory .envrc
+  elif source_envrc "$HOME/.envrc"; then
+    log "INFO" "Loaded from home directory .envrc"
+    ENVRC_LOADED=true
+  # Priority 4: Plugin directory .envrc
+  elif source_envrc "${PLUGIN_DIR}/.envrc"; then
+    log "INFO" "Loaded from plugin directory .envrc"
+    ENVRC_LOADED=true
+  fi
 fi
 
 if [ "$ENVRC_LOADED" = false ]; then

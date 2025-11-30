@@ -67,26 +67,64 @@ log "INFO" "Fetching Figma file: $FILE_ID"
 # Load environment variables - check multiple locations
 ENVRC_LOADED=false
 
-# Priority 1: Current directory .envrc
-if [ -f ".envrc" ]; then
-  log "INFO" "Loading .envrc from current directory"
-  source .envrc
+# Helper function to safely source envrc files
+source_envrc() {
+  local file="$1"
+  if [ -f "$file" ]; then
+    log "INFO" "Found $file, attempting to load..."
+    # Use set +e to prevent exit on error, grep export lines and eval them
+    set +e
+    # Extract and execute only export statements (safer than full source)
+    while IFS= read -r line; do
+      # Skip comments and empty lines
+      [[ "$line" =~ ^[[:space:]]*# ]] && continue
+      [[ -z "$line" ]] && continue
+      # Only process export statements
+      if [[ "$line" =~ ^[[:space:]]*export[[:space:]] ]]; then
+        eval "$line" 2>/dev/null
+      fi
+    done < "$file"
+    set -e
+    return 0
+  fi
+  return 1
+}
+
+# Check if already set in environment (e.g., by direnv)
+if [ -n "$FIGMA_ACCESS_TOKEN" ]; then
+  log "INFO" "FIGMA_ACCESS_TOKEN already set in environment"
   ENVRC_LOADED=true
-# Priority 2: Project .claude/.envrc
-elif [ -f ".claude/.envrc" ]; then
-  log "INFO" "Loading .envrc from .claude/"
-  source .claude/.envrc
+elif [ -n "$FIGMA_API_TOKEN" ]; then
+  log "INFO" "FIGMA_API_TOKEN found, using as FIGMA_ACCESS_TOKEN"
+  FIGMA_ACCESS_TOKEN="$FIGMA_API_TOKEN"
   ENVRC_LOADED=true
-# Priority 3: Home directory .envrc
-elif [ -f "$HOME/.envrc" ]; then
-  log "INFO" "Loading .envrc from home directory"
-  source "$HOME/.envrc"
-  ENVRC_LOADED=true
-# Priority 4: Plugin directory .envrc
-elif [ -f "${PLUGIN_DIR}/.envrc" ]; then
-  log "INFO" "Loading .envrc from plugin directory"
-  source "${PLUGIN_DIR}/.envrc"
-  ENVRC_LOADED=true
+fi
+
+# If not already set, try loading from files
+if [ "$ENVRC_LOADED" = false ]; then
+  # Priority 1: Current directory .envrc
+  if source_envrc ".envrc"; then
+    log "INFO" "Loaded from current directory .envrc"
+    ENVRC_LOADED=true
+  # Priority 2: Project .claude/.envrc
+  elif source_envrc ".claude/.envrc"; then
+    log "INFO" "Loaded from .claude/.envrc"
+    ENVRC_LOADED=true
+  # Priority 3: Home directory .envrc
+  elif source_envrc "$HOME/.envrc"; then
+    log "INFO" "Loaded from home directory .envrc"
+    ENVRC_LOADED=true
+  # Priority 4: Plugin directory .envrc
+  elif source_envrc "${PLUGIN_DIR}/.envrc"; then
+    log "INFO" "Loaded from plugin directory .envrc"
+    ENVRC_LOADED=true
+  fi
+fi
+
+# Support both FIGMA_ACCESS_TOKEN and FIGMA_API_TOKEN (fallback)
+if [ -z "$FIGMA_ACCESS_TOKEN" ] && [ -n "$FIGMA_API_TOKEN" ]; then
+  log "INFO" "Using FIGMA_API_TOKEN as FIGMA_ACCESS_TOKEN"
+  FIGMA_ACCESS_TOKEN="$FIGMA_API_TOKEN"
 fi
 
 if [ "$ENVRC_LOADED" = false ]; then
@@ -108,11 +146,16 @@ if [ -z "$FIGMA_ACCESS_TOKEN" ]; then
   log "ERROR" "FIGMA_ACCESS_TOKEN not set"
   echo "❌ Error: FIGMA_ACCESS_TOKEN not set"
   echo ""
+  echo "Current environment check:"
+  echo "  FIGMA_ACCESS_TOKEN: ${FIGMA_ACCESS_TOKEN:-<not set>}"
+  echo "  FIGMA_API_TOKEN: ${FIGMA_API_TOKEN:-<not set>}"
+  echo ""
   echo "To fix:"
-  echo "  1. Get token from: https://www.figma.com/settings (Personal Access Tokens)"
-  echo "  2. Edit .envrc"
-  echo "  3. Add: export FIGMA_ACCESS_TOKEN=\"your_token_here\""
-  echo "  4. Run: source .envrc"
+  echo "  1. Get token from: https://www.figma.com/developers/api#access-tokens"
+  echo "  2. Edit .envrc and add:"
+  echo "     export FIGMA_ACCESS_TOKEN=\"figd_your_token_here\""
+  echo "  3. Run: direnv allow . && direnv reload"
+  echo "     OR:  source .envrc"
   echo ""
   echo "📋 Log file: $LOG_FILE"
   exit 1
