@@ -53,11 +53,19 @@ if [ -z "$INPUT" ]; then
   exit 1
 fi
 
-# Extract file ID from URL if needed
+# Extract file ID and optional node-id from URL if needed
+NODE_ID=""
 if [[ "$INPUT" =~ figma.com/(file|design)/([a-zA-Z0-9]+) ]]; then
   FILE_ID="${BASH_REMATCH[2]}"
   log "INFO" "Extracted Figma file ID from URL: $FILE_ID"
   echo "📎 Extracted Figma file ID from URL: $FILE_ID"
+
+  # Extract node-id if present (e.g., ?node-id=3153-203362)
+  if [[ "$INPUT" =~ node-id=([0-9]+-[0-9]+) ]]; then
+    NODE_ID="${BASH_REMATCH[1]}"
+    log "INFO" "Extracted node ID: $NODE_ID"
+    echo "📎 Extracted node ID: $NODE_ID"
+  fi
 else
   FILE_ID="$INPUT"
 fi
@@ -164,8 +172,24 @@ fi
 log "INFO" "Figma credentials loaded successfully"
 log "INFO" "Token length: ${#FIGMA_ACCESS_TOKEN} chars"
 
-# Construct API URL
+# Construct API URL with query params
 API_URL="https://api.figma.com/v1/files/${FILE_ID}"
+
+# Add query parameters
+QUERY_PARAMS=""
+if [ -n "$NODE_ID" ]; then
+  # Fetch specific node - convert node-id format (3153-203362 -> 3153:203362)
+  NODE_ID_FORMATTED="${NODE_ID//-/:}"
+  QUERY_PARAMS="?ids=${NODE_ID_FORMATTED}&depth=2"
+  log "INFO" "Fetching specific node: $NODE_ID_FORMATTED"
+  echo "🎯 Fetching specific node: $NODE_ID"
+else
+  # Limit depth for large files to avoid 400 error
+  QUERY_PARAMS="?depth=1"
+  log "INFO" "Fetching with depth=1 (top-level only)"
+fi
+
+API_URL="${API_URL}${QUERY_PARAMS}"
 log "INFO" "API URL: $API_URL"
 
 echo "🎨 Fetching Figma file: $FILE_ID"
