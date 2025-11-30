@@ -6,10 +6,27 @@
 
 set -euo pipefail
 
-CLAUDE_DIR="."
+# Script directory (for relative paths)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# Detect CLAUDE_DIR - prioritize project's .claude directory
+if [ -d ".claude" ]; then
+  CLAUDE_DIR=".claude"
+elif [ -d "$(pwd)/.claude" ]; then
+  CLAUDE_DIR="$(pwd)/.claude"
+else
+  # Fallback to plugin's directory if no project .claude exists
+  CLAUDE_DIR="${PLUGIN_DIR}"
+fi
+
+# Set up paths
 LOGS_DIR="${CLAUDE_DIR}/logs"
 WORKFLOWS_DIR="${LOGS_DIR}/workflows"
 ACTIVE_WORKFLOW_FILE="${CLAUDE_DIR}/active-workflow.txt"
+
+# Ensure directories exist
+mkdir -p "${LOGS_DIR}" "${WORKFLOWS_DIR}" 2>/dev/null || true
 
 # Colors
 GREEN='\033[0;32m'
@@ -17,6 +34,19 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m'
+
+# Debug mode (set DEBUG=1 to enable)
+debug() {
+  if [[ "${DEBUG:-0}" == "1" ]]; then
+    echo -e "${BLUE}[DEBUG]${NC} $1" >&2
+  fi
+}
+
+debug "SCRIPT_DIR: $SCRIPT_DIR"
+debug "PLUGIN_DIR: $PLUGIN_DIR"
+debug "CLAUDE_DIR: $CLAUDE_DIR"
+debug "LOGS_DIR: $LOGS_DIR"
+debug "WORKFLOWS_DIR: $WORKFLOWS_DIR"
 
 # Get active workflow ID
 get_active_workflow() {
